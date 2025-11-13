@@ -212,4 +212,4 @@ MIT License - veja o arquivo [LICENSE](LICENSE) para detalhes.
 
 ---
 
-Desenvolvido com ❤️ por [Seu Nome](https://github.com/seu-usuario)
+Desenvolvido com ❤️ por Bruno Souza (https://github.com/Brun05ouza)
