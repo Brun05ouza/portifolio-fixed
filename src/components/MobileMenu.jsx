@@ -28,9 +28,9 @@ const MobileMenu = ({ isOpen, onClose }) => {
             animate={{ x: 0 }}
             exit={{ x: '-100%' }}
             transition={{ type: 'spring', damping: 25, stiffness: 200 }}
-            className="fixed left-0 top-0 h-full w-80 bg-white/95 dark:bg-gray-900/95 backdrop-blur-md z-50 shadow-2xl md:hidden border-r border-gray-200 dark:border-gray-700"
+            className="fixed left-0 top-0 h-full w-80 bg-gray-100 dark:bg-gray-800 z-50 shadow-2xl md:hidden border-r border-gray-200 dark:border-gray-700"
           >
-            <div className="p-6">
+            <div className="p-6 bg-gray-100 dark:bg-gray-800 h-full">
               <div className="flex items-center justify-between mb-8">
                 <h2 className="text-2xl font-bold text-gray-900 dark:text-white">Menu</h2>
                 <button
@@ -55,7 +55,7 @@ const MobileMenu = ({ isOpen, onClose }) => {
                       className={`flex items-center space-x-3 p-4 rounded-lg transition-colors ${
                         location.pathname === item.href
                           ? 'bg-primary-500 text-white'
-                          : 'text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800'
+                          : 'text-gray-700 dark:text-gray-300 bg-white dark:bg-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600'
                       }`}
                     >
                       <img 
