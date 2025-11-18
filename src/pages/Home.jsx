@@ -200,27 +200,27 @@ const Home = () => {
             initial="hidden"
             whileInView="visible"
             viewport={{ once: true }}
-            className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-4 sm:gap-6"
+            className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-6 gap-3 sm:gap-4 md:gap-6"
           >
             {skills.map((skill) => (
               <motion.div
                 key={skill.name}
                 variants={itemVariants}
                 whileHover={{ scale: 1.05 }}
-                className="bg-gray-50 dark:bg-gray-800 p-6 rounded-lg text-center hover:shadow-md transition-shadow"
+                className="bg-gray-50 dark:bg-gray-800 p-3 sm:p-4 md:p-6 rounded-lg text-center hover:shadow-md transition-shadow"
               >
                 <div className="text-4xl mb-3">
                   {skill.iconImage ? (
                     <img 
                       src={skill.iconImage} 
                       alt={skill.name}
-                      className="w-12 h-12 mx-auto object-contain"
+                      className="w-8 h-8 sm:w-10 sm:h-10 md:w-12 md:h-12 mx-auto object-contain"
                     />
                   ) : (
                     skill.icon
                   )}
                 </div>
-                <h3 className="font-semibold text-gray-900 dark:text-white">{skill.name}</h3>
+                <h3 className="font-semibold text-gray-900 dark:text-white text-xs sm:text-sm md:text-base">{skill.name}</h3>
               </motion.div>
             ))}
           </motion.div>

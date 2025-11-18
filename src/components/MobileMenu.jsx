@@ -61,7 +61,7 @@ const MobileMenu = ({ isOpen, onClose }) => {
                       <img 
                         src={item.iconImage} 
                         alt={item.name}
-                        className="w-6 h-6 object-contain"
+                        className="w-6 h-6 object-contain filter brightness-0 invert"
                       />
                       <span className="font-medium">{item.name}</span>
                     </Link>
