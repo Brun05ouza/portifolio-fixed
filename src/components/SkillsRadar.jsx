@@ -15,16 +15,16 @@ const SkillsRadar = () => {
     backend: [
       { name: 'PostgreSQL', level: 65, color: 'bg-blue-700' },
       { name: 'SQL Server', level: 60, color: 'bg-red-600' },
+      { name: 'APIs REST', level: 45, color: 'bg-purple-600' },
       { name: 'Node.js', level: 40, color: 'bg-green-600' },
-      { name: 'Python', level: 35, color: 'bg-yellow-600' },
-      { name: 'APIs REST', level: 45, color: 'bg-purple-600' }
+      { name: 'Python', level: 35, color: 'bg-yellow-600' }
     ],
     estudando: [
+      { name: 'MongoDB', level: 35, color: 'bg-green-500' },
       { name: 'TypeScript', level: 30, color: 'bg-blue-400' },
       { name: 'Next.js', level: 25, color: 'bg-gray-600' },
       { name: 'Docker', level: 20, color: 'bg-blue-300' },
-      { name: 'AWS', level: 15, color: 'bg-orange-400' },
-      { name: 'MongoDB', level: 35, color: 'bg-green-500' }
+      { name: 'AWS', level: 15, color: 'bg-orange-400' }
     ]
   };
 
@@ -40,18 +40,18 @@ const SkillsRadar = () => {
         Skills Técnicas
       </h3>
       
-      <div className="flex space-x-4 mb-8">
+      <div className="flex flex-wrap gap-2 sm:gap-4 mb-8">
         {categories.map(category => (
           <button
             key={category.id}
             onClick={() => setSelectedCategory(category.id)}
-            className={`px-4 py-2 rounded-lg font-medium transition-all ${
+            className={`px-3 py-2 sm:px-4 sm:py-2 rounded-lg font-medium transition-all text-sm sm:text-base ${
               selectedCategory === category.id
                 ? 'bg-blue-500 text-white shadow-lg'
                 : 'bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600'
             }`}
           >
-            <span className="mr-2">{category.icon}</span>
+            <span className="mr-1 sm:mr-2">{category.icon}</span>
             {category.name}
           </button>
         ))}
@@ -67,10 +67,10 @@ const SkillsRadar = () => {
             className="relative"
           >
             <div className="flex justify-between items-center mb-2">
-              <span className="font-medium text-gray-900 dark:text-white">
+              <span className="font-medium text-gray-900 dark:text-white text-sm sm:text-base">
                 {skill.name}
               </span>
-              <span className="text-sm text-gray-600 dark:text-gray-400">
+              <span className="text-xs sm:text-sm text-gray-600 dark:text-gray-400">
                 {skill.level}%
               </span>
             </div>
