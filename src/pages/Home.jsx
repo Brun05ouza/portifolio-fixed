@@ -278,7 +278,7 @@ const Home = () => {
               whileInView={{ scale: 1, opacity: 1 }}
               viewport={{ once: true }}
               transition={{ delay: 4, duration: 2, ease: "easeOut" }}
-              className="hidden lg:flex justify-center items-center relative"
+              className="hidden lg:flex justify-center items-center relative order-1 lg:order-1"
             >
               {/* Floating Data Points around second globe */}
               <motion.div
@@ -355,7 +355,7 @@ const Home = () => {
             </motion.div>
             
             {/* TCC Information - Appears gradually */}
-            <div className="text-white space-y-6">
+            <div className="text-white space-y-6 order-2 lg:order-2">
               {/* Badge */}
               <motion.div
                 initial={{ opacity: 0, y: 20 }}

@@ -28,7 +28,7 @@ const MobileMenu = ({ isOpen, onClose }) => {
             animate={{ x: 0 }}
             exit={{ x: '-100%' }}
             transition={{ type: 'spring', damping: 25, stiffness: 200 }}
-            className="fixed left-0 top-0 h-full w-80 bg-white dark:bg-gray-900 z-50 shadow-2xl md:hidden"
+            className="fixed left-0 top-0 h-full w-80 bg-white/95 dark:bg-gray-900/95 backdrop-blur-md z-50 shadow-2xl md:hidden border-r border-gray-200 dark:border-gray-700"
           >
             <div className="p-6">
               <div className="flex items-center justify-between mb-8">
