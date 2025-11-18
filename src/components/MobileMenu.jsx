@@ -5,11 +5,11 @@ const MobileMenu = ({ isOpen, onClose }) => {
   const location = useLocation();
   
   const navigation = [
-    { name: 'Início', href: '/', icon: '🏠' },
-    { name: 'Projetos', href: '/projetos', icon: '💼' },
-    { name: 'Dashboard', href: '/dashboard', icon: '📊' },
-    { name: 'Blog', href: '/blog', icon: '📝' },
-    { name: 'Contato', href: '/contato', icon: '📧' },
+    { name: 'Início', href: '/', iconImage: '/assets/casa.png' },
+    { name: 'Projetos', href: '/projetos', iconImage: '/assets/projetos.png' },
+    { name: 'Dashboard', href: '/dashboard', iconImage: '/assets/dashboard-tel.png' },
+    { name: 'Blog', href: '/blog', iconImage: '/assets/blog.png' },
+    { name: 'Contato', href: '/contato', iconImage: '/assets/telefone-tel.png' },
   ];
 
   return (
@@ -58,7 +58,11 @@ const MobileMenu = ({ isOpen, onClose }) => {
                           : 'text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800'
                       }`}
                     >
-                      <span className="text-xl">{item.icon}</span>
+                      <img 
+                        src={item.iconImage} 
+                        alt={item.name}
+                        className="w-6 h-6 object-contain"
+                      />
                       <span className="font-medium">{item.name}</span>
                     </Link>
                   </motion.div>

@@ -1,23 +1,43 @@
 import { motion } from 'framer-motion';
-import { useAnalytics } from '../hooks/useAnalytics';
 import { measurePerformance, getMemoryUsage } from '../utils/performance';
 import { useState, useEffect } from 'react';
+import analyticsService from '../services/analyticsService';
 
 const Dashboard = () => {
-  const analytics = useAnalytics();
+  const [analytics, setAnalytics] = useState({
+    visitors: 0,
+    pageViews: 0,
+    onlineUsers: 0,
+    sessionDuration: 0
+  });
   const [performance, setPerformance] = useState(null);
   const [memory, setMemory] = useState(null);
 
   useEffect(() => {
+    // Carrega dados reais
+    const updateAnalytics = () => {
+      setAnalytics({
+        visitors: analyticsService.getTotalVisits(),
+        pageViews: Object.values(analyticsService.getPageViews()).reduce((a, b) => a + b, 0),
+        onlineUsers: analyticsService.getOnlineUsers(),
+        sessionDuration: analyticsService.getSessionDuration()
+      });
+    };
+    
+    updateAnalytics();
     setPerformance(measurePerformance());
     setMemory(getMemoryUsage());
+    
+    // Atualiza a cada 30 segundos
+    const interval = setInterval(updateAnalytics, 30000);
+    return () => clearInterval(interval);
   }, []);
 
   const cards = [
     { title: 'Visitantes', value: analytics.visitors, color: 'bg-blue-500', iconImage: '/assets/pessoas.png' },
     { title: 'Page Views', value: analytics.pageViews, color: 'bg-green-500', iconImage: '/assets/postgre.png' },
-    { title: 'Bounce Rate', value: `${analytics.bounceRate.toFixed(1)}%`, color: 'bg-yellow-500', iconImage: '/assets/raio.png' },
-    { title: 'Tempo Médio', value: `${analytics.avgSessionTime.toFixed(0)}s`, color: 'bg-purple-500', iconImage: '/assets/relogio.png' }
+    { title: 'Online Agora', value: analytics.onlineUsers, color: 'bg-yellow-500', iconImage: '/assets/raio.png' },
+    { title: 'Sessão Atual', value: `${analytics.sessionDuration}s`, color: 'bg-purple-500', iconImage: '/assets/relogio.png' }
   ];
 
   return (

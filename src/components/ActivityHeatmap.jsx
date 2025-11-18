@@ -83,7 +83,7 @@ const ActivityHeatmap = ({ username = 'Brun05ouza' }) => {
     return (
       <div className="bg-white dark:bg-gray-800 rounded-lg p-6 shadow-lg">
         <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-4">
-          Atividade de Desenvolvimento
+          Atividade de Desenvolvimento (Commits)
         </h3>
         <div className="animate-pulse h-20 bg-gray-200 dark:bg-gray-700 rounded"></div>
       </div>
@@ -109,7 +109,7 @@ const ActivityHeatmap = ({ username = 'Brun05ouza' }) => {
   return (
     <div className="bg-white dark:bg-gray-800 rounded-lg p-6 shadow-lg">
       <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-4">
-        Atividade de Desenvolvimento
+        Atividade de Desenvolvimento (Commits)
       </h3>
       
       <div className="flex gap-0.5 sm:gap-1 overflow-x-auto pb-4">

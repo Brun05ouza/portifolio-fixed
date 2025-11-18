@@ -26,8 +26,14 @@ const Home = () => {
     { name: 'CSS', iconImage: '/assets/css.png' },
     { name: 'JavaScript', iconImage: '/assets/javascript.png' },
     { name: 'React', iconImage: '/assets/react.png' },
+    { name: 'Node.js', iconImage: '/assets/node.png' },
+    { name: 'TypeScript', iconImage: '/assets/typescript.png' },
+    { name: 'Git', iconImage: '/assets/git.png' },
+    { name: 'MongoDB', iconImage: '/assets/mongoDB.jpg' },
     { name: 'PostgreSQL', iconImage: '/assets/postgre.png' },
     { name: 'Vite', iconImage: '/assets/vite.png' },
+    { name: 'Tailwind CSS', iconImage: '/assets/tailwindcss.svg' },
+    { name: 'Firebase', iconImage: '/assets/firebase.svg' }
   ]
 
   const containerVariants = {
@@ -82,9 +88,9 @@ const Home = () => {
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.8 }}
           >
-            <h1 className="text-3xl sm:text-4xl md:text-6xl font-bold text-gray-900 dark:text-white mb-6 leading-tight">
+            <h1 className="text-4xl sm:text-5xl md:text-6xl font-bold text-gray-900 dark:text-white mb-6 leading-tight">
               Olá, eu sou<br className="sm:hidden" /> Bruno Souza<br/>
-              <span className="text-2xl sm:text-3xl md:text-5xl">
+              <span className="text-3xl sm:text-4xl md:text-5xl">
                 <TypingAnimation 
                   texts={['Estudante de Desenvolvimento', 'Aprendendo React', 'Explorando Tecnologias', 'Futuro Desenvolvedor', 'já tomou café hoje ?']}
                   speed={80}
@@ -109,13 +115,13 @@ const Home = () => {
               <div className="text-3xl opacity-20">💻</div>
             </div>
             <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 justify-center px-4">
-              <Link to="/projetos" className="btn-primary text-center py-4 sm:py-3">
+              <Link to="/projetos" className="btn-primary text-center py-4 sm:py-3 text-lg sm:text-base">
                 Ver Projetos
               </Link>
-              <Link to="/dashboard" className="bg-purple-600 hover:bg-purple-700 text-white font-medium py-4 sm:py-3 px-6 sm:px-8 rounded-lg transition-colors duration-200 text-center">
+              <Link to="/dashboard" className="bg-purple-600 hover:bg-purple-700 text-white font-medium py-4 sm:py-3 px-6 sm:px-8 rounded-lg transition-colors duration-200 text-center text-lg sm:text-base">
                 Dashboard Técnico
               </Link>
-              <Link to="/contato" className="btn-secondary text-center py-4 sm:py-3">
+              <Link to="/contato" className="bg-primary-600 hover:bg-primary-700 text-white font-medium py-4 sm:py-3 px-6 sm:px-8 rounded-lg transition-colors duration-200 text-center text-lg sm:text-base">
                 Entre em Contato
               </Link>
             </div>
@@ -154,9 +160,6 @@ const Home = () => {
               <SkillsRadar />
             </div>
             <div className="order-1 lg:order-2">
-              <h3 className="text-xl sm:text-2xl font-bold text-gray-900 dark:text-white mb-6 text-center lg:text-left">
-                Skills Interativas
-              </h3>
               <div className="block lg:hidden mb-8">
                 <SwipeCards />
               </div>
@@ -186,6 +189,12 @@ const Home = () => {
             </div>
           </div>
 
+          <div className="mb-8">
+            <h3 className="text-xl sm:text-2xl font-bold text-gray-900 dark:text-white mb-6 text-center">
+              Skills Interativas
+            </h3>
+          </div>
+          
           <motion.div
             variants={containerVariants}
             initial="hidden"
@@ -218,27 +227,304 @@ const Home = () => {
         </div>
       </AnimatedBackground>
 
+      {/* TCC Highlight Section */}
+      <section className="relative py-20 bg-gradient-to-br from-emerald-600 via-teal-600 to-cyan-700 dark:from-emerald-800 dark:via-teal-800 dark:to-cyan-900 overflow-hidden min-h-screen">
+        <div className="absolute inset-0 bg-black/20"></div>
+        
+        {/* Animated Globe with U Movement */}
+        <motion.div
+          initial={{ 
+            x: -300, 
+            y: -150
+          }}
+          animate={{ 
+            x: 1200,
+            y: -150
+          }}
+          transition={{
+            duration: 8,
+            ease: [0.25, 0.1, 0.25, 1],
+            delay: 0.5
+          }}
+          style={{
+            offsetPath: "path('M -300,-50 Q 200,600 1200,-50')",
+            offsetDistance: "0%"
+          }}
+          whileInView={{
+            offsetDistance: "100%"
+          }}
+          viewport={{ once: true, amount: 0.3 }}
+          className="absolute top-20 left-0 z-20"
+        >
+          <div className="w-[800px] h-[800px] rounded-full bg-gradient-to-br from-emerald-400 via-teal-500 to-cyan-600 animate-spin shadow-2xl" style={{animationDuration: '20s'}}>
+            {/* Continents */}
+            <div className="absolute top-20 left-28 w-40 h-32 bg-emerald-700 rounded-full opacity-80"></div>
+            <div className="absolute top-48 right-32 w-32 h-20 bg-emerald-700 rounded-full opacity-80"></div>
+            <div className="absolute bottom-32 left-20 w-44 h-28 bg-emerald-700 rounded-full opacity-80"></div>
+            <div className="absolute bottom-20 right-28 w-36 h-36 bg-emerald-700 rounded-full opacity-80"></div>
+            
+            {/* Orbital rings */}
+            <div className="absolute inset-0 border-2 border-white/30 rounded-full animate-pulse"></div>
+            <div className="absolute inset-4 border border-white/20 rounded-full animate-pulse" style={{animationDelay: '1s'}}></div>
+          </div>
+        </motion.div>
+        
+        <div className="container-custom relative z-10 flex items-center min-h-[80vh]">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center w-full">
+            
+            {/* Second Globe - Static beside EcoSphere */}
+            <motion.div
+              initial={{ scale: 0, opacity: 0 }}
+              whileInView={{ scale: 1, opacity: 1 }}
+              viewport={{ once: true }}
+              transition={{ delay: 4, duration: 2, ease: "easeOut" }}
+              className="hidden lg:flex justify-center items-center relative"
+            >
+              {/* Floating Data Points around second globe */}
+              <motion.div
+                animate={{ 
+                  x: [0, 30, 0, -30, 0],
+                  y: [0, -20, 0, 20, 0]
+                }}
+                transition={{ duration: 4, repeat: Infinity, ease: "easeInOut" }}
+                className="absolute -top-8 -left-8 bg-white/90 backdrop-blur-sm rounded-full p-3 border border-emerald-200 shadow-lg z-10"
+              >
+                <span className="text-emerald-700 text-sm font-bold">CO₂</span>
+              </motion.div>
+              
+              <motion.div
+                animate={{ 
+                  x: [0, 20, 0, -20, 0],
+                  y: [0, 30, 0, -30, 0]
+                }}
+                transition={{ duration: 3.5, repeat: Infinity, ease: "easeInOut", delay: 0.5 }}
+                className="absolute -top-4 -right-10 bg-white/90 backdrop-blur-sm rounded-full p-3 border border-teal-200 shadow-lg z-10"
+              >
+                <span className="text-teal-700 text-sm font-bold">25°C</span>
+              </motion.div>
+              
+              <motion.div
+                animate={{ 
+                  x: [0, 20, 0, -20, 0],
+                  y: [0, 25, 0, -25, 0]
+                }}
+                transition={{ duration: 4.5, repeat: Infinity, ease: "easeInOut", delay: 1 }}
+                className="absolute -bottom-8 -left-12 bg-white/90 backdrop-blur-sm rounded-full p-3 border border-cyan-200 shadow-lg z-10"
+              >
+                <span className="text-cyan-700 text-sm font-bold">78%</span>
+              </motion.div>
+              
+              <motion.div
+                animate={{ 
+                  x: [0, -15, 0, 15, 0],
+                  y: [0, -30, 0, 30, 0]
+                }}
+                transition={{ duration: 3, repeat: Infinity, ease: "easeInOut", delay: 1.5 }}
+                className="absolute -bottom-4 -right-8 bg-white/90 backdrop-blur-sm rounded-full p-3 border border-emerald-200 shadow-lg z-10"
+              >
+                <span className="text-emerald-700 text-sm font-bold">IoT</span>
+              </motion.div>
+              
+              {/* Pulsing rings around globe */}
+              <motion.div
+                animate={{ scale: [1, 1.2, 1], opacity: [0.3, 0.1, 0.3] }}
+                transition={{ duration: 2, repeat: Infinity, ease: "easeInOut" }}
+                className="absolute inset-0 border-2 border-white/30 rounded-full"
+                style={{ width: '500px', height: '500px', left: '-100px', top: '-100px' }}
+              />
+              
+              <motion.div
+                animate={{ scale: [1, 1.3, 1], opacity: [0.2, 0.05, 0.2] }}
+                transition={{ duration: 3, repeat: Infinity, ease: "easeInOut", delay: 1 }}
+                className="absolute inset-0 border border-white/20 rounded-full"
+                style={{ width: '600px', height: '600px', left: '-150px', top: '-150px' }}
+              />
+              
+              {/* Main Globe */}
+              <div className="w-[400px] h-[400px] rounded-full bg-gradient-to-br from-emerald-400 via-teal-500 to-cyan-600 animate-spin shadow-2xl relative" style={{animationDuration: '15s'}}>
+                {/* Continents */}
+                <div className="absolute top-12 left-16 w-20 h-16 bg-emerald-700 rounded-full opacity-80"></div>
+                <div className="absolute top-28 right-20 w-16 h-12 bg-emerald-700 rounded-full opacity-80"></div>
+                <div className="absolute bottom-20 left-12 w-24 h-14 bg-emerald-700 rounded-full opacity-80"></div>
+                <div className="absolute bottom-12 right-16 w-18 h-18 bg-emerald-700 rounded-full opacity-80"></div>
+                
+                {/* Orbital rings */}
+                <div className="absolute inset-0 border-2 border-white/30 rounded-full animate-pulse"></div>
+                <div className="absolute inset-4 border border-white/20 rounded-full animate-pulse" style={{animationDelay: '1s'}}></div>
+              </div>
+            </motion.div>
+            
+            {/* TCC Information - Appears gradually */}
+            <div className="text-white space-y-6">
+              {/* Badge */}
+              <motion.div
+                initial={{ opacity: 0, y: 20 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                transition={{ delay: 2, duration: 0.6 }}
+                className="inline-flex items-center gap-2 bg-white/20 backdrop-blur-sm px-6 py-3 rounded-full mb-8 border border-white/30"
+              >
+                <span className="text-2xl">🎓</span>
+                <span className="font-semibold text-lg">Trabalho de Conclusão de Curso</span>
+              </motion.div>
+            
+              {/* Title */}
+              <motion.h2
+                initial={{ opacity: 0, y: 20 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                transition={{ delay: 2.2, duration: 0.6 }}
+                className="text-4xl md:text-5xl font-bold mb-6 leading-tight"
+              >
+                EcoSphere
+                <span className="block text-xl md:text-2xl font-normal mt-2 text-emerald-100">
+                  Sistema de Monitoramento Ambiental
+                </span>
+              </motion.h2>
+            
+              {/* Description */}
+              <motion.p
+                initial={{ opacity: 0, y: 20 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                transition={{ delay: 2.4, duration: 0.6 }}
+                className="text-lg md:text-xl mb-8 text-teal-100 leading-relaxed"
+              >
+                Plataforma inovadora que integra IoT, Machine Learning e análise de dados em tempo real 
+                para monitoramento e preservação ambiental.
+              </motion.p>
+            
+              {/* Features */}
+              <div className="space-y-4 mb-8">
+                <motion.div
+                  initial={{ opacity: 0, x: -20 }}
+                  whileInView={{ opacity: 1, x: 0 }}
+                  viewport={{ once: true }}
+                  transition={{ delay: 2.6, duration: 0.6 }}
+                  className="flex items-center gap-4 bg-white/10 backdrop-blur-sm rounded-lg p-4 border border-white/20"
+                >
+                  <img src="/assets/plant.png" alt="Plant" className="w-8 h-8" />
+                  <div>
+                    <h3 className="font-bold text-lg">IoT Sensors</h3>
+                    <p className="text-teal-100 text-sm">Sensores inteligentes para coleta de dados ambientais</p>
+                  </div>
+                </motion.div>
+                <motion.div
+                  initial={{ opacity: 0, x: -20 }}
+                  whileInView={{ opacity: 1, x: 0 }}
+                  viewport={{ once: true }}
+                  transition={{ delay: 2.8, duration: 0.6 }}
+                  className="flex items-center gap-4 bg-white/10 backdrop-blur-sm rounded-lg p-4 border border-white/20"
+                >
+                  <img src="/assets/smart_toy.svg" alt="Smart" className="w-8 h-8" />
+                  <div>
+                    <h3 className="font-bold text-lg">Machine Learning</h3>
+                    <p className="text-teal-100 text-sm">Algoritmos preditivos para análise ambiental</p>
+                  </div>
+                </motion.div>
+                <motion.div
+                  initial={{ opacity: 0, x: -20 }}
+                  whileInView={{ opacity: 1, x: 0 }}
+                  viewport={{ once: true }}
+                  transition={{ delay: 3, duration: 0.6 }}
+                  className="flex items-center gap-4 bg-white/10 backdrop-blur-sm rounded-lg p-4 border border-white/20"
+                >
+                  <img src="/assets/dashboard.svg" alt="Dashboard" className="w-8 h-8" />
+                  <div>
+                    <h3 className="font-bold text-lg">Dashboard Real-time</h3>
+                    <p className="text-teal-100 text-sm">Visualização de dados em tempo real</p>
+                  </div>
+                </motion.div>
+              </div>
+            
+              {/* CTA Button */}
+              <motion.button
+                initial={{ opacity: 0, y: 20 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                transition={{ delay: 3.2, duration: 0.6 }}
+                onClick={() => window.open('https://github.com/Brun05ouza/Tcc-EcoSphere', '_blank')}
+                className="group bg-white text-emerald-600 hover:bg-emerald-50 font-bold py-4 px-8 rounded-xl transition-all duration-300 transform hover:scale-105 shadow-2xl hover:shadow-emerald-500/20"
+              >
+                <span className="flex items-center gap-3">
+                  <span>Ver Projeto Completo</span>
+                  <span className="group-hover:translate-x-1 transition-transform">→</span>
+                </span>
+              </motion.button>
+            </div>
+            
+          </div>
+        </div>
+      </section>
+
       {/* CTA Section */}
-      <AnimatedBackground className="section-padding bg-primary-600 text-white">
-        <div className="container-custom text-center">
+      <section className="relative py-20 bg-gradient-to-r from-gray-900 via-gray-800 to-black dark:from-gray-800 dark:via-gray-700 dark:to-gray-900 overflow-hidden">
+        {/* Background Pattern */}
+        <div className="absolute inset-0 opacity-10">
+          <div className="absolute inset-0" style={{
+            backgroundImage: `radial-gradient(circle at 25% 25%, #3b82f6 0%, transparent 50%), 
+                             radial-gradient(circle at 75% 75%, #8b5cf6 0%, transparent 50%)`
+          }}></div>
+        </div>
+        
+        {/* Animated particles */}
+        <div className="absolute inset-0">
+          {[...Array(15)].map((_, i) => (
+            <div
+              key={i}
+              className="absolute w-1 h-1 bg-primary-400 rounded-full animate-pulse"
+              style={{
+                left: `${Math.random() * 100}%`,
+                top: `${Math.random() * 100}%`,
+                animationDelay: `${Math.random() * 3}s`,
+                animationDuration: `${2 + Math.random() * 2}s`
+              }}
+            />
+          ))}
+        </div>
+        
+        <div className="container-custom text-center relative z-10">
           <motion.div
             initial={{ opacity: 0, y: 30 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
             transition={{ duration: 0.6 }}
+            className="text-white"
           >
-            <h2 className="text-3xl md:text-4xl font-bold mb-6">
+
+            
+            <h2 className="text-4xl md:text-5xl font-bold mb-6 bg-gradient-to-r from-white via-blue-100 to-purple-100 bg-clip-text text-transparent">
               Vamos trabalhar juntos?
             </h2>
-            <p className="text-xl mb-8 opacity-90">
-              Estou sempre aberto a novos desafios e oportunidades
+            <p className="text-xl md:text-2xl mb-10 text-gray-300 max-w-3xl mx-auto leading-relaxed">
+              Estou sempre disponível para novos desafios e oportunidades. 
+              <span className="block mt-2 text-primary-400 font-semibold">Vamos criar algo incrível!</span>
             </p>
-            <Link to="/contato" className="bg-white text-primary-600 hover:bg-gray-100 font-medium py-3 px-8 rounded-lg transition-colors duration-200">
-              Entrar em Contato
-            </Link>
+            
+            {/* CTA Buttons */}
+            <div className="flex flex-col sm:flex-row gap-4 justify-center">
+              <Link 
+                to="/contato" 
+                className="group bg-gradient-to-r from-primary-600 to-purple-600 hover:from-primary-700 hover:to-purple-700 text-white font-bold py-4 px-8 rounded-xl transition-all duration-300 transform hover:scale-105 shadow-2xl hover:shadow-primary-500/25"
+              >
+                <span className="flex items-center justify-center gap-3">
+                  <span>Entrar em Contato</span>
+                  <span className="group-hover:translate-x-1 transition-transform">→</span>
+                </span>
+              </Link>
+              <Link 
+                to="/projetos" 
+                className="group bg-white/10 backdrop-blur-sm hover:bg-white/20 text-white font-medium py-4 px-8 rounded-xl transition-all duration-300 border border-white/20 hover:border-white/40"
+              >
+                <span className="flex items-center justify-center gap-3">
+                  <span>Ver Meus Projetos</span>
+
+                </span>
+              </Link>
+            </div>
           </motion.div>
         </div>
-      </AnimatedBackground>
+      </section>
     </div>
   )
 }

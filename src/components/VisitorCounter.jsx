@@ -1,30 +1,21 @@
 import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
+import analyticsService from '../services/analyticsService';
 
 const VisitorCounter = () => {
   const [visitors, setVisitors] = useState(0);
   const [isOnline, setIsOnline] = useState(0);
 
   useEffect(() => {
-    // Simula contador de visitantes
-    const savedVisitors = localStorage.getItem('portfolio-visitors') || '1247';
-    setVisitors(parseInt(savedVisitors));
+    // Carrega dados reais
+    setVisitors(analyticsService.getTotalVisits());
+    setIsOnline(analyticsService.getOnlineUsers());
     
-    // Simula usuários online
-    setIsOnline(Math.floor(Math.random() * 15) + 3);
-    
-    // Incrementa visitantes a cada visita
-    const newCount = parseInt(savedVisitors) + 1;
-    localStorage.setItem('portfolio-visitors', newCount.toString());
-    setVisitors(newCount);
-    
-    // Atualiza usuários online periodicamente
+    // Atualiza dados a cada 30 segundos
     const interval = setInterval(() => {
-      setIsOnline(prev => {
-        const change = Math.floor(Math.random() * 3) - 1; // -1, 0, ou 1
-        return Math.max(1, Math.min(20, prev + change));
-      });
-    }, 5000);
+      setVisitors(analyticsService.getTotalVisits());
+      setIsOnline(analyticsService.getOnlineUsers());
+    }, 30000);
     
     return () => clearInterval(interval);
   }, []);

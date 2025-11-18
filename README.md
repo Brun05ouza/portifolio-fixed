@@ -69,12 +69,22 @@ cd portfolio-react
 npm install
 ```
 
-3. Execute o projeto:
+3. Configure as variáveis de ambiente:
+```bash
+cp .env.example .env
+```
+Edite o arquivo `.env` e adicione seu token do GitHub (opcional):
+```
+VITE_GITHUB_USERNAME=seu-usuario
+VITE_GITHUB_TOKEN=seu-token-github
+```
+
+4. Execute o projeto:
 ```bash
 npm run dev
 ```
 
-4. Acesse `http://localhost:3000`
+5. Acesse `http://localhost:3000`
 
 ## 📱 Funcionalidades
 
@@ -97,7 +107,8 @@ npm run dev
 - 🏆 **Sistema de Certificações** - Badges verificados
 - ⏱️ **Monitor de Performance** - Métricas de carregamento e memória
 - 🔔 **Sistema de Notificações** - Toast notifications animadas
-- 📈 **Integração GitHub** - Estatísticas e repositórios em destaque
+- 📈 **Integração GitHub** - Repositórios reais carregados automaticamente
+- ⭐ **Projetos Dinâmicos** - Carregamento automático dos seus repositórios GitHub
 - 🎯 **Timeline Interativa** - Experiência profissional visual
 - ⚡ **Hooks Customizados** - Demonstração de React avançado
 

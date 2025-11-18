@@ -1,4 +1,5 @@
-import { BrowserRouter as Router, Routes, Route } from 'react-router-dom'
+import { BrowserRouter as Router, Routes, Route, useLocation } from 'react-router-dom'
+import { useEffect } from 'react'
 import Layout from './components/Layout'
 import Home from './pages/Home'
 import Projects from './pages/Projects'
@@ -12,12 +13,24 @@ import VisitorCounter from './components/VisitorCounter'
 import CustomCursor from './components/CustomCursor'
 import ScrollToTop from './components/ScrollToTop'
 import { useNotification } from './hooks/useNotification'
+import analyticsService from './services/analyticsService'
+
+function PageTracker() {
+  const location = useLocation();
+  
+  useEffect(() => {
+    analyticsService.recordPageView(location.pathname);
+  }, [location]);
+  
+  return null;
+}
 
 function App() {
   const { notifications, removeNotification } = useNotification();
 
   return (
     <Router>
+      <PageTracker />
       <ScrollToTop />
       <Layout>
         <Routes>

@@ -1,23 +1,50 @@
 import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
+import { getRepositories } from '../services/githubService';
 
 const LiveStats = () => {
   const [stats, setStats] = useState({
-    linesOfCode: 12584,
-    projectsCompleted: 8,
-    coffeeConsumed: 247,
-    hoursOfEstudo: 520
+    linesOfCode: 0,
+    projectsCompleted: 0,
+    coffeeConsumed: 350,
+    hoursOfEstudo: 1200
   });
 
   useEffect(() => {
+    // Buscar dados reais do GitHub
+    const fetchGitHubStats = async () => {
+      try {
+        const repos = await getRepositories('Brun05ouza', 50);
+        const totalRepos = repos.filter(repo => !repo.fork).length;
+        
+        // Simular contagem de linhas baseada nos repositórios
+        const estimatedLines = totalRepos * 1500; // Média de 1500 linhas por repo
+        
+        setStats(prev => ({
+          ...prev,
+          linesOfCode: estimatedLines,
+          projectsCompleted: totalRepos
+        }));
+      } catch (error) {
+        console.error('Erro ao buscar stats do GitHub:', error);
+        // Valores fallback
+        setStats(prev => ({
+          ...prev,
+          linesOfCode: 25000,
+          projectsCompleted: 15
+        }));
+      }
+    };
+
+    fetchGitHubStats();
+
+    // Atualizar café a cada 30 segundos
     const interval = setInterval(() => {
       setStats(prev => ({
-        linesOfCode: prev.linesOfCode + Math.floor(Math.random() * 10),
-        projectsCompleted: prev.projectsCompleted + (Math.random() > 0.99 ? 1 : 0),
-        coffeeConsumed: prev.coffeeConsumed + (Math.random() > 0.95 ? 1 : 0),
-        hoursOfEstudo: prev.hoursOfEstudo + (Math.random() > 0.9 ? 1 : 0)
+        ...prev,
+        coffeeConsumed: prev.coffeeConsumed + (Math.random() > 0.98 ? 1 : 0)
       }));
-    }, 2000);
+    }, 30000);
 
     return () => clearInterval(interval);
   }, []);

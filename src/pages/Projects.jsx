@@ -15,7 +15,8 @@ const Projects = () => {
       tags: ['React', 'Node.js', 'MongoDB', 'Stripe'],
       demo: 'https://e-commerce-react-sand.vercel.app/',
       github: 'https://github.com/Brun05ouza/E-commerce-React-',
-      category: 'Web'
+      category: 'Web',
+      featured: true
     },
     {
       id: 2,
@@ -25,131 +26,84 @@ const Projects = () => {
       tags: ['React', 'TypeScript', 'Firebase', 'Tailwind'],
       demo: 'Em breve no Vercel',
       github: 'https://github.com/Brun05ouza/culture-hub',
-      category: 'Web'
+      category: 'Web',
+      featured: true
     },
     {
       id: 3,
-      title: 'App Mobile React Native',
-      description: 'Aplicativo mobile para delivery com geolocalização e pagamentos integrados.',
-      image: '/assets/appmobile.png',
-      tags: ['React Native', 'Firebase', 'Maps API'],
-      demo: '/project/3',
-      github: 'https://github.com/exemplo',
-      category: 'Mobile'
-    },
-    {
-      id: 4,
       title: 'Dashboard Analytics',
       description: 'Dashboard interativo para análise de dados com gráficos e relatórios em tempo real.',
       image: '/assets/dashboard.png',
       tags: ['React', 'D3.js', 'Python', 'AWS'],
       demo: 'https://dashboard-analytics-peach.vercel.app',
       github: 'https://github.com/Brun05ouza/DashboardAnalytics',
-      category: 'Web'
+      category: 'Web',
+      featured: true
+    },
+    {
+      id: 4,
+      title: 'App Mobile React Native',
+      description: 'Aplicativo mobile para delivery com geolocalização e pagamentos integrados.',
+      image: '/assets/appmobile.png',
+      tags: ['React Native', 'Firebase', 'Maps API'],
+      demo: '/project/3',
+      github: 'https://github.com/exemplo',
+      category: 'Mobile',
+      featured: true
     },
     {
       id: 5,
-      title: 'Sistema de Gestão',
-      description: 'Sistema completo para gestão de empresas com controle de estoque e vendas.',
-      image: 'https://via.placeholder.com/600x400/6366f1/ffffff?text=Sistema+Gestão',
-      tags: ['React', 'Node.js', 'MySQL', 'Express'],
-      demo: 'Em desenvolvimento',
-      github: 'https://github.com/exemplo',
-      category: 'Web'
+      title: 'Nexus Flow Web',
+      description: 'Plataforma web moderna para gerenciamento de fluxos de trabalho e automação de processos.',
+      image: 'https://opengraph.githubassets.com/1/Brun05ouza/nexus-flow-web',
+      tags: ['React', 'TypeScript', 'Node.js', 'Tailwind'],
+      demo: null,
+      github: 'https://github.com/Brun05ouza/nexus-flow-web',
+      category: 'Web',
+      featured: true
     },
     {
       id: 6,
-      title: 'App Fitness Tracker',
-      description: 'Aplicativo para acompanhamento de exercícios e metas de fitness.',
-      image: 'https://via.placeholder.com/600x400/f59e0b/ffffff?text=Fitness+App',
-      tags: ['React Native', 'Firebase', 'Health API'],
-      demo: 'Em desenvolvimento',
-      github: 'https://github.com/exemplo',
-      category: 'Mobile'
+      title: 'Gestor Pro Web',
+      description: 'Sistema completo de gestão empresarial com dashboard intuitivo, controle de vendas, estoque e relatórios avançados para otimizar a administração de negócios.',
+      image: 'https://opengraph.githubassets.com/1/Brun05ouza/gestor-pro-web',
+      tags: ['React', 'TypeScript', 'Material-UI', 'Node.js'],
+      demo: null,
+      github: 'https://github.com/Brun05ouza/gestor-pro-web',
+      category: 'Web',
+      featured: true
     },
     {
       id: 7,
-      title: 'Blog Pessoal',
-      description: 'Blog moderno com sistema de comentários e categorias.',
-      image: 'https://via.placeholder.com/600x400/ef4444/ffffff?text=Blog',
-      tags: ['Next.js', 'Markdown', 'Tailwind'],
-      demo: 'Em desenvolvimento',
-      github: 'https://github.com/exemplo',
-      category: 'Web'
+      title: 'PromoPC Hub Web',
+      description: 'Plataforma especializada em promoções de hardware e componentes de PC, com sistema de comparação de preços, alertas de ofertas e interface otimizada para gamers e entusiastas.',
+      image: 'https://opengraph.githubassets.com/1/Brun05ouza/promopc-hub-web',
+      tags: ['React', 'Next.js', 'Tailwind', 'API'],
+      demo: null,
+      github: 'https://github.com/Brun05ouza/promopc-hub-web',
+      category: 'Web',
+      featured: true
     },
     {
       id: 8,
-      title: 'API RESTful',
-      description: 'API completa para gerenciamento de usuários e autenticação.',
-      image: 'https://via.placeholder.com/600x400/10b981/ffffff?text=API+REST',
-      tags: ['Node.js', 'Express', 'JWT', 'MongoDB'],
-      demo: 'Em desenvolvimento',
-      github: 'https://github.com/exemplo',
-      category: 'Backend'
-    },
-    {
-      id: 9,
-      title: 'Chat em Tempo Real',
-      description: 'Aplicação de chat com mensagens instantâneas e salas.',
-      image: 'https://via.placeholder.com/600x400/8b5cf6/ffffff?text=Chat+App',
-      tags: ['React', 'Socket.io', 'Node.js'],
-      demo: 'Em desenvolvimento',
-      github: 'https://github.com/exemplo',
-      category: 'Web'
-    },
-    {
-      id: 10,
-      title: 'Game 2D',
-      description: 'Jogo 2D desenvolvido com JavaScript puro e Canvas.',
-      image: 'https://via.placeholder.com/600x400/f97316/ffffff?text=Game+2D',
-      tags: ['JavaScript', 'Canvas', 'HTML5'],
-      demo: 'Em desenvolvimento',
-      github: 'https://github.com/exemplo',
-      category: 'Game'
-    },
-    {
-      id: 11,
-      title: 'Calculadora Científica',
-      description: 'Calculadora avançada com funções científicas e gráficos.',
-      image: 'https://via.placeholder.com/600x400/06b6d4/ffffff?text=Calculadora',
-      tags: ['React', 'Math.js', 'Chart.js'],
-      demo: 'Em desenvolvimento',
-      github: 'https://github.com/exemplo',
-      category: 'Web'
-    },
-    {
-      id: 12,
-      title: 'Sistema de Tarefas',
-      description: 'Gerenciador de tarefas com drag and drop e colaboração.',
-      image: 'https://via.placeholder.com/600x400/84cc16/ffffff?text=Task+Manager',
-      tags: ['React', 'DnD', 'Firebase'],
-      demo: 'Em desenvolvimento',
-      github: 'https://github.com/exemplo',
-      category: 'Web'
-    },
-    {
-      id: 13,
-      title: 'App de Receitas',
-      description: 'Aplicativo mobile para descobrir e salvar receitas culinárias.',
-      image: 'https://via.placeholder.com/600x400/ec4899/ffffff?text=Receitas+App',
-      tags: ['React Native', 'API', 'SQLite'],
-      demo: 'Em desenvolvimento',
-      github: 'https://github.com/exemplo',
-      category: 'Mobile'
-    },
-    {
-      id: 14,
-      title: 'Portfolio 3D',
-      description: 'Portfolio interativo com elementos 3D e animações avançadas.',
-      image: 'https://via.placeholder.com/600x400/a855f7/ffffff?text=Portfolio+3D',
-      tags: ['Three.js', 'React', 'WebGL'],
-      demo: 'Em desenvolvimento',
-      github: 'https://github.com/exemplo',
-      category: 'Web'
+      title: 'LUX - Moda Masculina',
+      description: 'E-commerce elegante e moderno para moda masculina premium, com catálogo interativo, sistema de carrinho avançado e experiência de compra sofisticada.',
+      image: 'https://opengraph.githubassets.com/1/Brun05ouza/LUX-site-de-moda-masculina',
+      tags: ['HTML', 'CSS', 'JavaScript', 'E-commerce'],
+      demo: null,
+      github: 'https://github.com/Brun05ouza/LUX-site-de-moda-masculina',
+      category: 'Web',
+      featured: true
     }
   ]
 
-  const filters = ['Todos', 'Web', 'Mobile', 'Backend', 'Game']
+  const filters = [
+    { key: 'Todos', label: 'Todos os Projetos', count: projects.length },
+    { key: 'Web', label: 'Desenvolvimento Web', count: projects.filter(p => p.category === 'Web').length },
+    { key: 'Mobile', label: 'Apps Mobile', count: projects.filter(p => p.category === 'Mobile').length },
+    { key: 'Backend', label: 'Backend & APIs', count: projects.filter(p => p.category === 'Backend').length },
+    { key: 'Game', label: 'Games & Interativo', count: projects.filter(p => p.category === 'Game').length }
+  ].filter(filter => filter.count > 0)
 
   const filteredProjects = selectedFilter === 'Todos' 
     ? projects 
@@ -178,32 +132,61 @@ const Projects = () => {
           transition={{ delay: 0.2 }}
           className="flex justify-center mb-12"
         >
-          <div className="flex flex-wrap gap-3">
-            {filters.map((filter) => (
-              <button
-                key={filter}
-                onClick={() => setSelectedFilter(filter)}
-                className={`px-6 py-2 rounded-full font-medium transition-all duration-200 ${
-                  selectedFilter === filter
-                    ? 'bg-primary-600 text-white'
-                    : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+          <div className="flex flex-wrap justify-center gap-4 max-w-4xl">
+            {filters.map((filter, index) => (
+              <motion.button
+                key={filter.key}
+                initial={{ opacity: 0, scale: 0.8 }}
+                animate={{ opacity: 1, scale: 1 }}
+                transition={{ delay: 0.3 + index * 0.1 }}
+                whileHover={{ opacity: 0.9 }}
+                whileTap={{ scale: 0.98 }}
+                onClick={() => setSelectedFilter(filter.key)}
+                className={`group relative px-6 py-3 rounded-xl font-medium transition-all duration-300 transform ${
+                  selectedFilter === filter.key
+                    ? 'bg-gradient-to-r from-primary-600 to-primary-700 text-white shadow-lg shadow-primary-600/25'
+                    : 'bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-300 hover:bg-primary-50 dark:hover:bg-primary-900/10 shadow-md hover:shadow-lg border border-gray-200 dark:border-gray-700 hover:border-primary-200 dark:hover:border-primary-800'
                 }`}
               >
-                {filter}
-              </button>
+                <span className="flex items-center gap-2">
+                  <span className="text-sm font-semibold">{filter.label}</span>
+                  <span className={`text-xs px-2 py-1 rounded-full ${
+                    selectedFilter === filter.key
+                      ? 'bg-white/20 text-white'
+                      : 'bg-primary-100 dark:bg-primary-900 text-primary-700 dark:text-primary-300'
+                  }`}>
+                    {filter.count}
+                  </span>
+                </span>
+                
+                {/* Hover effect */}
+                <div className={`absolute inset-0 rounded-xl transition-opacity duration-300 ${
+                  selectedFilter === filter.key
+                    ? 'opacity-0'
+                    : 'opacity-0 group-hover:opacity-30 bg-gradient-to-r from-primary-100/50 to-primary-200/50 dark:from-primary-900/10 dark:to-primary-800/10'
+                }`} />
+              </motion.button>
             ))}
           </div>
         </motion.div>
 
         {/* Projects Grid */}
-        <motion.div
-          layout
-          className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8"
-        >
-          {filteredProjects.map((project) => (
-            <ProjectCard key={project.id} project={project} />
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+          {filteredProjects.map((project, index) => (
+            <motion.div
+              key={`${selectedFilter}-${project.id}`}
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ 
+                duration: 0.4,
+                delay: index * 0.1,
+                ease: "easeOut"
+              }}
+            >
+              <ProjectCard project={project} />
+            </motion.div>
           ))}
-        </motion.div>
+        </div>
 
         {filteredProjects.length === 0 && (
           <motion.div
