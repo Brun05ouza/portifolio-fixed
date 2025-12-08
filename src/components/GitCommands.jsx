@@ -95,7 +95,7 @@ const GitCommands = () => {
           className="text-center mb-12"
         >
           <h2 className="text-4xl font-bold text-gray-900 dark:text-white mb-4 flex items-center justify-center gap-3">
-            <img src="/github-mark.svg" alt="Git" className="w-10 h-10 bg-white rounded-full p-1" />
+            <img src="/assets/github-mark.svg" alt="Git" className="w-10 h-10 bg-white rounded-full p-1" />
             Comandos Git que Podem te Ajudar
           </h2>
           <p className="text-gray-600 dark:text-gray-400 max-w-2xl mx-auto">
@@ -124,7 +124,7 @@ const GitCommands = () => {
                   animate={copiedCommand === item.command ? { scale: [1, 1.2, 1] } : {}}
                   transition={{ duration: 0.3 }}
                 >
-                  {copiedCommand === item.command ? '✓' : <img src="/abra-o-livro.png" alt="Copiar" className="w-5 h-5 bg-purple-100 dark:bg-purple-900 rounded p-0.5" />}
+                  {copiedCommand === item.command ? '✓' : <img src="/assets/abra-o-livro.png" alt="Copiar" className="w-5 h-5 bg-purple-100 dark:bg-purple-900 rounded p-0.5" />}
                 </motion.button>
               </div>
               <p className="text-sm text-gray-600 dark:text-gray-400">
@@ -141,7 +141,7 @@ const GitCommands = () => {
           className="mt-8 text-center"
         >
           <p className="text-sm text-gray-500 dark:text-gray-400 flex items-center justify-center gap-2">
-            💡 Dica: Clique no ícone <img src="/abra-o-livro.png" alt="livro" className="w-4 h-4 inline bg-purple-100 dark:bg-purple-900 rounded p-0.5" /> para copiar o comando
+            💡 Dica: Clique no ícone <img src="/assets/abra-o-livro.png" alt="livro" className="w-4 h-4 inline bg-purple-100 dark:bg-purple-900 rounded p-0.5" /> para copiar o comando
           </p>
         </motion.div>
       </div>
