@@ -3,35 +3,51 @@ import { motion } from 'framer-motion';
 const Certifications = () => {
   const certifications = [
     {
-      name: 'JavaScript Fundamentals',
-      issuer: 'Curso Online',
-      date: '2024',
+      name: 'JavaScript: utilizando tipos, variáveis e funções',
+      issuer: 'Alura',
+      date: '2024/2025',
       badgeImage: '/assets/javascript.png',
       color: 'bg-yellow-500',
       verified: true
     },
     {
       name: 'React Basics',
-      issuer: 'Plataforma de Ensino',
-      date: '2024',
+      issuer: 'Alura',
+      date: '2024/2025',
       badgeImage: '/assets/react.png',
       color: 'bg-blue-500',
       verified: true
     },
     {
-      name: 'HTML & CSS Complete',
-      issuer: 'Curso Web',
-      date: '2023',
+      name: 'HTML e CSS: responsividade com mobile-first',
+      issuer: 'Alura',
+      date: '2024/2025',
       badgeImage: '/assets/html.png',
       color: 'bg-orange-500',
       verified: true
     },
     {
-      name: 'SQL Database Basics',
-      issuer: 'Estudos Pessoais',
-      date: '2023',
-      badgeImage: '/assets/postgre.png',
-      color: 'bg-green-500',
+      name: 'HTML e CSS: praticando HTML/CSS',
+      issuer: 'Alura',
+      date: '2024/2025',
+      badgeImage: '/assets/html.png',
+      color: 'bg-orange-500',
+      verified: true
+    },
+    {
+      name: 'HTML e CSS: trabalhando com responsividade e publicação de projetos',
+      issuer: 'Alura',
+      date: '2024/2025',
+      badgeImage: '/assets/html.png',
+      color: 'bg-orange-500',
+      verified: true
+    },
+    {
+      name: 'Git e GitHub: repositório, commit e versões',
+      issuer: 'Alura',
+      date: '2024/2025',
+      badgeImage: '/assets/git.png',
+      color: 'bg-purple-500',
       verified: true
     }
   ];
@@ -63,7 +79,7 @@ const Certifications = () => {
                   <h3 className="font-bold text-gray-900 dark:text-white">
                     {cert.name}
                   </h3>
-                  <p className="text-sm text-gray-600 dark:text-gray-400">
+                  <p className="text-sm font-bold text-blue-600 dark:text-blue-400">
                     {cert.issuer}
                   </p>
                 </div>

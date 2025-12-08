@@ -3,9 +3,16 @@ import { motion } from 'framer-motion';
 const Timeline = () => {
   const experiences = [
     {
+      year: '2025',
+      title: 'Estudos em React, JavaScript, HTML e CSS',
+      company: 'Alura',
+      description: 'Aprofundando conhecimentos em desenvolvimento web moderno com foco em React, JavaScript, HTML e CSS.',
+      skills: ['React', 'JavaScript', 'HTML', 'CSS']
+    },
+    {
       year: '2024',
-      title: 'Estudando Desenvolvimento Web',
-      company: 'Autodidata / Cursos Online',
+      title: 'Graduação em Ciência da Computação',
+      company: 'Autodidata / Vídeos no YouTube',
       description: 'Aprendendo React, aprofundando JavaScript e explorando tecnologias modernas de desenvolvimento.',
       skills: ['React', 'JavaScript', 'Vite', 'CSS']
     },
@@ -48,7 +55,7 @@ const Timeline = () => {
               {exp.title}
             </h3>
             
-            <p className="text-gray-600 dark:text-gray-300 font-medium mb-3">
+            <p className="text-blue-600 dark:text-blue-400 font-bold text-lg mb-3">
               {exp.company}
             </p>
             

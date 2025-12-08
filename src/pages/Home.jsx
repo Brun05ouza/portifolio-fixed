@@ -8,6 +8,7 @@ import Terminal from '../components/Terminal'
 import ActivityHeatmap from '../components/ActivityHeatmap'
 import LiveStats from '../components/LiveStats'
 import SwipeCards from '../components/SwipeCards'
+import GitCommands from '../components/GitCommands'
 
 import { useNotification } from '../hooks/useNotification'
 import { useEffect } from 'react'
@@ -456,6 +457,9 @@ const Home = () => {
           </div>
         </div>
       </section>
+
+      {/* Git Commands Section */}
+      <GitCommands />
 
       {/* CTA Section */}
       <section className="relative py-20 bg-gradient-to-r from-gray-900 via-gray-800 to-black dark:from-gray-800 dark:via-gray-700 dark:to-gray-900 overflow-hidden">
