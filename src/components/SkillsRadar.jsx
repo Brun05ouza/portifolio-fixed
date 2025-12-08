@@ -35,7 +35,7 @@ const SkillsRadar = () => {
   ];
 
   return (
-    <div className="bg-white dark:bg-gray-800 rounded-lg p-6 shadow-lg">
+    <div className="bg-white dark:bg-gray-800 rounded-xl p-6 shadow-xl border border-gray-200 dark:border-gray-700">
       <h3 className="text-2xl font-bold text-gray-900 dark:text-white mb-6">
         Skills Técnicas
       </h3>
@@ -45,10 +45,10 @@ const SkillsRadar = () => {
           <button
             key={category.id}
             onClick={() => setSelectedCategory(category.id)}
-            className={`px-3 py-2 sm:px-4 sm:py-2 rounded-lg font-medium transition-all text-sm sm:text-base ${
+            className={`px-4 py-2 sm:px-5 sm:py-3 rounded-lg font-semibold transition-all text-sm sm:text-base ${
               selectedCategory === category.id
-                ? 'bg-blue-500 text-white shadow-lg'
-                : 'bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600'
+                ? 'bg-gradient-to-r from-blue-500 to-purple-500 text-white shadow-lg scale-105'
+                : 'bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600 border border-gray-300 dark:border-gray-600'
             }`}
           >
             <span className="mr-1 sm:mr-2">{category.icon}</span>
@@ -75,14 +75,14 @@ const SkillsRadar = () => {
               </span>
             </div>
             
-            <div className="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-3">
+            <div className="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-4 shadow-inner">
               <motion.div
                 initial={{ width: 0 }}
                 animate={{ width: `${skill.level}%` }}
                 transition={{ duration: 1, delay: index * 0.1 }}
-                className={`h-3 rounded-full ${skill.color} relative overflow-hidden`}
+                className={`h-4 rounded-full ${skill.color} relative overflow-hidden shadow-md`}
               >
-                <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent animate-pulse"></div>
+                <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/30 to-transparent animate-pulse"></div>
               </motion.div>
             </div>
           </motion.div>

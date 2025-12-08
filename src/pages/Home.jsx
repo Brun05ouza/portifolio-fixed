@@ -201,27 +201,27 @@ const Home = () => {
             initial="hidden"
             whileInView="visible"
             viewport={{ once: true }}
-            className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-6 gap-3 sm:gap-4 md:gap-6"
+            className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-4 md:gap-6"
           >
             {skills.map((skill) => (
               <motion.div
                 key={skill.name}
                 variants={itemVariants}
                 whileHover={{ scale: 1.05 }}
-                className="bg-gray-50 dark:bg-gray-800 p-3 sm:p-4 md:p-6 rounded-lg text-center hover:shadow-md transition-shadow"
+                className="bg-white dark:bg-gray-800 p-4 md:p-6 rounded-xl text-center hover:shadow-xl transition-all duration-300 flex flex-col items-center justify-center min-h-[130px] border border-gray-200 dark:border-gray-700 shadow-md"
               >
-                <div className="text-4xl mb-3">
+                <div className="mb-3 flex items-center justify-center h-16">
                   {skill.iconImage ? (
                     <img 
                       src={skill.iconImage} 
                       alt={skill.name}
-                      className="w-8 h-8 sm:w-10 sm:h-10 md:w-12 md:h-12 mx-auto object-contain"
+                      className="w-14 h-14 md:w-16 md:h-16 object-contain"
                     />
                   ) : (
                     skill.icon
                   )}
                 </div>
-                <h3 className="font-semibold text-gray-900 dark:text-white text-xs sm:text-sm md:text-base">{skill.name}</h3>
+                <h3 className="font-bold text-gray-900 dark:text-white text-sm md:text-base">{skill.name}</h3>
               </motion.div>
             ))}
           </motion.div>
@@ -255,7 +255,7 @@ const Home = () => {
             offsetDistance: "100%"
           }}
           viewport={{ once: true, amount: 0.3 }}
-          className="absolute top-20 left-0 z-20"
+          className="hidden lg:block absolute top-20 left-0 z-20"
         >
           <div className="w-[800px] h-[800px] rounded-full bg-gradient-to-br from-emerald-400 via-teal-500 to-cyan-600 animate-spin shadow-2xl" style={{animationDuration: '20s'}}>
             {/* Continents */}
