@@ -89,7 +89,7 @@ const Home = () => {
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.8 }}
           >
-            <h1 className="text-4xl sm:text-5xl md:text-6xl font-bold text-gray-900 dark:text-white mb-6 leading-tight">
+            <h1 className="text-5xl sm:text-6xl md:text-7xl font-bold text-gray-900 dark:text-white mb-6 leading-tight">
               Olá, eu sou<br className="sm:hidden" /> Bruno Souza<br/>
               <span className="text-3xl sm:text-4xl md:text-5xl">
                 <TypingAnimation 
@@ -105,16 +105,6 @@ const Home = () => {
               aprendendo e criando projetos para evoluir minhas habilidades
             </p>
             
-            {/* Floating Elements */}
-            <div className="absolute top-1/4 left-1/4 animate-bounce">
-              <div className="text-4xl opacity-20">⚛️</div>
-            </div>
-            <div className="absolute top-1/3 right-1/4 animate-pulse">
-              <div className="text-3xl opacity-20">🚀</div>
-            </div>
-            <div className="absolute bottom-1/4 left-1/3 animate-bounce" style={{animationDelay: '1s'}}>
-              <div className="text-3xl opacity-20">💻</div>
-            </div>
             <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 justify-center px-4">
               <Link to="/projetos" className="btn-primary text-center py-4 sm:py-3 text-lg sm:text-base">
                 Ver Projetos

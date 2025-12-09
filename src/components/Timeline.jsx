@@ -6,28 +6,28 @@ const Timeline = () => {
       year: '2025',
       title: 'Estudos em React, JavaScript, HTML e CSS',
       company: 'Alura',
-      description: 'Aprofundando conhecimentos em desenvolvimento web moderno com foco em React, JavaScript, HTML e CSS.',
+      description: 'Aprofundando conhecimentos em desenvolvimento web moderno com foco em React, JavaScript, HTML e CSS através de cursos especializados.',
       skills: ['React', 'JavaScript', 'HTML', 'CSS']
     },
     {
-      year: '2024',
+      year: '2022 - 2026',
       title: 'Graduação em Ciência da Computação',
-      company: 'Autodidata / Vídeos no YouTube',
-      description: 'Aprendendo React, aprofundando JavaScript e explorando tecnologias modernas de desenvolvimento.',
-      skills: ['React', 'JavaScript', 'Vite', 'CSS']
+      company: 'Universidade Serra dos Órgãos (UNIFESO)',
+      description: 'Curso em andamento na UNIFESO, desenvolvendo base sólida em ciência da computação, algoritmos, estruturas de dados e engenharia de software.',
+      skills: ['Algoritmos', 'Estruturas de Dados', 'POO', 'Banco de Dados']
     },
     {
       year: '2023',
-      title: 'Fundamentos de Programação',
-      company: 'Estudos Pessoais',
-      description: 'Dominando HTML, CSS, JavaScript e conceitos de bancos de dados relacionais.',
-      skills: ['HTML', 'CSS', 'JavaScript', 'PostgreSQL']
+      title: 'Conhecimentos e Lógicas da Programação',
+      company: 'Autodidata / Vídeos no YouTube',
+      description: 'Estudando fundamentos de programação, lógica computacional e desenvolvimento web através de conteúdos gratuitos e prática constante.',
+      skills: ['Lógica', 'JavaScript', 'HTML', 'CSS']
     },
     {
       year: '2022',
       title: 'Início da Jornada',
       company: 'Primeiros Passos',
-      description: 'Descobrindo o mundo da programação e criando meus primeiros projetos web.',
+      description: 'Descobrindo o mundo da programação, criando primeiros projetos web e aprendendo conceitos básicos de desenvolvimento.',
       skills: ['HTML', 'CSS', 'SQL Server', 'Lógica']
     }
   ];
