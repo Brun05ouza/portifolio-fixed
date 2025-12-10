@@ -71,7 +71,7 @@ const LiveStats = () => {
               <img 
                 src={stat.iconImage} 
                 alt={stat.label}
-                className="w-8 h-8 mx-auto object-contain"
+                className="w-8 h-8 mx-auto object-contain dark:filter dark:invert"
               />
             ) : (
               stat.icon

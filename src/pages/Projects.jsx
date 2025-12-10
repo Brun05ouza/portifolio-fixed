@@ -94,6 +94,17 @@ const Projects = () => {
       github: 'https://github.com/Brun05ouza/LUX-site-de-moda-masculina',
       category: 'Web',
       featured: true
+    },
+    {
+      id: 9,
+      title: 'Jogo do Número Secreto',
+      description: 'Jogo interativo desenvolvido em JavaScript puro onde o jogador deve adivinhar o número secreto com dicas e sistema de pontuação.',
+      image: 'https://opengraph.githubassets.com/1/Brun05ouza/jogo-do-numero-secreto',
+      tags: ['JavaScript', 'HTML', 'CSS', 'Game'],
+      demo: 'https://jogo-do-numero-secreto-amber-delta.vercel.app/',
+      github: 'https://github.com/Brun05ouza/jogo-do-numero-secreto',
+      category: 'Game',
+      featured: true
     }
   ]
 

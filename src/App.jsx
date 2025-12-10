@@ -7,6 +7,7 @@ import ProjectDetail from './pages/ProjectDetail'
 import Blog from './pages/Blog'
 import Contact from './pages/Contact'
 import DashboardPage from './pages/Dashboard'
+import CertificationsPage from './pages/Certifications'
 import NotificationToast from './components/NotificationToast'
 import ScrollProgress from './components/ScrollProgress'
 import VisitorCounter from './components/VisitorCounter'
@@ -40,6 +41,7 @@ function App() {
           <Route path="/dashboard" element={<DashboardPage />} />
           <Route path="/blog" element={<Blog />} />
           <Route path="/contato" element={<Contact />} />
+          <Route path="/certificacoes" element={<CertificationsPage />} />
         </Routes>
         <NotificationToast 
           notifications={notifications} 
