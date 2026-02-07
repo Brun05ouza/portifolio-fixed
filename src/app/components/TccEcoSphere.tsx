@@ -1,3 +1,4 @@
+import { useEffect, useRef, useState } from 'react';
 import { motion } from 'motion/react';
 import { GlitchText } from './GlitchText';
 import { Cpu, Brain, LayoutDashboard, Sparkles } from 'lucide-react';
@@ -5,6 +6,21 @@ import { GlobeAnimation } from './GlobeAnimation';
 import Galaxy from './Galaxy';
 
 export function TccEcoSphere() {
+  const sectionRef = useRef<HTMLElement>(null);
+  const [isInView, setIsInView] = useState(false);
+
+  useEffect(() => {
+    const el = sectionRef.current;
+    if (!el) return;
+    const io = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((e) => setIsInView(e.isIntersecting));
+      },
+      { threshold: [0, 0.1, 0.5, 1] }
+    );
+    io.observe(el);
+    return () => io.disconnect();
+  }, []);
   const features = [
     {
       icon: <Cpu className="w-6 h-6" />,
@@ -29,10 +45,10 @@ export function TccEcoSphere() {
   ];
 
   return (
-    <section id="tcc" className="relative py-32 px-6 overflow-hidden">
+    <section ref={sectionRef} id="tcc" className="relative py-32 px-6 overflow-hidden">
       {/* Galaxy background - apenas nesta seção */}
       <div className="absolute inset-0 z-0">
-        <Galaxy
+        {isInView && <Galaxy
           density={1}
           glowIntensity={0.3}
           saturation={0}
@@ -46,7 +62,7 @@ export function TccEcoSphere() {
           mouseInteraction
           mouseRepulsion
           transparent
-        />
+        />}
       </div>
       <div className="absolute inset-0 z-[1] bg-background/40 pointer-events-none" />
       <div className="relative z-10 max-w-6xl mx-auto">
@@ -121,7 +137,7 @@ export function TccEcoSphere() {
           viewport={{ once: true }}
           transition={{ duration: 0.6, delay: 0.2 }}
         >
-          <GlobeAnimation size={160} className="rounded-full overflow-hidden border-2 border-primary/40 shadow-lg shadow-primary/20 ring-2 ring-primary/10" />
+          {isInView && <GlobeAnimation size={160} className="rounded-full overflow-hidden border-2 border-primary/40 shadow-lg shadow-primary/20 ring-2 ring-primary/10" />}
         </motion.div>
       </div>
     </section>

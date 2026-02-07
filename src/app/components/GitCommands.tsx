@@ -24,8 +24,11 @@ const gitCommands = [
   { command: 'git stash pop', description: 'Recupera as alterações guardadas anteriormente' },
 ];
 
+const INITIAL_VISIBLE = 8;
+
 export function GitCommands() {
   const [copiedIndex, setCopiedIndex] = useState<number | null>(null);
+  const [showAll, setShowAll] = useState(false);
   const [terminalInput, setTerminalInput] = useState('');
   const [terminalOutput, setTerminalOutput] = useState<{ command: string; output: string }[]>([]);
   const [selectedSuggestion, setSelectedSuggestion] = useState(0);
@@ -101,7 +104,7 @@ export function GitCommands() {
   };
 
   return (
-    <section id="git-commands" className="relative py-32 px-6">
+    <section id="git-commands" className="relative py-20 md:py-32 px-4 sm:px-6">
       <div className="max-w-6xl mx-auto">
         <motion.div
           className="text-center mb-16"
@@ -110,10 +113,10 @@ export function GitCommands() {
           viewport={{ once: true }}
           transition={{ duration: 0.6 }}
         >
-          <h2 className="text-4xl md:text-5xl font-bold mb-4">
+          <h2 className="text-3xl sm:text-4xl md:text-5xl font-bold mb-4">
             <GlitchText text="Comandos Git" />
           </h2>
-          <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
+          <p className="text-base sm:text-xl text-muted-foreground max-w-2xl mx-auto px-2">
             Guia rápido dos principais comandos Git para versionar seus projetos
           </p>
           <div className="w-20 h-1 mx-auto mt-6 bg-gradient-to-r from-blue-400 to-cyan-400 rounded-full" />
@@ -127,19 +130,19 @@ export function GitCommands() {
           viewport={{ once: true }}
           transition={{ duration: 0.6 }}
         >
-          <div className="flex items-center gap-3 px-4 py-3 bg-gray-900/80 border-b border-gray-700/50">
-            <div className="flex gap-2">
-              <div className="w-3 h-3 rounded-full bg-red-500/90 hover:bg-red-400 transition-colors" />
-              <div className="w-3 h-3 rounded-full bg-yellow-500/90 hover:bg-yellow-400 transition-colors" />
-              <div className="w-3 h-3 rounded-full bg-green-500/90 hover:bg-green-400 transition-colors" />
+          <div className="flex items-center gap-2 sm:gap-3 px-3 sm:px-4 py-2.5 sm:py-3 bg-gray-900/80 border-b border-gray-700/50">
+            <div className="flex gap-1.5 sm:gap-2 shrink-0">
+              <div className="w-2.5 h-2.5 sm:w-3 sm:h-3 rounded-full bg-red-500/90" />
+              <div className="w-2.5 h-2.5 sm:w-3 sm:h-3 rounded-full bg-yellow-500/90" />
+              <div className="w-2.5 h-2.5 sm:w-3 sm:h-3 rounded-full bg-green-500/90" />
             </div>
-            <Terminal className="w-4 h-4 text-emerald-500/80" />
-            <span className="text-sm text-gray-400">Terminal Interativo — digite um comando git e pressione Enter</span>
+            <Terminal className="w-4 h-4 text-emerald-500/80 shrink-0" />
+            <span className="text-xs sm:text-sm text-gray-400 truncate">Terminal — digite um comando git</span>
           </div>
-          <div className="p-4 min-h-[120px]">
+          <div className="p-3 sm:p-4 min-h-[100px] sm:min-h-[120px]">
             <div
               ref={outputRef}
-              className="mb-3 max-h-[200px] overflow-y-auto space-y-2 font-mono text-sm"
+              className="mb-3 max-h-[160px] sm:max-h-[200px] overflow-y-auto space-y-2 font-mono text-xs sm:text-sm"
             >
               {terminalOutput.map((line, i) => (
                 <div key={i} className="space-y-0.5">
@@ -192,18 +195,20 @@ export function GitCommands() {
         </motion.div>
 
         {/* Lista de comandos */}
-        <div className="grid md:grid-cols-2 gap-4">
-          {gitCommands.map((item, index) => (
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
+          {(showAll ? gitCommands : gitCommands.slice(0, INITIAL_VISIBLE)).map((item, index) => (
             <motion.div
-              key={index}
-              initial={{ opacity: 0, x: -20 }}
-              whileInView={{ opacity: 1, x: 0 }}
-              viewport={{ once: true }}
-              transition={{ duration: 0.4, delay: index * 0.03 }}
-              className="flex flex-col gap-2 p-4 rounded-lg bg-card border border-border hover:border-primary/50 transition-all duration-300 group"
+              key={item.command}
+              initial={{ opacity: 0, y: 16 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{
+                duration: 0.35,
+                delay: showAll ? index * 0.03 : index * 0.02,
+              }}
+              className="flex flex-col gap-2 p-3 sm:p-4 rounded-lg bg-card border border-border hover:border-primary/50 transition-all duration-300 group"
             >
-              <div className="flex items-center gap-3">
-                <code className="flex-1 font-mono text-sm text-foreground">{item.command}</code>
+              <div className="flex items-center gap-2 sm:gap-3 min-w-0">
+                <code className="flex-1 font-mono text-xs sm:text-sm text-foreground break-all min-w-0">{item.command}</code>
                 <button
                   onClick={() => copyToClipboard(item.command, index)}
                   className="p-2 rounded-lg hover:bg-muted transition-colors flex-shrink-0"
@@ -216,10 +221,27 @@ export function GitCommands() {
                   )}
                 </button>
               </div>
-              <p className="text-sm text-muted-foreground">{item.description}</p>
+              <p className="text-xs sm:text-sm text-muted-foreground">{item.description}</p>
             </motion.div>
           ))}
         </div>
+
+        {!showAll && gitCommands.length > INITIAL_VISIBLE && (
+          <motion.div
+            className="text-center mt-6"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ delay: 0.3 }}
+          >
+            <button
+              type="button"
+              onClick={() => setShowAll(true)}
+              className="w-full sm:w-auto px-6 py-3 rounded-full border-2 border-primary/50 hover:bg-primary/10 hover:border-primary transition-all duration-300 font-semibold text-primary text-sm sm:text-base"
+            >
+              Ver mais comandos ({gitCommands.length - INITIAL_VISIBLE} restantes)
+            </button>
+          </motion.div>
+        )}
 
         <motion.p
           className="text-center text-sm text-muted-foreground mt-6 flex items-center justify-center gap-2"

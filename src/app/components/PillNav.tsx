@@ -31,29 +31,40 @@ export function PillNav() {
   const [menuOpen, setMenuOpen] = useState(false);
 
   useEffect(() => {
+    let rafId: number | null = null;
+    let ticking = false;
+
     const handleScroll = () => {
-      setScrolled(window.scrollY > 50);
+      if (ticking) return;
+      ticking = true;
+      rafId = requestAnimationFrame(() => {
+        setScrolled(window.scrollY > 50);
 
-      const sections = navItems.map((item) => ({
-        id: item.id,
-        element: document.getElementById(item.id),
-      }));
+        const sections = navItems.map((item) => ({
+          id: item.id,
+          element: document.getElementById(item.id),
+        }));
 
-      const currentSection = sections.find((section) => {
-        if (section.element) {
-          const rect = section.element.getBoundingClientRect();
-          return rect.top <= 100 && rect.bottom >= 100;
+        const currentSection = sections.find((section) => {
+          if (section.element) {
+            const rect = section.element.getBoundingClientRect();
+            return rect.top <= 100 && rect.bottom >= 100;
+          }
+          return false;
+        });
+
+        if (currentSection) {
+          setActiveId(currentSection.id);
         }
-        return false;
+        ticking = false;
       });
-
-      if (currentSection) {
-        setActiveId(currentSection.id);
-      }
     };
 
-    window.addEventListener('scroll', handleScroll);
-    return () => window.removeEventListener('scroll', handleScroll);
+    window.addEventListener('scroll', handleScroll, { passive: true });
+    return () => {
+      window.removeEventListener('scroll', handleScroll);
+      if (rafId !== null) cancelAnimationFrame(rafId);
+    };
   }, []);
 
   const handleClick = (e: React.MouseEvent<HTMLAnchorElement>, href: string, id: string) => {
