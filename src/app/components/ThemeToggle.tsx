@@ -1,7 +1,6 @@
 import { useEffect, useState } from "react";
 import { useTheme } from "next-themes";
 import { Moon, Sun } from "lucide-react";
-import { toast } from "sonner";
 
 export function ThemeToggle() {
   const { theme, setTheme } = useTheme();
@@ -10,12 +9,7 @@ export function ThemeToggle() {
   useEffect(() => setMounted(true), []);
 
   const toggle = () => {
-    if (theme === "dark") {
-      toast.info("Essa funcionalidade ainda está em desenvolvimento, pode estar meio bugado rsrs");
-      setTheme("light");
-    } else {
-      setTheme("dark");
-    }
+    setTheme(theme === "dark" ? "light" : "dark");
   };
 
   if (!mounted) {
@@ -28,7 +22,8 @@ export function ThemeToggle() {
     <button
       type="button"
       onClick={toggle}
-      className="flex items-center justify-center w-11 h-11 rounded-xl border border-border hover:bg-muted active:bg-accent transition-colors touch-manipulation"
+      title={theme === "dark" ? "Ativar modo claro" : "Ativar modo escuro"}
+      className="flex items-center justify-center w-11 h-11 rounded-xl border border-border hover:bg-muted active:bg-accent transition-colors touch-manipulation focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary"
       aria-label={theme === "dark" ? "Ativar modo claro" : "Ativar modo escuro"}
     >
       {theme === "dark" ? (

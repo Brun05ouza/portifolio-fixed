@@ -1,42 +1,28 @@
 import { useEffect, useState } from 'react';
 import { motion, useInView } from 'motion/react';
 import { useRef } from 'react';
-import { Code2, Rocket, Coffee, Clock } from 'lucide-react';
 import { GlitchText } from './GlitchText';
+import { stats } from '../../config/content';
+import { useReducedMotion } from '../../hooks/useReducedMotion';
 
-const stats = [
-  {
-    icon: Code2,
-    value: 43500,
-    label: 'Linhas de Código',
-    color: '#22c55e',
-  },
-  {
-    icon: Rocket,
-    value: 29,
-    label: 'Projetos Concluídos',
-    color: '#10b981',
-  },
-  {
-    icon: Coffee,
-    value: 350,
-    label: 'Cafés Consumidos',
-    color: '#f59e0b',
-  },
-  {
-    icon: Clock,
-    value: 1200,
-    label: 'Horas de Estudo',
-    color: '#8b5cf6',
-  },
-];
-
-function AnimatedNumber({ value, format = (n) => n.toLocaleString('pt-BR') }: { value: number; format?: (n: number) => string }) {
-  const [displayValue, setDisplayValue] = useState(0);
+function AnimatedNumber({
+  value,
+  format = (n) => n.toLocaleString('pt-BR'),
+  reduceMotion,
+}: {
+  value: number;
+  format?: (n: number) => string;
+  reduceMotion?: boolean;
+}) {
+  const [displayValue, setDisplayValue] = useState(reduceMotion ? value : 0);
   const ref = useRef<HTMLSpanElement>(null);
   const isInView = useInView(ref, { once: true });
 
   useEffect(() => {
+    if (reduceMotion) {
+      setDisplayValue(value);
+      return;
+    }
     if (!isInView) return;
     const duration = 1500;
     const steps = 60;
@@ -55,22 +41,23 @@ function AnimatedNumber({ value, format = (n) => n.toLocaleString('pt-BR') }: { 
     }, stepDuration);
 
     return () => clearInterval(timer);
-  }, [isInView, value]);
+  }, [isInView, value, reduceMotion]);
 
   return <span ref={ref}>{format(displayValue)}</span>;
 }
 
 export function LiveStats() {
+  const reduceMotion = useReducedMotion();
+
   return (
     <section id="stats" className="relative py-32 px-6 overflow-hidden">
       <div className="relative z-10 max-w-6xl mx-auto">
-        {/* Section header */}
         <motion.div
           className="text-center mb-16"
           initial={{ opacity: 0, y: 30 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
-          transition={{ duration: 0.6 }}
+          transition={{ duration: reduceMotion ? 0 : 0.6 }}
         >
           <h2 className="text-4xl md:text-5xl font-bold mb-4">
             <GlitchText text="Estatísticas em Tempo Real" />
@@ -81,7 +68,6 @@ export function LiveStats() {
           <div className="w-20 h-1 mx-auto mt-6 rounded-full" style={{ background: 'linear-gradient(to right, var(--color-beam-start), var(--color-beam-end))' }} />
         </motion.div>
 
-        {/* Stats grid */}
         <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-6">
           {stats.map((stat, index) => {
             const Icon = stat.icon;
@@ -91,7 +77,7 @@ export function LiveStats() {
                 initial={{ opacity: 0, y: 30 }}
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true, margin: '-50px' }}
-                transition={{ duration: 0.5, delay: index * 0.1 }}
+                transition={{ duration: reduceMotion ? 0 : 0.5, delay: reduceMotion ? 0 : index * 0.1 }}
                 className="relative p-6 rounded-xl bg-card border border-border hover:border-primary/30 transition-all duration-300 group"
               >
                 <div className="flex items-start gap-4">
@@ -109,6 +95,7 @@ export function LiveStats() {
                       <AnimatedNumber
                         value={stat.value}
                         format={(n) => n.toLocaleString('pt-BR')}
+                        reduceMotion={reduceMotion}
                       />
                     </div>
                     <p className="text-sm text-muted-foreground mt-1">{stat.label}</p>

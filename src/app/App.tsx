@@ -65,11 +65,12 @@ export default function App() {
       {scrolled && (
         <button
           onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
-          className="fixed bottom-8 right-8 z-40 w-12 h-12 rounded-full flex items-center justify-center text-white shadow-lg transition-transform hover:scale-110"
+          className="fixed bottom-8 right-8 z-40 w-12 h-12 rounded-full flex items-center justify-center text-white shadow-lg transition-transform hover:scale-110 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 focus-visible:ring-offset-background"
           style={{
             background: 'linear-gradient(135deg, var(--color-beam-start), var(--color-beam-end))',
           }}
-          aria-label="Scroll to top"
+          aria-label="Voltar ao topo da página"
+          title="Voltar ao topo"
         >
           ↑
         </button>

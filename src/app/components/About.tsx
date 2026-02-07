@@ -2,8 +2,10 @@ import { motion } from 'motion/react';
 import { Code2, Database, Palette, Zap } from 'lucide-react';
 import { GlitchText } from './GlitchText';
 import TiltedCard from './TiltedCard';
+import { useReducedMotion } from '../../hooks/useReducedMotion';
 
 export function About() {
+  const reduceMotion = useReducedMotion();
   const values = [
     {
       icon: <Zap className="w-6 h-6" />,
@@ -63,14 +65,14 @@ export function About() {
       {/* Scroll indicator - acima de Sobre Mim */}
       <motion.div
         className="absolute -top-6 left-1/2 -translate-x-1/2 flex flex-col items-center gap-1 z-10"
-        animate={{ y: [0, 8, 0] }}
-        transition={{ duration: 2, repeat: Infinity, ease: 'easeInOut' }}
+        animate={reduceMotion ? false : { y: [0, 8, 0] }}
+        transition={reduceMotion ? { duration: 0 } : { duration: 2, repeat: Infinity, ease: 'easeInOut' }}
       >
         <div className="w-6 h-9 md:w-7 md:h-11 rounded-full border-2 border-foreground/40 flex items-start justify-center pt-2 md:pt-2.5 pb-1 flex-shrink-0 overflow-visible">
           <motion.div
             className="w-1.5 h-1.5 md:w-2 md:h-2 bg-foreground/70 rounded-full flex-shrink-0"
-            animate={{ y: [0, 10, 0] }}
-            transition={{ duration: 2, repeat: Infinity, ease: 'easeInOut' }}
+            animate={reduceMotion ? false : { y: [0, 10, 0] }}
+            transition={reduceMotion ? { duration: 0 } : { duration: 2, repeat: Infinity, ease: 'easeInOut' }}
           />
         </div>
         <span className="text-xs text-foreground/50 hidden md:inline">Scroll</span>
@@ -112,6 +114,7 @@ export function About() {
               scaleOnHover={1.05}
               showMobileWarning={false}
               showTooltip={false}
+              reduceMotion={reduceMotion}
               displayOverlayContent
               overlayContent={
                 <p className="tilted-card-demo-text">

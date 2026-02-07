@@ -22,6 +22,7 @@ interface TiltedCardProps {
   showTooltip?: boolean;
   overlayContent?: ReactNode;
   displayOverlayContent?: boolean;
+  reduceMotion?: boolean;
 }
 
 export default function TiltedCard({
@@ -37,9 +38,12 @@ export default function TiltedCard({
   showMobileWarning = true,
   showTooltip = true,
   overlayContent = null,
-  displayOverlayContent = false
+  displayOverlayContent = false,
+  reduceMotion = false
 }: TiltedCardProps) {
   const ref = useRef<HTMLElement>(null);
+  const amp = reduceMotion ? 0 : rotateAmplitude;
+  const scaleHover = reduceMotion ? 1 : scaleOnHover;
 
   const x = useMotionValue(0);
   const y = useMotionValue(0);
@@ -62,8 +66,8 @@ export default function TiltedCard({
     const offsetX = e.clientX - rect.left - rect.width / 2;
     const offsetY = e.clientY - rect.top - rect.height / 2;
 
-    const rotationX = (offsetY / (rect.height / 2)) * -rotateAmplitude;
-    const rotationY = (offsetX / (rect.width / 2)) * rotateAmplitude;
+    const rotationX = (offsetY / (rect.height / 2)) * -amp;
+    const rotationY = (offsetX / (rect.width / 2)) * amp;
 
     rotateX.set(rotationX);
     rotateY.set(rotationY);
@@ -77,7 +81,7 @@ export default function TiltedCard({
   }
 
   function handleMouseEnter() {
-    scale.set(scaleOnHover);
+    scale.set(scaleHover);
     opacity.set(1);
   }
 
@@ -118,6 +122,9 @@ export default function TiltedCard({
         <motion.img
           src={imageSrc}
           alt={altText}
+          width={320}
+          height={320}
+          loading="lazy"
           className="tilted-card-img"
           style={{
             width: imageWidth,

@@ -9,22 +9,7 @@ import {
   SheetTrigger,
 } from './ui/sheet';
 import { ThemeToggle } from './ThemeToggle';
-
-interface NavItem {
-  id: string;
-  label: string;
-  href: string;
-}
-
-const navItems: NavItem[] = [
-  { id: 'home', label: 'Início', href: '#home' },
-  { id: 'about', label: 'Sobre', href: '#about' },
-  { id: 'work', label: 'Projetos', href: '#work' },
-  { id: 'certificados', label: 'Certificados', href: '#certificados' },
-  { id: 'stack', label: 'Skills', href: '#stack' },
-  { id: 'git-commands', label: 'Terminal', href: '#git-commands' },
-  { id: 'contact', label: 'Contato', href: '#contact' },
-];
+import { navItems } from '../../config/content';
 
 export function PillNav() {
   const [activeId, setActiveId] = useState('home');
@@ -86,6 +71,11 @@ export function PillNav() {
     scrolled ? 'bg-background/95' : 'bg-background/85'
   }`;
 
+  const linkClass = (isActive: boolean) =>
+    `relative z-10 px-4 py-2 text-sm transition-colors duration-200 block focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 focus-visible:rounded-full ${
+      isActive ? 'font-semibold' : ''
+    }`;
+
   return (
     <>
       {/* Mobile: barra com logo + hamburger */}
@@ -99,7 +89,7 @@ export function PillNav() {
         <a
           href="#home"
           onClick={(e) => handleClick(e, '#home', 'home')}
-          className="text-sm font-semibold text-foreground"
+          className="text-sm font-semibold text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:rounded-lg"
         >
           Portfolio
         </a>
@@ -108,7 +98,7 @@ export function PillNav() {
           <Sheet open={menuOpen} onOpenChange={setMenuOpen}>
           <SheetTrigger asChild>
             <button
-              className="flex items-center justify-center w-11 h-11 rounded-xl border border-white/20 hover:bg-white/10 active:bg-white/15 transition-colors touch-manipulation"
+              className="flex items-center justify-center w-11 h-11 rounded-xl border border-white/20 hover:bg-white/10 active:bg-white/15 transition-colors touch-manipulation focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary"
               aria-label="Abrir menu de navegação"
             >
               <Menu className="w-6 h-6 text-foreground" strokeWidth={2} />
@@ -121,17 +111,18 @@ export function PillNav() {
             <SheetHeader>
               <SheetTitle className="text-left text-foreground">Navegação</SheetTitle>
             </SheetHeader>
-            <nav className="flex flex-col gap-1 mt-6">
+            <nav className="flex flex-col gap-1 mt-6" aria-label="Navegação principal">
               {navItems.map((item) => (
                 <a
                   key={item.id}
                   href={item.href}
                   onClick={(e) => handleClick(e, item.href, item.id)}
-                  className={`px-4 py-3.5 rounded-xl text-base font-medium transition-colors ${
+                  className={`px-4 py-3.5 rounded-xl text-base font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary ${
                     activeId === item.id
                       ? 'bg-primary/20 text-primary'
                       : 'text-foreground hover:bg-muted'
                   }`}
+                  aria-current={activeId === item.id ? 'true' : undefined}
                 >
                   {item.label}
                 </a>
@@ -149,6 +140,7 @@ export function PillNav() {
         initial={{ y: -100, opacity: 0 }}
         animate={{ y: 0, opacity: 1 }}
         transition={{ duration: 0.6, ease: 'easeOut' }}
+        aria-label="Navegação principal"
       >
         <ul className="flex items-center gap-1 px-3 py-2 relative">
           {navItems.map((item) => (
@@ -156,10 +148,11 @@ export function PillNav() {
               <a
                 href={item.href}
                 onClick={(e) => handleClick(e, item.href, item.id)}
-                className="relative z-10 px-4 py-2 text-sm transition-colors duration-200 block"
+                className={linkClass(activeId === item.id)}
                 style={{
                   color: activeId === item.id ? 'var(--primary-foreground)' : 'var(--foreground)',
                 }}
+                aria-current={activeId === item.id ? 'page' : undefined}
               >
                 {item.label}
               </a>

@@ -3,16 +3,18 @@ import { motion } from 'motion/react';
 import { ProjectCard } from './ProjectCard';
 import { GlitchText } from './GlitchText';
 import { fetchUserRepos } from '../services/githubService';
-import type { ProjectFromRepo } from '../services/githubService';
-import { Loader2 } from 'lucide-react';
+import { Loader2, AlertCircle } from 'lucide-react';
+import { siteConfig } from '../../config/content';
 
 export function Projects() {
-  const [projects, setProjects] = useState<ProjectFromRepo[]>([]);
+  const [projects, setProjects] = useState<Awaited<ReturnType<typeof fetchUserRepos>>['projects']>([]);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    fetchUserRepos(50).then((repos) => {
-      setProjects(repos);
+    fetchUserRepos(50).then(({ projects, error }) => {
+      setProjects(projects);
+      setError(error);
       setLoading(false);
     });
   }, []);
@@ -36,6 +38,21 @@ export function Projects() {
           </p>
           <div className="w-20 h-1 mx-auto mt-6 rounded-full" style={{ background: 'linear-gradient(to right, var(--color-beam-start), var(--color-beam-end))' }} />
         </motion.div>
+
+        {/* Error banner */}
+        {error && (
+          <motion.div
+            initial={{ opacity: 0, y: -10 }}
+            animate={{ opacity: 1, y: 0 }}
+            className="mb-8 p-4 rounded-xl bg-muted/50 border border-border flex items-start gap-3"
+          >
+            <AlertCircle className="w-5 h-5 text-amber-500 shrink-0 mt-0.5" />
+            <div>
+              <p className="font-medium text-foreground">Aviso</p>
+              <p className="text-sm text-muted-foreground">{error}</p>
+            </div>
+          </motion.div>
+        )}
 
         {/* Projects grid */}
         {loading ? (
@@ -72,10 +89,10 @@ export function Projects() {
           transition={{ duration: 0.6 }}
         >
           <a
-            href="https://github.com/Brun05ouza"
+            href={siteConfig.githubUrl}
             target="_blank"
             rel="noopener noreferrer"
-            className="inline-block px-8 py-4 rounded-full border-2 border-foreground hover:bg-foreground hover:text-background transition-all duration-300 font-semibold"
+            className="inline-block px-8 py-4 rounded-full border-2 border-foreground hover:bg-foreground hover:text-background transition-all duration-300 font-semibold focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2"
           >
             Ver Meus Projetos
           </a>

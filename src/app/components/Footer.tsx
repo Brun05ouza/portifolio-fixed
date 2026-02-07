@@ -1,7 +1,10 @@
 import { motion } from 'motion/react';
 import { Heart, Code2 } from 'lucide-react';
+import { siteConfig } from '../../config/content';
+import { useReducedMotion } from '../../hooks/useReducedMotion';
 
 export function Footer() {
+  const reduceMotion = useReducedMotion();
   return (
     <footer className="relative py-12 px-6 border-t border-border">
       <div className="max-w-6xl mx-auto">
@@ -61,8 +64,8 @@ export function Footer() {
             <h4 className="font-semibold mb-4">Contato</h4>
             <ul className="space-y-2 text-sm text-muted-foreground">
               <li>
-                <a href="mailto:brunosouzagithub2003@gmail.com" className="hover:text-primary transition-colors">
-                  brunosouzagithub2003@gmail.com
+                <a href={`mailto:${siteConfig.contactEmail}`} className="hover:text-primary transition-colors">
+                  {siteConfig.contactEmail}
                 </a>
               </li>
               <li>Brasil</li>
@@ -76,8 +79,8 @@ export function Footer() {
           <p className="text-sm text-muted-foreground flex items-center gap-2">
             © 2026 Bruno Souza. Todos os direitos reservados. Feito com{' '}
             <motion.span
-              animate={{ scale: [1, 1.2, 1] }}
-              transition={{ duration: 1, repeat: Infinity }}
+              animate={reduceMotion ? { scale: 1 } : { scale: [1, 1.2, 1] }}
+              transition={reduceMotion ? { duration: 0 } : { duration: 1, repeat: Infinity }}
             >
               <Heart className="w-4 h-4 text-red-500 fill-red-500" />
             </motion.span>{' '}
