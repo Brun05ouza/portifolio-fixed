@@ -88,7 +88,7 @@ export function About() {
           <h2 className="text-4xl md:text-5xl font-bold mb-4">
             <GlitchText text="Sobre Mim" />
           </h2>
-          <div className="w-20 h-1 mx-auto bg-gradient-to-r from-blue-400 to-cyan-400 rounded-full" />
+          <div className="w-20 h-1 mx-auto rounded-full" style={{ background: 'linear-gradient(to right, var(--color-beam-start), var(--color-beam-end))' }} />
         </motion.div>
 
         {/* Bio section */}
@@ -205,7 +205,7 @@ export function About() {
                     }}
                   />
                   {index < timeline.length - 1 && (
-                    <div className="w-0.5 flex-1 mt-2 bg-gradient-to-b from-blue-400 to-transparent" />
+                    <div className="w-0.5 flex-1 mt-2 bg-gradient-to-b from-[var(--color-beam-end)] to-transparent" />
                   )}
                 </div>
                 <div className="flex-1 pb-8">

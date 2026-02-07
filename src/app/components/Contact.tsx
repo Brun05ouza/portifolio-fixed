@@ -33,7 +33,7 @@ export function Contact() {
       name: 'LinkedIn',
       icon: <Linkedin className="w-6 h-6" />,
       href: 'https://www.linkedin.com/in/bruno-souza/',
-      color: 'from-blue-600 to-blue-700',
+      color: 'from-green-700 to-green-600',
     },
   ];
 
@@ -54,7 +54,7 @@ export function Contact() {
           <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
             Estou sempre disponível para novos desafios e oportunidades. Vamos criar algo incrível!
           </p>
-          <div className="w-20 h-1 mx-auto mt-6 bg-gradient-to-r from-blue-400 to-cyan-400 rounded-full" />
+          <div className="w-20 h-1 mx-auto mt-6 rounded-full" style={{ background: 'linear-gradient(to right, var(--color-beam-start), var(--color-beam-end))' }} />
         </motion.div>
 
         <div className="grid lg:grid-cols-2 gap-12">
@@ -169,7 +169,7 @@ export function Contact() {
                   <span className="text-muted-foreground">Disponível para novos projetos</span>
                 </div>
                 <div className="flex items-center gap-3 text-sm">
-                  <div className="w-2 h-2 rounded-full bg-blue-500" />
+                  <div className="w-2 h-2 rounded-full bg-[var(--color-glow)]" />
                   <span className="text-muted-foreground">Respondo em até 24 horas</span>
                 </div>
               </div>

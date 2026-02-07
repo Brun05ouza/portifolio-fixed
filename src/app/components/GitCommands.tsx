@@ -119,7 +119,7 @@ export function GitCommands() {
           <p className="text-base sm:text-xl text-muted-foreground max-w-2xl mx-auto px-2">
             Guia rápido dos principais comandos Git para versionar seus projetos
           </p>
-          <div className="w-20 h-1 mx-auto mt-6 bg-gradient-to-r from-blue-400 to-cyan-400 rounded-full" />
+          <div className="w-20 h-1 mx-auto mt-6 rounded-full" style={{ background: 'linear-gradient(to right, var(--color-beam-start), var(--color-beam-end))' }} />
         </motion.div>
 
         {/* Terminal Interativo */}
@@ -150,7 +150,7 @@ export function GitCommands() {
                     <span className="text-emerald-400">$</span>
                     <span className="text-gray-300">{line.command}</span>
                   </div>
-                  <div className="text-cyan-400/90 pl-4 text-xs">{line.output}</div>
+                  <div className="pl-4 text-xs text-[var(--color-beam-end)]/90">{line.output}</div>
                 </div>
               ))}
             </div>

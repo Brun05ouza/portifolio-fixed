@@ -8,6 +8,7 @@ import {
   SheetTitle,
   SheetTrigger,
 } from './ui/sheet';
+import { ThemeToggle } from './ThemeToggle';
 
 interface NavItem {
   id: string;
@@ -77,12 +78,12 @@ export function PillNav() {
 
   const navStyle = {
     borderRadius: '9999px',
-    border: '1px solid rgba(255, 255, 255, 0.15)',
-    boxShadow: '0 4px 30px rgba(0, 0, 0, 0.4), inset 0 1px 0 rgba(255, 255, 255, 0.05)',
+    border: '1px solid var(--border)',
+    boxShadow: '0 4px 30px rgba(0, 0, 0, 0.15), inset 0 1px 0 rgba(255, 255, 255, 0.03)',
   };
 
   const navBaseClass = `fixed top-4 z-50 transition-all duration-300 backdrop-blur-xl ${
-    scrolled ? 'bg-black/90' : 'bg-black/75'
+    scrolled ? 'bg-background/95' : 'bg-background/85'
   }`;
 
   return (
@@ -102,7 +103,9 @@ export function PillNav() {
         >
           Portfolio
         </a>
-        <Sheet open={menuOpen} onOpenChange={setMenuOpen}>
+        <div className="flex items-center gap-2">
+          <ThemeToggle />
+          <Sheet open={menuOpen} onOpenChange={setMenuOpen}>
           <SheetTrigger asChild>
             <button
               className="flex items-center justify-center w-11 h-11 rounded-xl border border-white/20 hover:bg-white/10 active:bg-white/15 transition-colors touch-manipulation"
@@ -136,6 +139,7 @@ export function PillNav() {
             </nav>
           </SheetContent>
         </Sheet>
+        </div>
       </motion.nav>
 
       {/* Desktop: pill nav completo */}
@@ -172,6 +176,9 @@ export function PillNav() {
               )}
             </li>
           ))}
+          <li className="flex items-center pl-2 ml-1 border-l border-border">
+            <ThemeToggle />
+          </li>
         </ul>
       </motion.nav>
     </>

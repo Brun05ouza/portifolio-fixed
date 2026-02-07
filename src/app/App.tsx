@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react';
+import { useTheme } from 'next-themes';
 import { PillNav } from './components/PillNav';
 import { Hero } from './components/Hero';
 import { About } from './components/About';
@@ -11,9 +12,11 @@ import { GitCommands } from './components/GitCommands';
 import { Contact } from './components/Contact';
 import { Footer } from './components/Footer';
 import Squares from './components/Squares';
+import { Toaster } from './components/ui/sonner';
 
 export default function App() {
   const [scrolled, setScrolled] = useState(false);
+  const { resolvedTheme } = useTheme();
 
   useEffect(() => {
     const handleScroll = () => {
@@ -32,14 +35,12 @@ export default function App() {
           speed={0.8}
           squareSize={48}
           direction="down"
-          borderColor="rgba(30, 64, 175, 0.25)"
-          hoverFillColor="rgba(26, 26, 36, 0.6)"
+          borderColor={(resolvedTheme ?? 'dark') === 'dark' ? 'rgba(22, 101, 52, 0.25)' : 'rgba(22, 101, 52, 0.2)'}
+          hoverFillColor={(resolvedTheme ?? 'dark') === 'dark' ? 'rgba(26, 26, 36, 0.6)' : 'rgba(248, 250, 252, 0.7)'}
         />
         <div
           className="absolute inset-0 pointer-events-none"
-          style={{
-            background: 'linear-gradient(180deg, rgba(10, 10, 15, 0.35) 0%, rgba(10, 10, 15, 0.55) 50%, rgba(10, 10, 15, 0.45) 100%)',
-          }}
+          style={{ background: 'var(--overlay-gradient)' }}
         />
       </div>
 
@@ -57,6 +58,7 @@ export default function App() {
           <Contact />
         </main>
         <Footer />
+        <Toaster />
       </div>
 
       {/* Scroll to top button */}

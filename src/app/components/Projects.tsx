@@ -34,7 +34,7 @@ export function Projects() {
           <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
             Projetos desenvolvidos durante minha jornada de aprendizado
           </p>
-          <div className="w-20 h-1 mx-auto mt-6 bg-gradient-to-r from-blue-400 to-cyan-400 rounded-full" />
+          <div className="w-20 h-1 mx-auto mt-6 rounded-full" style={{ background: 'linear-gradient(to right, var(--color-beam-start), var(--color-beam-end))' }} />
         </motion.div>
 
         {/* Projects grid */}

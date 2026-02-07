@@ -59,7 +59,7 @@ export function Hero() {
                 <RotatingText
                   texts={['Desenvolvimento', 'Tecnologia', 'Café']}
                   mainClassName="inline-block overflow-hidden min-w-[180px] pb-4 md:pb-6"
-                  elementLevelClassName="bg-gradient-to-r from-blue-400 via-cyan-400 to-blue-500 bg-clip-text text-transparent"
+                  elementLevelClassName="bg-gradient-to-r from-[var(--color-beam-start)] via-[var(--color-chroma-3)] to-[var(--color-beam-end)] bg-clip-text text-transparent"
                   staggerFrom="last"
                   initial={{ y: '100%' }}
                   animate={{ y: 0 }}

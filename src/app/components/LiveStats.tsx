@@ -9,7 +9,7 @@ const stats = [
     icon: Code2,
     value: 43500,
     label: 'Linhas de Código',
-    color: '#3b82f6',
+    color: '#22c55e',
   },
   {
     icon: Rocket,
@@ -78,7 +78,7 @@ export function LiveStats() {
           <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
             Métricas da minha jornada como desenvolvedor
           </p>
-          <div className="w-20 h-1 mx-auto mt-6 bg-gradient-to-r from-blue-400 to-cyan-400 rounded-full" />
+          <div className="w-20 h-1 mx-auto mt-6 rounded-full" style={{ background: 'linear-gradient(to right, var(--color-beam-start), var(--color-beam-end))' }} />
         </motion.div>
 
         {/* Stats grid */}

@@ -1,9 +1,12 @@
 
   <!DOCTYPE html>
-  <html lang="pt-BR">
+  <html lang="pt-BR" class="dark" suppressHydrationWarning>
     <head>
       <meta charset="UTF-8" />
       <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+      <script>
+        (function(){var t=localStorage.getItem('theme');document.documentElement.classList.toggle('dark',t!=='light')})();
+      </script>
       <title>Portfolio - Bruno Souza | Desenvolvedor Full Stack</title>
     </head>
 
