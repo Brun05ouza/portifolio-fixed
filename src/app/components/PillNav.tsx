@@ -1,5 +1,13 @@
 import { useState, useEffect } from 'react';
 import { motion } from 'motion/react';
+import { Menu } from 'lucide-react';
+import {
+  Sheet,
+  SheetContent,
+  SheetHeader,
+  SheetTitle,
+  SheetTrigger,
+} from './ui/sheet';
 
 interface NavItem {
   id: string;
@@ -20,18 +28,18 @@ const navItems: NavItem[] = [
 export function PillNav() {
   const [activeId, setActiveId] = useState('home');
   const [scrolled, setScrolled] = useState(false);
+  const [menuOpen, setMenuOpen] = useState(false);
 
   useEffect(() => {
     const handleScroll = () => {
       setScrolled(window.scrollY > 50);
-      
-      // Update active section based on scroll position
-      const sections = navItems.map(item => ({
+
+      const sections = navItems.map((item) => ({
         id: item.id,
         element: document.getElementById(item.id),
       }));
 
-      const currentSection = sections.find(section => {
+      const currentSection = sections.find((section) => {
         if (section.element) {
           const rect = section.element.getBoundingClientRect();
           return rect.top <= 100 && rect.bottom >= 100;
@@ -51,52 +59,110 @@ export function PillNav() {
   const handleClick = (e: React.MouseEvent<HTMLAnchorElement>, href: string, id: string) => {
     e.preventDefault();
     setActiveId(id);
+    setMenuOpen(false);
     const element = document.querySelector(href);
     element?.scrollIntoView({ behavior: 'smooth' });
   };
 
+  const navStyle = {
+    borderRadius: '9999px',
+    border: '1px solid rgba(255, 255, 255, 0.15)',
+    boxShadow: '0 4px 30px rgba(0, 0, 0, 0.4), inset 0 1px 0 rgba(255, 255, 255, 0.05)',
+  };
+
+  const navBaseClass = `fixed top-4 z-50 transition-all duration-300 backdrop-blur-xl ${
+    scrolled ? 'bg-black/90' : 'bg-black/75'
+  }`;
+
   return (
-    <motion.nav
-      className={`fixed top-4 left-1/2 -translate-x-1/2 z-50 transition-all duration-300 backdrop-blur-xl ${
-        scrolled
-          ? 'bg-black/90'
-          : 'bg-black/75'
-      }`}
-      style={{
-        borderRadius: '9999px',
-        border: '1px solid rgba(255, 255, 255, 0.15)',
-        boxShadow: '0 4px 30px rgba(0, 0, 0, 0.4), inset 0 1px 0 rgba(255, 255, 255, 0.05)',
-      }}
-      initial={{ y: -100, opacity: 0 }}
-      animate={{ y: 0, opacity: 1 }}
-      transition={{ duration: 0.6, ease: 'easeOut' }}
-    >
-      <ul className="flex items-center gap-1 px-3 py-2 relative">
-        {navItems.map((item) => (
-          <li key={item.id} className="relative">
-            <a
-              href={item.href}
-              onClick={(e) => handleClick(e, item.href, item.id)}
-              className="relative z-10 px-4 py-2 text-sm transition-colors duration-200 block"
-              style={{
-                color: activeId === item.id ? 'var(--primary-foreground)' : 'var(--foreground)',
-              }}
+    <>
+      {/* Mobile: barra com logo + hamburger */}
+      <motion.nav
+        className={`${navBaseClass} left-4 right-4 flex md:hidden justify-between items-center px-4 py-2.5`}
+        style={navStyle}
+        initial={{ y: -100, opacity: 0 }}
+        animate={{ y: 0, opacity: 1 }}
+        transition={{ duration: 0.6, ease: 'easeOut' }}
+      >
+        <a
+          href="#home"
+          onClick={(e) => handleClick(e, '#home', 'home')}
+          className="text-sm font-semibold text-foreground"
+        >
+          Portfolio
+        </a>
+        <Sheet open={menuOpen} onOpenChange={setMenuOpen}>
+          <SheetTrigger asChild>
+            <button
+              className="flex items-center justify-center w-11 h-11 rounded-xl border border-white/20 hover:bg-white/10 active:bg-white/15 transition-colors touch-manipulation"
+              aria-label="Abrir menu de navegação"
             >
-              {item.label}
-            </a>
-            {activeId === item.id && (
-              <motion.div
-                layoutId="pill-indicator"
-                className="absolute inset-0 rounded-full"
+              <Menu className="w-6 h-6 text-foreground" strokeWidth={2} />
+            </button>
+          </SheetTrigger>
+          <SheetContent
+            side="right"
+            className="w-[min(280px,85vw)] sm:w-[320px] border-border bg-card/95 backdrop-blur-xl"
+          >
+            <SheetHeader>
+              <SheetTitle className="text-left text-foreground">Navegação</SheetTitle>
+            </SheetHeader>
+            <nav className="flex flex-col gap-1 mt-6">
+              {navItems.map((item) => (
+                <a
+                  key={item.id}
+                  href={item.href}
+                  onClick={(e) => handleClick(e, item.href, item.id)}
+                  className={`px-4 py-3.5 rounded-xl text-base font-medium transition-colors ${
+                    activeId === item.id
+                      ? 'bg-primary/20 text-primary'
+                      : 'text-foreground hover:bg-muted'
+                  }`}
+                >
+                  {item.label}
+                </a>
+              ))}
+            </nav>
+          </SheetContent>
+        </Sheet>
+      </motion.nav>
+
+      {/* Desktop: pill nav completo */}
+      <motion.nav
+        className={`${navBaseClass} left-1/2 -translate-x-1/2 hidden md:block`}
+        style={navStyle}
+        initial={{ y: -100, opacity: 0 }}
+        animate={{ y: 0, opacity: 1 }}
+        transition={{ duration: 0.6, ease: 'easeOut' }}
+      >
+        <ul className="flex items-center gap-1 px-3 py-2 relative">
+          {navItems.map((item) => (
+            <li key={item.id} className="relative">
+              <a
+                href={item.href}
+                onClick={(e) => handleClick(e, item.href, item.id)}
+                className="relative z-10 px-4 py-2 text-sm transition-colors duration-200 block"
                 style={{
-                  background: 'linear-gradient(135deg, var(--color-beam-start), var(--color-beam-end))',
+                  color: activeId === item.id ? 'var(--primary-foreground)' : 'var(--foreground)',
                 }}
-                transition={{ type: 'spring', stiffness: 380, damping: 30 }}
-              />
-            )}
-          </li>
-        ))}
-      </ul>
-    </motion.nav>
+              >
+                {item.label}
+              </a>
+              {activeId === item.id && (
+                <motion.div
+                  layoutId="pill-indicator"
+                  className="absolute inset-0 rounded-full"
+                  style={{
+                    background:
+                      'linear-gradient(135deg, var(--color-beam-start), var(--color-beam-end))',
+                  }}
+                  transition={{ type: 'spring', stiffness: 380, damping: 30 }}
+                />
+              )}
+            </li>
+          ))}
+        </ul>
+      </motion.nav>
+    </>
   );
 }
