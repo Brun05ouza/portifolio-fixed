@@ -46,8 +46,10 @@ export function TccEcoSphere() {
 
   return (
     <section ref={sectionRef} id="tcc" className="relative py-32 px-6 overflow-hidden">
+      {/* Camada sólida: esconde o background global (Squares) só nesta seção para evitar dois fundos animados no celular */}
+      <div className="absolute inset-0 z-0 bg-background" aria-hidden />
       {/* Galaxy background - apenas nesta seção */}
-      <div className="absolute inset-0 z-0">
+      <div className="absolute inset-0 z-[1]">
         {isInView && <Galaxy
           density={1}
           glowIntensity={0.3}
@@ -64,7 +66,7 @@ export function TccEcoSphere() {
           transparent
         />}
       </div>
-      <div className="absolute inset-0 z-[1] bg-background/40 pointer-events-none" />
+      <div className="absolute inset-0 z-[2] bg-background/40 pointer-events-none" />
       <div className="relative z-10 max-w-6xl mx-auto">
         <motion.div
           className="text-center mb-16"

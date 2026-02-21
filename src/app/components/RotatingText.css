@@ -5,6 +5,12 @@
   position: relative;
 }
 
+/* Centraliza o texto rotativo quando a palavra é mais curta (ex: "Café") */
+.rotate-text-center .text-rotate {
+  justify-content: center;
+  width: 100%;
+}
+
 .text-rotate-sr-only {
   position: absolute;
   width: 1px;

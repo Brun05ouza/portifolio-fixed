@@ -11,9 +11,9 @@ export function Hero() {
   return (
     <section
       id="home"
-      className="relative min-h-screen flex items-center justify-center overflow-hidden"
+      className="relative min-h-screen flex items-center justify-center overflow-hidden pt-[7.5rem] sm:pt-32 md:pt-0"
     >
-      <div className="relative z-10 max-w-6xl mx-auto px-6 text-center">
+      <div className="relative z-10 max-w-6xl mx-auto px-4 sm:px-6 text-center pb-8 md:pb-0">
         <motion.div
           initial={{ opacity: 0, y: 30 }}
           animate={{ opacity: 1, y: 0 }}
@@ -59,7 +59,7 @@ export function Hero() {
               <span className="flex justify-center w-full">
                 <RotatingText
                   texts={heroTexts.rotating}
-                  mainClassName="inline-block overflow-hidden min-w-[180px] pb-4 md:pb-6"
+                  mainClassName="rotate-text-center block w-full max-w-[380px] md:max-w-[480px] mx-auto overflow-hidden pb-4 md:pb-6 text-center"
                   elementLevelClassName="bg-gradient-to-r from-[var(--color-beam-start)] via-[var(--color-chroma-3)] to-[var(--color-beam-end)] bg-clip-text text-transparent"
                   staggerFrom="last"
                   initial={{ y: '100%' }}

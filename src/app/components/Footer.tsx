@@ -6,9 +6,9 @@ import { useReducedMotion } from '../../hooks/useReducedMotion';
 export function Footer() {
   const reduceMotion = useReducedMotion();
   return (
-    <footer className="relative py-12 px-6 border-t border-border">
+    <footer className="relative py-12 sm:py-16 px-4 sm:px-6 border-t border-border">
       <div className="max-w-6xl mx-auto">
-        <div className="grid md:grid-cols-3 gap-8 mb-8">
+        <div className="grid md:grid-cols-3 gap-8 sm:gap-10 mb-10 sm:mb-12">
           {/* Brand */}
           <div>
             <div className="flex items-center gap-2 mb-4">
@@ -75,8 +75,8 @@ export function Footer() {
         </div>
 
         {/* Bottom bar */}
-        <div className="pt-8 border-t border-border flex flex-col md:flex-row items-center justify-between gap-4">
-          <p className="text-sm text-muted-foreground flex items-center gap-2">
+        <div className="pt-10 sm:pt-12 border-t border-border flex flex-col md:flex-row items-center justify-between gap-6 sm:gap-4">
+          <p className="text-sm text-muted-foreground flex flex-wrap items-center justify-center md:justify-start gap-x-2 gap-y-1 text-center md:text-left">
             © 2026 Bruno Souza. Todos os direitos reservados. Feito com{' '}
             <motion.span
               animate={reduceMotion ? { scale: 1 } : { scale: [1, 1.2, 1] }}
@@ -87,7 +87,7 @@ export function Footer() {
             e React
           </p>
           
-          <div className="flex items-center gap-4 text-sm">
+          <div className="flex flex-wrap items-center justify-center md:justify-end gap-4 text-sm">
             <a href="#" className="text-muted-foreground hover:text-primary transition-colors">
               Privacidade
             </a>
