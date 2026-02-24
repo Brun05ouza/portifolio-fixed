@@ -8,10 +8,10 @@ import { Code2, Rocket, Coffee, Clock } from 'lucide-react';
 
 export const siteConfig = {
   githubUser: import.meta.env.VITE_GITHUB_USER || 'Brun05ouza',
+  formEndpoint: import.meta.env.VITE_CONTACT_FORM_ENDPOINT || '',
   contactEmail: 'brunosouzagithub2003@gmail.com',
   linkedinUrl: 'https://www.linkedin.com/in/bruno-souza/',
   githubUrl: 'https://github.com/Brun05ouza',
-  formEndpoint: import.meta.env.VITE_CONTACT_FORM_ENDPOINT || '',
 };
 
 export const navItems = [

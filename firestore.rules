@@ -1,0 +1,11 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    // Coleção do formulário de contato: permite apenas CRIAR (enviar mensagem).
+    // Leitura/edição/exclusão só pelo Console ou Admin SDK.
+    match /contacts/{docId} {
+      allow create: if true;
+      allow read, update, delete: if false;
+    }
+  }
+}

@@ -9,6 +9,14 @@
 .rotate-text-center .text-rotate {
   justify-content: center;
   width: 100%;
+  min-height: inherit;
+}
+
+/* Garante altura mínima no desktop para a palavra mais longa sem excesso de espaço abaixo */
+@media (min-width: 768px) {
+  .rotate-text-center.text-rotate {
+    min-height: 1.35em;
+  }
 }
 
 .text-rotate-sr-only {
@@ -36,6 +44,9 @@
 .text-rotate-element {
   display: inline-block;
   line-height: 1.3;
+  vertical-align: top;
+  /* Evita que o span do gradiente sobreponha caracteres adjacentes no desktop */
+  isolation: isolate;
 }
 
 .text-rotate-space {

@@ -56,10 +56,10 @@ export function Hero() {
 
             <h1 className="text-5xl md:text-7xl font-bold flex flex-col items-center">
               <GlitchText text={heroTexts.prefix} className="block mb-2" />
-              <span className="flex justify-center w-full">
+              <span className="flex justify-center w-full min-h-[1.5em] md:min-h-[1.35em]">
                 <RotatingText
                   texts={heroTexts.rotating}
-                  mainClassName="rotate-text-center block w-full max-w-[380px] md:max-w-[480px] mx-auto overflow-hidden pb-4 md:pb-6 text-center"
+                  mainClassName="rotate-text-center block w-full max-w-[380px] md:max-w-[580px] mx-auto overflow-hidden pb-4 md:pb-6 text-center min-h-[1.4em] md:min-h-[1.35em]"
                   elementLevelClassName="bg-gradient-to-r from-[var(--color-beam-start)] via-[var(--color-chroma-3)] to-[var(--color-beam-end)] bg-clip-text text-transparent"
                   staggerFrom="last"
                   initial={{ y: '100%' }}

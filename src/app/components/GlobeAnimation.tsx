@@ -9,9 +9,11 @@ import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js';
 interface GlobeAnimationProps {
   className?: string;
   size?: number;
+  /** Aparência mais clara (mais luz e atmosfera suave) */
+  light?: boolean;
 }
 
-export function GlobeAnimation({ className = '', size = 120 }: GlobeAnimationProps) {
+export function GlobeAnimation({ className = '', size = 120, light = false }: GlobeAnimationProps) {
   const containerRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -20,11 +22,17 @@ export function GlobeAnimation({ className = '', size = 120 }: GlobeAnimationPro
     const width = size;
     const height = size;
 
+    const atmosphereColor = light ? '#a5d8ff' : '#60a5fa';
+    const ambientIntensity = light ? 1.8 : 1.2;
+    const dirIntensity = light ? 1.6 : 1.2;
+    const dirFillIntensity = light ? 0.7 : 0.4;
+    const toneExposure = light ? 1.5 : 1.2;
+
     const Globe = new ThreeGlobe()
       .globeImageUrl('https://cdn.jsdelivr.net/npm/three-globe@2/example/img/earth-blue-marble.jpg')
       .bumpImageUrl('https://cdn.jsdelivr.net/npm/three-globe@2/example/img/earth-topology.png')
       .showAtmosphere(true)
-      .atmosphereColor('#60a5fa')
+      .atmosphereColor(atmosphereColor)
       .atmosphereAltitude(0.18);
 
     const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
@@ -32,15 +40,15 @@ export function GlobeAnimation({ className = '', size = 120 }: GlobeAnimationPro
     renderer.setPixelRatio(Math.min(2, window.devicePixelRatio));
     renderer.setClearColor(0x000000, 0);
     renderer.toneMapping = THREE.ACESFilmicToneMapping;
-    renderer.toneMappingExposure = 1.2;
+    renderer.toneMappingExposure = toneExposure;
     renderer.outputColorSpace = THREE.SRGBColorSpace;
     containerRef.current.appendChild(renderer.domElement);
 
     const scene = new THREE.Scene();
     scene.add(Globe);
-    scene.add(new THREE.AmbientLight(0xffffff, 1.2));
-    scene.add(new THREE.DirectionalLight(0xffffff, 1.2));
-    scene.add(new THREE.DirectionalLight(0x93c5fd, 0.4).position.set(5, 3, 5));
+    scene.add(new THREE.AmbientLight(0xffffff, ambientIntensity));
+    scene.add(new THREE.DirectionalLight(0xffffff, dirIntensity));
+    scene.add(new THREE.DirectionalLight(0x93c5fd, dirFillIntensity).position.set(5, 3, 5));
 
     const camera = new THREE.PerspectiveCamera(45, width / height, 0.1, 1000);
     camera.position.z = 240;

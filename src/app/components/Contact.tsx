@@ -4,6 +4,8 @@ import { Mail, Github, Linkedin, Send, Sparkles, Loader2, CheckCircle2 } from 'l
 import { GlitchText } from './GlitchText';
 import { siteConfig, socialLinks } from '../../config/content';
 import { toast } from 'sonner';
+import { submitContactToFirebase } from '../services/contactFirebase';
+import { sendContactEmailJS, isEmailJSConfigured } from '../services/contactEmailJS';
 
 const iconMap = { Email: Mail, GitHub: Github, LinkedIn: Linkedin } as const;
 
@@ -36,35 +38,25 @@ export function Contact() {
     e.preventDefault();
     if (!validate()) return;
 
-    const endpoint = siteConfig.formEndpoint;
-    if (!endpoint) {
-      const mailto = `mailto:${siteConfig.contactEmail}?subject=Contato do Portfólio - ${encodeURIComponent(formData.name)}&body=${encodeURIComponent(formData.message + '\n\n---\nDe: ' + formData.email)}`;
-      window.location.href = mailto;
-      toast.success('Abriu seu cliente de e-mail. Envie a mensagem para entrar em contato.');
-      setSubmitted(true);
-      return;
-    }
-
     setSubmitting(true);
     setErrors({});
 
     try {
-      const res = await fetch(endpoint, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json', Accept: 'application/json' },
-        body: JSON.stringify(formData),
-      });
+      const result = await submitContactToFirebase(formData);
 
-      const data = await res.json().catch(() => ({}));
-
-      if (res.ok) {
+      if (result.ok) {
+        if (isEmailJSConfigured()) {
+          const emailResult = await sendContactEmailJS(formData);
+          if (!emailResult.ok) {
+            toast.warning('Mensagem salva. O aviso por e-mail pode não ter sido enviado.');
+          }
+        }
         setFormData({ name: '', email: '', message: '' });
         setSubmitted(true);
         toast.success('Mensagem enviada! Responderei em breve.');
       } else {
-        const msg = data.error || data.message || `Erro ${res.status}. Tente novamente.`;
-        toast.error(msg);
-        setErrors({ submit: msg });
+        toast.error(result.error);
+        setErrors({ submit: result.error });
       }
     } catch {
       toast.error('Falha na conexão. Verifique sua internet e tente novamente.');

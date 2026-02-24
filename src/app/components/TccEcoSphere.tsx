@@ -1,11 +1,4 @@
-import { useEffect, useRef, useState } from 'react';
-import { motion } from 'motion/react';
-import { GlitchText } from './GlitchText';
-import { Cpu, Brain, LayoutDashboard, Sparkles } from 'lucide-react';
-import { GlobeAnimation } from './GlobeAnimation';
 import Galaxy from './Galaxy';
-
-export function TccEcoSphere() {
   const sectionRef = useRef<HTMLElement>(null);
   const [isInView, setIsInView] = useState(false);
 
@@ -21,6 +14,13 @@ export function TccEcoSphere() {
     io.observe(el);
     return () => io.disconnect();
   }, []);
+import React from 'react';
+import { motion } from 'motion/react';
+import { GlitchText } from './GlitchText';
+import { Cpu, Brain, LayoutDashboard, Sparkles } from 'lucide-react';
+import { GlobeAnimation } from './GlobeAnimation';
+
+export function TccEcoSphere() {
   const features = [
     {
       icon: <Cpu className="w-6 h-6" />,
@@ -43,30 +43,12 @@ export function TccEcoSphere() {
       description: 'TensorFlow.js + Google Teachable Machine para categorização automática',
     },
   ];
-
-  return (
-    <section ref={sectionRef} id="tcc" className="relative py-32 px-6 overflow-hidden">
       {/* Camada sólida: esconde o background global (Squares) só nesta seção para evitar dois fundos animados no celular */}
       <div className="absolute inset-0 z-0 bg-background" aria-hidden />
-      {/* Galaxy background - apenas nesta seção */}
-      <div className="absolute inset-0 z-[1]">
-        {isInView && <Galaxy
-          density={1}
-          glowIntensity={0.3}
-          saturation={0}
-          hueShift={200}
-          twinkleIntensity={0.3}
-          rotationSpeed={0.08}
-          repulsionStrength={2}
-          autoCenterRepulsion={0}
-          starSpeed={0.5}
-          speed={1}
-          mouseInteraction
-          mouseRepulsion
-          transparent
-        />}
-      </div>
-      <div className="absolute inset-0 z-[2] bg-background/40 pointer-events-none" />
+      <div className="absolute inset-0 z-[1] bg-background/40 pointer-events-none" />
+
+  return (
+    <section id="tcc" className="relative py-32 px-6 overflow-hidden">
       <div className="relative z-10 max-w-6xl mx-auto">
         <motion.div
           className="text-center mb-16"
@@ -139,7 +121,7 @@ export function TccEcoSphere() {
           viewport={{ once: true }}
           transition={{ duration: 0.6, delay: 0.2 }}
         >
-          {isInView && <GlobeAnimation size={160} className="rounded-full overflow-hidden border-2 border-primary/40 shadow-lg shadow-primary/20 ring-2 ring-primary/10" />}
+          <GlobeAnimation size={220} light className="rounded-full overflow-hidden border-2 border-primary/40 shadow-lg shadow-primary/20 ring-2 ring-primary/10" />
         </motion.div>
       </div>
     </section>
