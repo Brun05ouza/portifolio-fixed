@@ -127,7 +127,7 @@ export function ProjectCard({
                   <span className="text-sm text-muted-foreground">
                     Landing Page desenvolvido para{' '}
                     <a
-                      href="https://moregenesis.com.br"
+                      href="https://genesisempreendimentos.com.br"
                       target="_blank"
                       rel="noopener noreferrer"
                       className="text-foreground hover:text-primary transition-colors underline underline-offset-2"

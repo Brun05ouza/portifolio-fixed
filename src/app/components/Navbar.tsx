@@ -50,82 +50,77 @@ export function Navbar({ onScheduleCall }: NavbarProps) {
   return (
     <>
       <motion.nav
-        className="fixed top-3 left-3 right-3 sm:top-4 sm:left-4 sm:right-4 md:left-1/2 md:right-auto md:-translate-x-1/2 z-50 flex justify-between items-center md:justify-center px-3 py-2.5 sm:px-4 sm:py-3 rounded-xl sm:rounded-2xl border-0 bg-transparent shadow-none"
-        style={{ border: 'none' }}
+        className="fixed top-3 left-3 right-3 sm:top-4 sm:left-4 sm:right-4 z-50"
         initial={{ y: -20, opacity: 0 }}
         animate={{ y: 0, opacity: 1 }}
         transition={{ duration: 0.4 }}
         aria-label="Navegação principal"
       >
-        {/* Desktop: links */}
-        <ul className="hidden md:flex items-center gap-1">
-          {navItems.map((item) => (
-            <li key={item.id}>
-              <a
-                href={item.href}
-                onClick={(e) => handleClick(e, item.href, item.id)}
-                className={linkClass(activeId === item.id)}
-                style={{
-                  color: activeId === item.id ? 'var(--accent-primary)' : 'var(--foreground-muted)',
-                }}
-                aria-current={activeId === item.id ? 'page' : undefined}
-              >
-                {item.label}
-              </a>
-            </li>
-          ))}
-        </ul>
-
-        {/* Container transparente atrás dos botões (segue eles pois a nav é fixed) */}
+        {/* Desktop: barra única centralizada; mobile: conteúdo à direita */}
         <div
-          className="relative flex items-center gap-2 ml-auto md:ml-0 rounded-xl sm:rounded-2xl px-1 py-1 sm:px-1.5 sm:py-1.5"
-          style={{
-            backgroundColor: 'rgba(10, 10, 15, 0.45)',
-            border: '1px solid rgba(255, 255, 255, 0.06)',
-            backdropFilter: 'blur(12px)',
-            WebkitBackdropFilter: 'blur(12px)',
-          }}
+          className="flex justify-end md:justify-center items-center w-full md:max-w-6xl md:mx-auto md:px-4 md:py-2 md:rounded-2xl md:border md:border-white/10 md:bg-[rgba(10,10,15,0.55)] md:backdrop-blur-xl md:shadow-[0_4px_24px_rgba(0,0,0,0.12)]"
         >
-          <ThemeToggle />
-          <Sheet open={menuOpen} onOpenChange={setMenuOpen}>
-            <SheetTrigger asChild>
-              <button
-                className="flex md:hidden items-center justify-center min-w-[44px] min-h-[44px] w-11 h-11 rounded-lg border transition-colors hover:bg-[var(--surface-hover)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--ring)]"
-                style={{ borderColor: 'var(--border)' }}
-                aria-label="Abrir menu"
+          {/* Links — visíveis só no desktop, centralizados junto ao tema */}
+          <ul className="hidden md:flex items-center gap-1">
+            {navItems.map((item) => (
+              <li key={item.id}>
+                <a
+                  href={item.href}
+                  onClick={(e) => handleClick(e, item.href, item.id)}
+                  className={linkClass(activeId === item.id)}
+                  style={{
+                    color: activeId === item.id ? 'var(--accent-primary)' : 'var(--foreground-muted)',
+                  }}
+                  aria-current={activeId === item.id ? 'page' : undefined}
+                >
+                  {item.label}
+                </a>
+              </li>
+            ))}
+          </ul>
+
+          {/* Direita: tema + menu mobile — no desktop sem fundo próprio (integra à barra) */}
+          <div className="flex items-center gap-2 ml-auto md:ml-0 rounded-xl sm:rounded-2xl px-1.5 py-1.5 bg-[rgba(10,10,15,0.45)] border border-white/[0.06] backdrop-blur-xl md:rounded-none md:px-0 md:py-0 md:bg-transparent md:border-0 md:backdrop-blur-none">
+            <ThemeToggle />
+            <Sheet open={menuOpen} onOpenChange={setMenuOpen}>
+              <SheetTrigger asChild>
+                <button
+                  className="flex md:hidden items-center justify-center min-w-[44px] min-h-[44px] w-11 h-11 rounded-lg border transition-colors hover:bg-[var(--surface-hover)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--ring)]"
+                  style={{ borderColor: 'var(--border)' }}
+                  aria-label="Abrir menu"
+                >
+                  <Menu className="w-5 h-5" style={{ color: 'var(--foreground)' }} strokeWidth={2} />
+                </button>
+              </SheetTrigger>
+              <SheetContent
+                side="right"
+                className="w-[min(280px,85vw)] border-[var(--border)]"
+                style={{ backgroundColor: 'var(--card)' }}
               >
-                <Menu className="w-5 h-5" style={{ color: 'var(--foreground)' }} strokeWidth={2} />
-              </button>
-            </SheetTrigger>
-            <SheetContent
-              side="right"
-              className="w-[min(280px,85vw)] border-[var(--border)]"
-              style={{ backgroundColor: 'var(--card)' }}
-            >
-              <SheetHeader>
-                <SheetTitle className="text-left" style={{ color: 'var(--foreground)' }}>Menu</SheetTitle>
-              </SheetHeader>
-              <nav className="flex flex-col gap-1 mt-6" aria-label="Navegação móvel">
-                {navItems.map((item) => (
-                  <a
-                    key={item.id}
-                    href={item.href}
-                    onClick={(e) => handleClick(e, item.href, item.id)}
-                    className="px-4 py-3 rounded-lg text-base font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--ring)]"
-                    style={{
-                      color: activeId === item.id ? 'var(--accent-primary)' : 'var(--foreground)',
-                      backgroundColor: activeId === item.id ? 'var(--accent-primary-muted)' : 'transparent',
-                    }}
-                    aria-current={activeId === item.id ? 'true' : undefined}
-                  >
-                    {item.label}
-                  </a>
-                ))}
-              </nav>
-            </SheetContent>
-          </Sheet>
+                <SheetHeader>
+                  <SheetTitle className="text-left" style={{ color: 'var(--foreground)' }}>Menu</SheetTitle>
+                </SheetHeader>
+                <nav className="flex flex-col gap-1 mt-6" aria-label="Navegação móvel">
+                  {navItems.map((item) => (
+                    <a
+                      key={item.id}
+                      href={item.href}
+                      onClick={(e) => handleClick(e, item.href, item.id)}
+                      className="px-4 py-3 rounded-lg text-base font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--ring)]"
+                      style={{
+                        color: activeId === item.id ? 'var(--accent-primary)' : 'var(--foreground)',
+                        backgroundColor: activeId === item.id ? 'var(--accent-primary-muted)' : 'transparent',
+                      }}
+                      aria-current={activeId === item.id ? 'true' : undefined}
+                    >
+                      {item.label}
+                    </a>
+                  ))}
+                </nav>
+              </SheetContent>
+            </Sheet>
+          </div>
         </div>
-        {/* fim container transparente */}
       </motion.nav>
     </>
   );

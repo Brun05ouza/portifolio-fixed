@@ -35,7 +35,7 @@ export function About() {
       title: 'Desenvolvedor Web / Design',
       company: 'Gênesis Empreendimentos',
       description: 'Desenvolvimento de landing pages e aplicações internas',
-      url: 'https://genesisempreendimentos.com/',
+      url: 'https://genesisempreendimentos.com.br',
     },
     {
       year: '2023 - 2026',
