@@ -2,33 +2,22 @@
 @import './tailwind.css';
 @import './theme.css';
 
-/* Custom scrollbar */
-::-webkit-scrollbar {
-  width: 10px;
-}
-
-::-webkit-scrollbar-track {
-  background: var(--background);
-}
-
-::-webkit-scrollbar-thumb {
-  background: linear-gradient(135deg, var(--color-beam-start), var(--color-beam-end));
-  border-radius: 5px;
-}
-
-::-webkit-scrollbar-thumb:hover {
-  background: linear-gradient(135deg, var(--color-beam-end), var(--color-beam-start));
-}
-
-/* Smooth scrolling */
+/* Barra de scroll oculta na página (mantém a rolagem) + smooth scroll */
 html {
+  scrollbar-width: none; /* Firefox */
+  -ms-overflow-style: none; /* IE / Edge antigo */
   scroll-behavior: smooth;
+}
+
+html::-webkit-scrollbar,
+body::-webkit-scrollbar {
+  display: none; /* Chrome, Safari, Edge */
 }
 
 /* Selection color */
 ::selection {
-  background: var(--color-glow);
-  color: white;
+  background: var(--accent-primary);
+  color: #050508;
 }
 
 /* Reduce motion for accessibility */

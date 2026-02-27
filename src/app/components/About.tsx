@@ -61,7 +61,7 @@ export function About() {
   ];
 
   return (
-    <section id="about" className="relative py-32 px-6">
+    <section id="about" className="relative py-16 sm:py-24 md:py-28 lg:py-32 px-4 sm:px-6">
       {/* Scroll indicator - acima de Sobre Mim */}
       <motion.div
         className="absolute -top-6 left-1/2 -translate-x-1/2 flex flex-col items-center gap-1 z-10"
@@ -81,20 +81,20 @@ export function About() {
       <div className="max-w-6xl mx-auto">
         {/* Section header */}
         <motion.div
-          className="text-center mb-16"
+          className="text-center mb-10 sm:mb-14 md:mb-16"
           initial={{ opacity: 0, y: 30 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
           transition={{ duration: 0.6 }}
         >
-          <h2 className="text-4xl md:text-5xl font-bold mb-4">
+          <h2 className="text-3xl sm:text-4xl md:text-5xl font-bold mb-4">
             <GlitchText text="Sobre Mim" />
           </h2>
           <div className="w-20 h-1 mx-auto rounded-full" style={{ background: 'linear-gradient(to right, var(--color-beam-start), var(--color-beam-end))' }} />
         </motion.div>
 
         {/* Bio section */}
-        <div className="grid md:grid-cols-2 gap-12 mb-20">
+        <div className="grid md:grid-cols-2 gap-8 sm:gap-10 md:gap-12 mb-14 sm:mb-20">
           <motion.div
             initial={{ opacity: 0, x: -30 }}
             whileInView={{ opacity: 1, x: 0 }}
@@ -106,10 +106,10 @@ export function About() {
               imageSrc="/eu.png"
               altText="Bruno Souza - Desenvolvedor"
               captionText="Bruno Souza - Desenvolvedor Front End"
-              containerHeight="320px"
-              containerWidth="320px"
-              imageHeight="320px"
-              imageWidth="320px"
+              containerHeight="min(280px, 75vw)"
+              containerWidth="min(280px, 75vw)"
+              imageHeight="min(280px, 75vw)"
+              imageWidth="min(280px, 75vw)"
               rotateAmplitude={12}
               scaleOnHover={1.05}
               showMobileWarning={false}
@@ -131,7 +131,7 @@ export function About() {
             transition={{ duration: 0.6, delay: 0.2 }}
             className="space-y-6 flex flex-col justify-center"
           >
-            <p className="text-lg text-muted-foreground leading-relaxed">
+            <p className="text-base sm:text-lg text-muted-foreground leading-relaxed">
               Estudante de desenvolvimento web com conhecimentos em{' '}
               <span className="text-foreground font-semibold">HTML</span>,{' '}
               <span className="text-foreground font-semibold">CSS</span>,{' '}
@@ -139,12 +139,12 @@ export function About() {
               <span className="text-foreground font-semibold">React</span> e{' '}
               <span className="text-foreground font-semibold">bancos de dados</span>.
             </p>
-            <p className="text-lg text-muted-foreground leading-relaxed">
+            <p className="text-base sm:text-lg text-muted-foreground leading-relaxed">
               Atualmente cursando e aprimorando minhas habilidades em tecnologias modernas para me tornar
               um desenvolvedor completo. Desenvolvi o EcoSphere como TCC — uma plataforma de sustentabilidade
               com IA, gamificação e monitoramento ambiental em tempo real.
             </p>
-            <p className="text-lg text-muted-foreground leading-relaxed">
+            <p className="text-base sm:text-lg text-muted-foreground leading-relaxed">
               Apaixonado por tecnologia, aprendendo e criando projetos para evoluir minhas habilidades
               e contribuir com soluções que façam a diferença.
             </p>
@@ -157,7 +157,7 @@ export function About() {
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
           transition={{ duration: 0.6 }}
-          className="grid sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-20"
+          className="grid sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6 mb-14 sm:mb-20"
         >
           {values.map((value, index) => (
             <motion.div
@@ -166,7 +166,7 @@ export function About() {
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
               transition={{ duration: 0.5, delay: index * 0.1 }}
-              className="p-6 rounded-xl bg-card border border-border hover:border-primary/50 transition-all duration-300 group"
+              className="p-4 sm:p-6 rounded-xl bg-card border border-border hover:border-primary/50 transition-all duration-300 group"
             >
               <div
                 className="w-14 h-14 rounded-lg mb-4 flex items-center justify-center text-white"
@@ -189,8 +189,8 @@ export function About() {
           viewport={{ once: true }}
           transition={{ duration: 0.6 }}
         >
-          <h3 className="text-2xl font-bold mb-8 text-center">Trajetória</h3>
-          <div className="space-y-8">
+          <h3 className="text-xl sm:text-2xl font-bold mb-6 sm:mb-8 text-center">Trajetória</h3>
+          <div className="space-y-6 sm:space-y-8">
             {timeline.map((item, index) => (
               <motion.div
                 key={index}

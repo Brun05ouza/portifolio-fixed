@@ -50,25 +50,25 @@ export function LiveStats() {
   const reduceMotion = useReducedMotion();
 
   return (
-    <section id="stats" className="relative py-32 px-6 overflow-hidden">
+    <section id="stats" className="relative py-16 sm:py-24 md:py-32 px-4 sm:px-6 overflow-hidden">
       <div className="relative z-10 max-w-6xl mx-auto">
         <motion.div
-          className="text-center mb-16"
+          className="text-center mb-10 sm:mb-14 md:mb-16"
           initial={{ opacity: 0, y: 30 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
           transition={{ duration: reduceMotion ? 0 : 0.6 }}
         >
-          <h2 className="text-4xl md:text-5xl font-bold mb-4">
+          <h2 className="text-3xl sm:text-4xl md:text-5xl font-bold mb-4">
             <GlitchText text="Estatísticas em Tempo Real" />
           </h2>
-          <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
+          <p className="text-base sm:text-xl text-muted-foreground max-w-2xl mx-auto">
             Métricas da minha jornada como desenvolvedor
           </p>
           <div className="w-20 h-1 mx-auto mt-6 rounded-full" style={{ background: 'linear-gradient(to right, var(--color-beam-start), var(--color-beam-end))' }} />
         </motion.div>
 
-        <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-6">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6">
           {stats.map((stat, index) => {
             const Icon = stat.icon;
             return (
@@ -78,7 +78,7 @@ export function LiveStats() {
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true, margin: '-50px' }}
                 transition={{ duration: reduceMotion ? 0 : 0.5, delay: reduceMotion ? 0 : index * 0.1 }}
-                className="relative p-6 rounded-xl bg-card border border-border hover:border-primary/30 transition-all duration-300 group"
+                className="relative p-4 sm:p-6 rounded-xl bg-card border border-border hover:border-primary/30 transition-all duration-300 group"
               >
                 <div className="flex items-start gap-4">
                   <div
@@ -89,7 +89,7 @@ export function LiveStats() {
                   </div>
                   <div className="flex-1 min-w-0">
                     <div
-                      className="text-2xl md:text-3xl font-bold tabular-nums"
+                      className="text-xl sm:text-2xl md:text-3xl font-bold tabular-nums"
                       style={{ color: stat.color }}
                     >
                       <AnimatedNumber

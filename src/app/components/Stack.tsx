@@ -161,20 +161,20 @@ export function Stack() {
   ];
 
   return (
-    <section id="stack" className="relative py-32 px-6 overflow-hidden">
+    <section id="stack" className="relative py-16 sm:py-24 md:py-32 px-4 sm:px-6 overflow-hidden">
       <div className="relative z-10 max-w-6xl mx-auto">
         {/* Section header */}
         <motion.div
-          className="text-center mb-16"
+          className="text-center mb-10 sm:mb-14 md:mb-16"
           initial={{ opacity: 0, y: 30 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
           transition={{ duration: 0.6 }}
         >
-          <h2 className="text-4xl md:text-5xl font-bold mb-4">
+          <h2 className="text-3xl sm:text-4xl md:text-5xl font-bold mb-4">
             <GlitchText text="Skills Interativas" />
           </h2>
-          <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
+          <p className="text-base sm:text-xl text-muted-foreground max-w-2xl mx-auto">
             Tecnologias e ferramentas que utilizo nos meus projetos
           </p>
           <div className="w-20 h-1 mx-auto mt-6 rounded-full" style={{ background: 'linear-gradient(to right, var(--color-beam-start), var(--color-beam-end))' }} />
@@ -182,7 +182,7 @@ export function Stack() {
 
         {/* Tech stack badges */}
         <motion.div
-          className="flex flex-wrap justify-center gap-3 mb-20"
+          className="flex flex-wrap justify-center gap-2 sm:gap-3 mb-12 sm:mb-16 md:mb-20"
           initial={{ opacity: 0, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
@@ -193,7 +193,7 @@ export function Stack() {
             return (
               <motion.div
                 key={index}
-                className="px-5 py-3 rounded-full font-semibold shadow-lg flex items-center gap-2 bg-card border border-border hover:border-primary/50 transition-colors"
+                className="px-3 py-2 sm:px-4 sm:py-2.5 md:px-5 md:py-3 rounded-full font-semibold text-sm sm:text-base shadow-lg flex items-center gap-1.5 sm:gap-2 bg-card border border-border hover:border-primary/50 transition-colors"
                 initial={{ opacity: 0, scale: 0 }}
                 whileInView={{ opacity: 1, scale: 1 }}
                 viewport={{ once: true }}
@@ -227,7 +227,7 @@ export function Stack() {
                 >
                   {category.icon}
                 </div>
-                <h3 className="text-2xl font-bold">{category.title}</h3>
+                <h3 className="text-xl sm:text-2xl font-bold">{category.title}</h3>
               </div>
 
               {/* Skills */}
@@ -242,15 +242,15 @@ export function Stack() {
 
         {/* Additional info */}
         <motion.div
-          className="mt-16 p-8 rounded-2xl bg-card border border-border text-center"
+          className="mt-12 sm:mt-16 p-4 sm:p-6 md:p-8 rounded-2xl bg-card border border-border text-center"
           initial={{ opacity: 0, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
           transition={{ duration: 0.6 }}
         >
           <Layers className="w-12 h-12 mx-auto mb-4 text-primary" />
-          <h3 className="text-xl font-bold mb-2">Aprendizado Contínuo</h3>
-          <p className="text-muted-foreground max-w-2xl mx-auto">
+          <h3 className="text-lg sm:text-xl font-bold mb-2">Aprendizado Contínuo</h3>
+          <p className="text-sm sm:text-base text-muted-foreground max-w-2xl mx-auto">
             Sempre explorando novas tecnologias. Aprimorando habilidades em TypeScript, 
             Next.js e integração com IA para me tornar um desenvolvedor completo.
           </p>

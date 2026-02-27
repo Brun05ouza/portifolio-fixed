@@ -22,6 +22,9 @@ export function GlobeAnimation({ className = '', size = 120, light = false }: Gl
     const width = size;
     const height = size;
 
+    // Reduz carga no mobile
+    const dpr = typeof window !== 'undefined' && window.innerWidth < 768 ? 1 : Math.min(2, window.devicePixelRatio);
+
     const atmosphereColor = light ? '#a5d8ff' : '#60a5fa';
     const ambientIntensity = light ? 1.8 : 1.2;
     const dirIntensity = light ? 1.6 : 1.2;
@@ -35,9 +38,13 @@ export function GlobeAnimation({ className = '', size = 120, light = false }: Gl
       .atmosphereColor(atmosphereColor)
       .atmosphereAltitude(0.18);
 
-    const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
+    const renderer = new THREE.WebGLRenderer({
+      antialias: true,
+      alpha: true,
+      powerPreference: 'low-power',
+    });
     renderer.setSize(width, height);
-    renderer.setPixelRatio(Math.min(2, window.devicePixelRatio));
+    renderer.setPixelRatio(dpr);
     renderer.setClearColor(0x000000, 0);
     renderer.toneMapping = THREE.ACESFilmicToneMapping;
     renderer.toneMappingExposure = toneExposure;
@@ -60,17 +67,36 @@ export function GlobeAnimation({ className = '', size = 120, light = false }: Gl
     controls.autoRotate = true;
     controls.autoRotateSpeed = 1.5;
 
-    let animationId: number;
+    let animationId: number | null = null;
+    let isVisible = true;
 
     function animate() {
+      if (!isVisible) return;
       animationId = requestAnimationFrame(animate);
       controls.update();
       renderer.render(scene, camera);
     }
+
+    const io = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((e) => {
+          const nowVisible = e.isIntersecting;
+          if (nowVisible && !isVisible) {
+            isVisible = true;
+            animate();
+          } else {
+            isVisible = nowVisible;
+          }
+        });
+      },
+      { threshold: 0, rootMargin: '50px' }
+    );
+    io.observe(renderer.domElement);
     animate();
 
     return () => {
-      cancelAnimationFrame(animationId);
+      io.disconnect();
+      if (animationId !== null) cancelAnimationFrame(animationId);
       controls.dispose();
       renderer.dispose();
       containerRef.current?.removeChild(renderer.domElement);

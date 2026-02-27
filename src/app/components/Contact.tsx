@@ -16,7 +16,11 @@ function getSocialDisplay(link: (typeof socialLinks)[0]) {
   return link.href;
 }
 
-export function Contact() {
+interface ContactProps {
+  onScheduleMeeting?: () => void;
+}
+
+export function Contact({ onScheduleMeeting }: ContactProps) {
   const [formData, setFormData] = useState({ name: '', email: '', message: '' });
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [submitting, setSubmitting] = useState(false);
@@ -67,32 +71,32 @@ export function Contact() {
   };
 
   return (
-    <section id="contact" className="relative py-32 px-6 overflow-hidden">
+    <section id="contact" className="relative py-16 sm:py-24 md:py-32 px-4 sm:px-6 overflow-hidden">
       <div className="relative z-10 max-w-6xl mx-auto">
         <motion.div
-          className="text-center mb-16"
+          className="text-center mb-10 sm:mb-14 md:mb-16"
           initial={{ opacity: 0, y: 30 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
           transition={{ duration: 0.6 }}
         >
-          <h2 className="text-4xl md:text-5xl font-bold mb-4">
+          <h2 className="text-3xl sm:text-4xl md:text-5xl font-bold mb-4">
             <GlitchText text="Vamos trabalhar juntos?" />
           </h2>
-          <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
+          <p className="text-base sm:text-xl text-muted-foreground max-w-2xl mx-auto">
             Estou sempre disponível para novos desafios e oportunidades. Vamos criar algo incrível!
           </p>
           <div className="w-20 h-1 mx-auto mt-6 rounded-full" style={{ background: 'linear-gradient(to right, var(--color-beam-start), var(--color-beam-end))' }} />
         </motion.div>
 
-        <div className="grid lg:grid-cols-2 gap-12">
+        <div className="grid lg:grid-cols-2 gap-8 sm:gap-10 md:gap-12">
           <motion.div
             initial={{ opacity: 0, x: -30 }}
             whileInView={{ opacity: 1, x: 0 }}
             viewport={{ once: true }}
             transition={{ duration: 0.6 }}
           >
-            <div className="relative p-8 rounded-2xl bg-card border border-border">
+            <div className="relative p-4 sm:p-6 md:p-8 rounded-2xl bg-card border border-border">
               <div
                 className="absolute -inset-0.5 rounded-2xl opacity-20 blur-xl -z-10"
                 style={{ background: 'linear-gradient(135deg, var(--color-glow), var(--color-beam-end))' }}
@@ -237,6 +241,15 @@ export function Contact() {
                   <span className="text-muted-foreground">Respondo em até 24 horas</span>
                 </div>
               </div>
+              {onScheduleMeeting && (
+                <button
+                  type="button"
+                  onClick={onScheduleMeeting}
+                  className="mt-4 w-full sm:w-auto px-6 py-3 rounded-lg border-2 border-primary text-primary hover:bg-primary hover:text-primary-foreground transition-colors font-medium focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary"
+                >
+                  Agendar reunião
+                </button>
+              )}
             </div>
 
             <div className="space-y-4">

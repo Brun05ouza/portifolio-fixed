@@ -1,113 +1,104 @@
 @custom-variant dark (&:is(.dark *));
 
-/* Light theme (when html has no .dark class) */
-:root {
-  --font-size: 16px;
-  --background: #f8fafc;
-  --foreground: #0f172a;
-  --card: #ffffff;
-  --card-foreground: #0f172a;
-  --popover: #ffffff;
-  --popover-foreground: #0f172a;
-  --primary: #0f172a;
-  --primary-foreground: #f8fafc;
-  --secondary: #f1f5f9;
-  --secondary-foreground: #0f172a;
-  --muted: #f1f5f9;
-  --muted-foreground: #64748b;
-  --accent: #e2e8f0;
-  --accent-foreground: #0f172a;
+/* ========== PREMIUM DARK (default) ========== */
+:root,
+.dark {
+  /* Surfaces */
+  --background: #050508;
+  --background-elevated: #0a0a0f;
+  --surface: #0f0f14;
+  --surface-hover: #16161d;
+  --foreground: #fafafa;
+  --foreground-muted: #a1a1aa;
+  --foreground-subtle: #71717a;
+
+  /* Primary accent (cyan) - CTAs, links, highlights */
+  --accent-primary: #22d3ee;
+  --accent-primary-hover: #67e8f9;
+  --accent-primary-muted: rgba(34, 211, 238, 0.15);
+  /* Secondary (amber) - badges, secondary CTAs */
+  --accent-secondary: #fbbf24;
+  --accent-secondary-hover: #fcd34d;
+  --accent-secondary-muted: rgba(251, 191, 36, 0.12);
+
+  /* Semantic */
+  --card: #12121a;
+  --card-foreground: #fafafa;
+  --border: rgba(255, 255, 255, 0.06);
+  --border-strong: rgba(255, 255, 255, 0.1);
+  --input: #18181f;
+  --ring: rgba(34, 211, 238, 0.4);
   --destructive: #ef4444;
-  --destructive-foreground: #ffffff;
-  --border: rgba(15, 23, 42, 0.12);
-  --input: transparent;
-  --input-background: #f1f5f9;
-  --switch-background: #e2e8f0;
-  --font-weight-medium: 500;
-  --font-weight-normal: 400;
-  --ring: rgba(34, 197, 94, 0.4);
-  --chart-1: #22c55e;
-  --chart-2: #16a34a;
-  --chart-3: #15803d;
-  --chart-4: #166534;
-  --chart-5: #f59e0b;
-  --radius: 0.625rem;
-  --sidebar: #ffffff;
-  --sidebar-foreground: #0f172a;
-  --sidebar-primary: #22c55e;
-  --sidebar-primary-foreground: #ffffff;
-  --sidebar-accent: #f1f5f9;
-  --sidebar-accent-foreground: #0f172a;
-  --sidebar-border: rgba(15, 23, 42, 0.12);
-  --sidebar-ring: rgba(34, 197, 94, 0.4);
-  
-  /* Portfolio Custom - Light (verde escuro) */
-  --color-glow: #22c55e;
-  --color-beam-start: #14532d;
-  --color-beam-end: #16a34a;
-  --color-spotlight: rgba(34, 197, 94, 0.08);
-  --color-chroma-1: #14532d;
-  --color-chroma-2: #166534;
-  --color-chroma-3: #16a34a;
-  --color-chroma-4: #22c55e;
+  --success: #22c55e;
 
-  /* Squares grid - light */
-  --squares-border: rgba(22, 101, 52, 0.2);
-  --squares-hover-fill: rgba(248, 250, 252, 0.7);
+  /* Typography scale */
+  --font-sans: ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  --font-mono: ui-monospace, "Cascadia Code", "Source Code Pro", monospace;
+  --text-xs: 0.75rem;
+  --text-sm: 0.875rem;
+  --text-base: 1rem;
+  --text-lg: 1.125rem;
+  --text-xl: 1.25rem;
+  --text-2xl: 1.5rem;
+  --text-3xl: 1.875rem;
+  --text-4xl: 2.25rem;
+  --text-5xl: 3rem;
+  --text-6xl: 3.75rem;
+  --text-7xl: 4.5rem;
+  --text-display: clamp(2.5rem, 5vw + 1rem, 4rem);
+  --leading-tight: 1.2;
+  --leading-snug: 1.375;
+  --leading-normal: 1.5;
+  --tracking-tight: -0.02em;
+  --tracking-wide: 0.05em;
 
-  /* Overlay gradient - light */
-  --overlay-gradient: linear-gradient(180deg, rgba(248, 250, 252, 0.4) 0%, rgba(248, 250, 252, 0.6) 50%, rgba(248, 250, 252, 0.5) 100%);
+  /* Radius */
+  --radius-sm: 0.375rem;
+  --radius-md: 0.5rem;
+  --radius-lg: 0.75rem;
+  --radius-xl: 1rem;
+  --radius-2xl: 1.25rem;
+  --radius-full: 9999px;
+
+  /* Shadows (subtle, no heavy blur) */
+  --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.4);
+  --shadow-md: 0 4px 12px rgba(0, 0, 0, 0.35);
+  --shadow-lg: 0 8px 24px rgba(0, 0, 0, 0.4);
+  --shadow-glow: 0 0 40px rgba(34, 211, 238, 0.12);
+
+  /* Legacy compatibility (map to new tokens) */
+  --primary: var(--accent-primary);
+  --primary-foreground: #050508;
+  --secondary: var(--surface-hover);
+  --secondary-foreground: var(--foreground);
+  --muted: var(--surface);
+  --muted-foreground: var(--foreground-muted);
+  --accent: var(--surface-hover);
+  --accent-foreground: var(--foreground);
+  --color-glow: var(--accent-primary);
+  --color-beam-start: #0891b2;
+  --color-beam-end: #22d3ee;
+  --color-spotlight: var(--accent-primary-muted);
+  --color-chroma-1: #0891b2;
+  --color-chroma-2: #22d3ee;
+  --overlay-gradient: radial-gradient(ellipse 80% 50% at 50% -20%, rgba(34, 211, 238, 0.15), transparent 50%);
 }
 
-/* Dark theme (padrão - html tem class="dark") */
-.dark {
-  --background: #0a0a0f;
-  --foreground: #e4e4e7;
-  --card: #13131a;
-  --card-foreground: #e4e4e7;
-  --popover: #13131a;
-  --popover-foreground: #e4e4e7;
-  --primary: #e4e4e7;
-  --primary-foreground: #0a0a0f;
-  --secondary: #1a1a24;
-  --secondary-foreground: #e4e4e7;
-  --muted: #1a1a24;
-  --muted-foreground: #a1a1aa;
-  --accent: #2a2a38;
-  --accent-foreground: #e4e4e7;
-  --destructive: #ef4444;
-  --destructive-foreground: #ffffff;
-  --border: rgba(255, 255, 255, 0.08);
-  --input: #1a1a24;
-  --ring: rgba(100, 116, 139, 0.5);
-  --font-weight-medium: 500;
-  --font-weight-normal: 400;
-  --chart-1: #22c55e;
-  --chart-2: #16a34a;
-  --chart-3: #15803d;
-  --chart-4: #166534;
-  --chart-5: #f59e0b;
-  --sidebar: #13131a;
-  --sidebar-foreground: #e4e4e7;
-  --sidebar-primary: #22c55e;
-  --sidebar-primary-foreground: #ffffff;
-  --sidebar-accent: #1a1a24;
-  --sidebar-accent-foreground: #e4e4e7;
-  --sidebar-border: rgba(255, 255, 255, 0.08);
-  --sidebar-ring: rgba(100, 116, 139, 0.5);
-  
-  /* Dark mode custom variables (verde escuro) */
-  --color-glow: #22c55e;
-  --color-beam-start: #14532d;
-  --color-beam-end: #16a34a;
-  --color-spotlight: rgba(34, 197, 94, 0.15);
-
-  /* Squares grid - dark */
-  --squares-border: rgba(22, 101, 52, 0.25);
-  --squares-hover-fill: rgba(26, 26, 36, 0.6);
-
-  /* Overlay gradient - dark */
-  --overlay-gradient: linear-gradient(180deg, rgba(10, 10, 15, 0.35) 0%, rgba(10, 10, 15, 0.55) 50%, rgba(10, 10, 15, 0.45) 100%);
+/* Light theme override (optional) */
+:root:not(.dark) {
+  --background: #fafafa;
+  --background-elevated: #ffffff;
+  --surface: #f4f4f5;
+  --surface-hover: #e4e4e7;
+  --foreground: #09090b;
+  --foreground-muted: #71717a;
+  --foreground-subtle: #a1a1aa;
+  --card: #ffffff;
+  --card-foreground: #09090b;
+  --border: rgba(0, 0, 0, 0.08);
+  --border-strong: rgba(0, 0, 0, 0.12);
+  --input: #f4f4f5;
+  --overlay-gradient: radial-gradient(ellipse 80% 50% at 50% -20%, rgba(34, 211, 238, 0.08), transparent 50%);
 }
 
 @theme inline {
@@ -115,99 +106,50 @@
   --color-foreground: var(--foreground);
   --color-card: var(--card);
   --color-card-foreground: var(--card-foreground);
-  --color-popover: var(--popover);
-  --color-popover-foreground: var(--popover-foreground);
-  --color-primary: var(--primary);
+  --color-primary: var(--accent-primary);
   --color-primary-foreground: var(--primary-foreground);
   --color-secondary: var(--secondary);
   --color-secondary-foreground: var(--secondary-foreground);
   --color-muted: var(--muted);
-  --color-muted-foreground: var(--muted-foreground);
+  --color-muted-foreground: var(--foreground-muted);
   --color-accent: var(--accent);
   --color-accent-foreground: var(--accent-foreground);
   --color-destructive: var(--destructive);
-  --color-destructive-foreground: var(--destructive-foreground);
   --color-border: var(--border);
   --color-input: var(--input);
-  --color-input-background: var(--input-background);
-  --color-switch-background: var(--switch-background);
   --color-ring: var(--ring);
-  --color-chart-1: var(--chart-1);
-  --color-chart-2: var(--chart-2);
-  --color-chart-3: var(--chart-3);
-  --color-chart-4: var(--chart-4);
-  --color-chart-5: var(--chart-5);
-  --radius-sm: calc(var(--radius) - 4px);
-  --radius-md: calc(var(--radius) - 2px);
-  --radius-lg: var(--radius);
-  --radius-xl: calc(var(--radius) + 4px);
-  --color-sidebar: var(--sidebar);
-  --color-sidebar-foreground: var(--sidebar-foreground);
-  --color-sidebar-primary: var(--sidebar-primary);
-  --color-sidebar-primary-foreground: var(--sidebar-primary-foreground);
-  --color-sidebar-accent: var(--sidebar-accent);
-  --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
-  --color-sidebar-border: var(--sidebar-border);
-  --color-sidebar-ring: var(--sidebar-ring);
+  --radius-sm: var(--radius-sm);
+  --radius-md: var(--radius-md);
+  --radius-lg: var(--radius-lg);
+  --radius-xl: var(--radius-xl);
+  --radius-2xl: var(--radius-2xl);
+  /* Allow text-muted-foreground etc. to work */
+  --color-foreground-muted: var(--foreground-muted);
 }
 
 @layer base {
   * {
-    @apply border-border outline-ring/50;
+    @apply border-border;
+  }
+
+  html {
+    font-size: 16px;
+    -webkit-font-smoothing: antialiased;
   }
 
   body {
     @apply bg-background text-foreground;
+    font-family: var(--font-sans);
+    line-height: var(--leading-normal);
   }
 
-  /**
-  * Default typography styles for HTML elements (h1-h4, p, label, button, input).
-  * These are in @layer base, so Tailwind utility classes (like text-sm, text-lg) automatically override them.
-  */
-
-  html {
-    font-size: var(--font-size);
+  h1, h2, h3, h4 {
+    letter-spacing: var(--tracking-tight);
+    line-height: var(--leading-tight);
   }
 
-  h1 {
-    font-size: var(--text-2xl);
-    font-weight: var(--font-weight-medium);
-    line-height: 1.5;
-  }
-
-  h2 {
-    font-size: var(--text-xl);
-    font-weight: var(--font-weight-medium);
-    line-height: 1.5;
-  }
-
-  h3 {
-    font-size: var(--text-lg);
-    font-weight: var(--font-weight-medium);
-    line-height: 1.5;
-  }
-
-  h4 {
-    font-size: var(--text-base);
-    font-weight: var(--font-weight-medium);
-    line-height: 1.5;
-  }
-
-  label {
-    font-size: var(--text-base);
-    font-weight: var(--font-weight-medium);
-    line-height: 1.5;
-  }
-
-  button {
-    font-size: var(--text-base);
-    font-weight: var(--font-weight-medium);
-    line-height: 1.5;
-  }
-
-  input {
-    font-size: var(--text-base);
-    font-weight: var(--font-weight-normal);
-    line-height: 1.5;
+  :focus-visible {
+    outline: 2px solid var(--ring);
+    outline-offset: 2px;
   }
 }

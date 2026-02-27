@@ -1,5 +1,5 @@
 import { useState, useRef } from 'react';
-import { motion, useMotionValue, useSpring, useTransform } from 'motion/react';
+import { motion } from 'motion/react';
 import { ExternalLink, Github } from 'lucide-react';
 
 const TITLE_MAX_LENGTH = 50;
@@ -18,6 +18,13 @@ interface ProjectCardProps {
   role: string;
   demoLink?: string;
   githubLink?: string;
+  repoName?: string;
+  /** Oculta o link do GitHub (ex.: projeto sem repositório público). */
+  hideGithubLink?: boolean;
+  /** Se true, não exibe o overlay escuro sobre a imagem (deixa a imagem do projeto em destaque). */
+  hideImageOverlay?: boolean;
+  /** Se definido, o card é clicável e abre o modal de case. */
+  onSelect?: () => void;
 }
 
 export function ProjectCard({
@@ -28,70 +35,32 @@ export function ProjectCard({
   role,
   demoLink,
   githubLink,
+  repoName,
+  hideGithubLink = false,
+  hideImageOverlay = false,
+  onSelect,
 }: ProjectCardProps) {
   const [isHovered, setIsHovered] = useState(false);
   const cardRef = useRef<HTMLDivElement>(null);
 
-  const x = useMotionValue(0);
-  const y = useMotionValue(0);
-
-  const mouseXSpring = useSpring(x, { stiffness: 300, damping: 30 });
-  const mouseYSpring = useSpring(y, { stiffness: 300, damping: 30 });
-
-  const rotateX = useTransform(mouseYSpring, [-0.5, 0.5], ['7.5deg', '-7.5deg']);
-  const rotateY = useTransform(mouseXSpring, [-0.5, 0.5], ['-7.5deg', '7.5deg']);
-
-  const spotlightBackground = useTransform(
-    [mouseXSpring, mouseYSpring],
-    ([fx, fy]) =>
-      `radial-gradient(600px circle at ${50 + (fx ?? 0) * 100}% ${50 + (fy ?? 0) * 100}%, var(--color-spotlight), transparent 40%)`
-  );
-
-  const handleMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
-    if (!cardRef.current) return;
-
-    const rect = cardRef.current.getBoundingClientRect();
-    const width = rect.width;
-    const height = rect.height;
-
-    const mouseX = e.clientX - rect.left;
-    const mouseY = e.clientY - rect.top;
-
-    const xPct = mouseX / width - 0.5;
-    const yPct = mouseY / height - 0.5;
-
-    x.set(xPct);
-    y.set(yPct);
-  };
-
-  const handleMouseLeave = () => {
-    setIsHovered(false);
-    x.set(0);
-    y.set(0);
+  const handleClick = (e: React.MouseEvent) => {
+    if (onSelect && !(e.target as HTMLElement).closest('a')) {
+      e.preventDefault();
+      onSelect();
+    }
   };
 
   return (
     <motion.div
       ref={cardRef}
       className="relative group cursor-pointer w-full"
-      style={{
-        transformStyle: 'preserve-3d',
-        rotateX,
-        rotateY,
-      }}
-      onMouseMove={handleMouseMove}
       onMouseEnter={() => setIsHovered(true)}
-      onMouseLeave={handleMouseLeave}
+      onMouseLeave={() => setIsHovered(false)}
+      onClick={handleClick}
       whileHover={{ scale: 1.02 }}
       transition={{ duration: 0.2 }}
     >
       <div className="relative overflow-hidden rounded-xl bg-card border border-border shadow-lg h-full flex flex-col">
-        {/* Spotlight overlay */}
-        <motion.div
-          className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none"
-          style={{ background: spotlightBackground }}
-        />
-
         {/* Image */}
         <div className="relative h-44 shrink-0 overflow-hidden">
           <img
@@ -102,8 +71,10 @@ export function ProjectCard({
             loading="lazy"
             className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
           />
-          <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent" />
-          
+          {!hideImageOverlay && (
+            <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent" aria-hidden />
+          )}
+
           {/* Role badge */}
           <div className="absolute top-3 right-3">
             <span className="px-3 py-1 text-xs bg-white/20 backdrop-blur-md text-white rounded-full border border-white/30">
@@ -140,19 +111,34 @@ export function ProjectCard({
           </div>
 
           {/* Links */}
-          <div className="flex gap-3 pt-2">
+          <div className="flex flex-wrap items-center gap-2 pt-2">
             {demoLink && (
-              <a
-                href={demoLink}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="flex items-center gap-2 text-sm hover:text-primary transition-colors"
-              >
-                <ExternalLink className="w-4 h-4" />
-                <span>Demo</span>
-              </a>
+              <>
+                <a
+                  href={demoLink}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="flex items-center gap-2 text-sm hover:text-primary transition-colors"
+                >
+                  <ExternalLink className="w-4 h-4" />
+                  <span>Visitar site</span>
+                </a>
+                {repoName === 'residencial-nature' && (
+                  <span className="text-sm text-muted-foreground">
+                    Landing Page desenvolvido para{' '}
+                    <a
+                      href="https://moregenesis.com.br"
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="text-foreground hover:text-primary transition-colors underline underline-offset-2"
+                    >
+                      Gênesis Empreendimentos
+                    </a>
+                  </span>
+                )}
+              </>
             )}
-            {githubLink && (
+            {githubLink && !hideGithubLink && (
               <a
                 href={githubLink}
                 target="_blank"

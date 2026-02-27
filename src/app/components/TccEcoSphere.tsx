@@ -1,6 +1,13 @@
-import Galaxy from './Galaxy';
+import React, { useRef, useState, useEffect } from 'react';
+import { motion } from 'motion/react';
+import { GlitchText } from './GlitchText';
+import { Cpu, Brain, LayoutDashboard, Sparkles } from 'lucide-react';
+import { GlobeAnimation } from './GlobeAnimation';
+
+export function TccEcoSphere() {
   const sectionRef = useRef<HTMLElement>(null);
   const [isInView, setIsInView] = useState(false);
+  const [globeReady, setGlobeReady] = useState(false);
 
   useEffect(() => {
     const el = sectionRef.current;
@@ -9,18 +16,22 @@ import Galaxy from './Galaxy';
       (entries) => {
         entries.forEach((e) => setIsInView(e.isIntersecting));
       },
-      { threshold: [0, 0.1, 0.5, 1] }
+      { rootMargin: '100px', threshold: 0.1 }
     );
     io.observe(el);
     return () => io.disconnect();
   }, []);
-import React from 'react';
-import { motion } from 'motion/react';
-import { GlitchText } from './GlitchText';
-import { Cpu, Brain, LayoutDashboard, Sparkles } from 'lucide-react';
-import { GlobeAnimation } from './GlobeAnimation';
 
-export function TccEcoSphere() {
+  // Só monta o globo após a seção estar em view + pequeno delay para não travar o scroll
+  useEffect(() => {
+    if (!isInView) {
+      setGlobeReady(false);
+      return;
+    }
+    const t = setTimeout(() => setGlobeReady(true), 300);
+    return () => clearTimeout(t);
+  }, [isInView]);
+
   const features = [
     {
       icon: <Cpu className="w-6 h-6" />,
@@ -43,12 +54,9 @@ export function TccEcoSphere() {
       description: 'TensorFlow.js + Google Teachable Machine para categorização automática',
     },
   ];
-      {/* Camada sólida: esconde o background global (Squares) só nesta seção para evitar dois fundos animados no celular */}
-      <div className="absolute inset-0 z-0 bg-background" aria-hidden />
-      <div className="absolute inset-0 z-[1] bg-background/40 pointer-events-none" />
 
   return (
-    <section id="tcc" className="relative py-32 px-6 overflow-hidden">
+    <section ref={sectionRef} id="tcc" className="relative py-32 px-6 overflow-hidden">
       <div className="relative z-10 max-w-6xl mx-auto">
         <motion.div
           className="text-center mb-16"
@@ -57,6 +65,12 @@ export function TccEcoSphere() {
           viewport={{ once: true }}
           transition={{ duration: 0.6 }}
         >
+          <p
+            className="text-sm font-medium tracking-wide uppercase mb-3"
+            style={{ color: 'var(--accent-primary)' }}
+          >
+            TCC — Trabalho de conclusão de curso
+          </p>
           <h2 className="text-4xl md:text-5xl font-bold mb-4">
             <GlitchText text="EcoSphere" />
           </h2>
@@ -115,13 +129,19 @@ export function TccEcoSphere() {
         </motion.div>
 
         <motion.div
-          className="flex justify-center mt-8"
+          className="flex justify-center mt-8 min-h-[220px] items-center"
           initial={{ opacity: 0 }}
           whileInView={{ opacity: 1 }}
           viewport={{ once: true }}
           transition={{ duration: 0.6, delay: 0.2 }}
         >
-          <GlobeAnimation size={220} light className="rounded-full overflow-hidden border-2 border-primary/40 shadow-lg shadow-primary/20 ring-2 ring-primary/10" />
+          {globeReady ? (
+            <GlobeAnimation size={220} light className="rounded-full overflow-hidden border-2 border-primary/40 shadow-lg shadow-primary/20 ring-2 ring-primary/10" />
+          ) : (
+            <div className="w-[220px] h-[220px] rounded-full border-2 border-primary/20 bg-card/50 flex items-center justify-center" aria-hidden>
+              <span className="text-sm text-muted-foreground">Carregando...</span>
+            </div>
+          )}
         </motion.div>
       </div>
     </section>

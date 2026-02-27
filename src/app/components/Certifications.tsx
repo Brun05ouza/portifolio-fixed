@@ -35,25 +35,25 @@ export function Certifications() {
   const [isExpanded, setIsExpanded] = useState(false);
 
   return (
-    <section id="certificados" className="relative py-32 px-6">
+    <section id="certificados" className="relative py-16 sm:py-24 md:py-32 px-4 sm:px-6">
       <div className="max-w-6xl mx-auto">
         <motion.div
-          className="text-center mb-16"
+          className="text-center mb-10 sm:mb-14 md:mb-16"
           initial={{ opacity: 0, y: 30 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
           transition={{ duration: 0.6 }}
         >
-          <h2 className="text-4xl md:text-5xl font-bold mb-4">
+          <h2 className="text-3xl sm:text-4xl md:text-5xl font-bold mb-4">
             <GlitchText text="Certificações" />
           </h2>
-          <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
+          <p className="text-base sm:text-xl text-muted-foreground max-w-2xl mx-auto">
             Cursos e certificações concluídos
           </p>
           <div className="w-20 h-1 mx-auto mt-6 rounded-full" style={{ background: 'linear-gradient(to right, var(--color-beam-start), var(--color-beam-end))' }} />
         </motion.div>
 
-        <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-6">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6">
           {(isExpanded ? expandedCertifications : initialCertifications).map((cert, index) => {
             const IconComponent = cert.icon;
             return (
@@ -96,7 +96,7 @@ export function Certifications() {
           <button
             type="button"
             onClick={() => setIsExpanded(!isExpanded)}
-            className="inline-block px-6 py-3 rounded-full border-2 border-foreground hover:bg-foreground hover:text-background transition-all duration-300 font-semibold"
+            className="inline-block w-full sm:w-auto px-6 py-3 rounded-full border-2 border-foreground hover:bg-foreground hover:text-background transition-all duration-300 font-semibold text-sm sm:text-base min-h-[44px] sm:min-h-0"
           >
             {isExpanded ? 'Ver menos ←' : 'Ver Todos os Certificados →'}
           </button>

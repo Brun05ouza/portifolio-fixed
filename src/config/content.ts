@@ -12,15 +12,20 @@ export const siteConfig = {
   contactEmail: 'brunosouzagithub2003@gmail.com',
   linkedinUrl: 'https://www.linkedin.com/in/bruno-souza/',
   githubUrl: 'https://github.com/Brun05ouza',
+  /** Número WhatsApp formato internacional sem + (ex: 5521965272231). Usado por openWhatsApp(). */
+  whatsappNumber: import.meta.env.VITE_WHATSAPP_NUMBER || '5521965272231',
+  /** URL do Calendly para agendamento (ex: https://calendly.com/seu-link). */
+  calendlyUrl: import.meta.env.VITE_CALENDLY_URL || 'https://calendly.com/SEU_LINK_AQUI',
 };
 
 export const navItems = [
   { id: 'home', label: 'Início', href: '#home' },
+  { id: 'services', label: 'Serviços', href: '#services' },
+  { id: 'work', label: 'Cases', href: '#work' },
+  { id: 'process', label: 'Processo', href: '#process' },
   { id: 'about', label: 'Sobre', href: '#about' },
-  { id: 'work', label: 'Projetos', href: '#work' },
-  { id: 'certificados', label: 'Certificados', href: '#certificados' },
   { id: 'stack', label: 'Skills', href: '#stack' },
-  { id: 'git-commands', label: 'Terminal', href: '#git-commands' },
+  { id: 'certificados', label: 'Certificados', href: '#certificados' },
   { id: 'contact', label: 'Contato', href: '#contact' },
 ];
 
@@ -33,6 +38,8 @@ export const stats = [
 
 export const heroTexts = {
   greeting: 'Olá, eu sou Bruno Souza',
+  headline: 'Desenvolvo sistemas web escaláveis e experiências digitais de alto impacto.',
+  subheadline: 'Especialista em SaaS, plataformas empresariais e interfaces modernas com foco em performance e conversão.',
   rotating: ['Desenvolvimento', 'Tecnologia', 'Café'],
   prefix: 'Apaixonado por',
   subtitle: 'Estudante de desenvolvimento apaixonado por tecnologia, aprendendo e criando projetos para evoluir minhas habilidades',

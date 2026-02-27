@@ -27,6 +27,8 @@ export interface ProjectFromRepo {
   role: string;
   demoLink?: string;
   githubLink: string;
+  /** Nome do repositório (ex: nexus-flow-web) para mapear case details. */
+  repoName?: string;
 }
 
 export interface FetchReposResult {
@@ -85,6 +87,7 @@ function parseApiResponse(data: GitHubRepo[]): ProjectFromRepo[] {
         role: getRole(repo),
         demoLink: repo.homepage || undefined,
         githubLink: repo.html_url,
+        repoName: repo.name,
       };
     });
 }
