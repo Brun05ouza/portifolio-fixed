@@ -3,6 +3,7 @@ import { motion } from 'motion/react';
 import { Mail, Github, Linkedin, Send, Sparkles, Loader2, CheckCircle2 } from 'lucide-react';
 import { GlitchText } from './GlitchText';
 import { siteConfig, socialLinks } from '../../config/content';
+import { openWhatsApp } from '../../utils/whatsapp';
 import { toast } from 'sonner';
 import { submitContactToFirebase } from '../services/contactFirebase';
 import { sendContactEmailJS, isEmailJSConfigured } from '../services/contactEmailJS';
@@ -16,11 +17,7 @@ function getSocialDisplay(link: (typeof socialLinks)[0]) {
   return link.href;
 }
 
-interface ContactProps {
-  onScheduleMeeting?: () => void;
-}
-
-export function Contact({ onScheduleMeeting }: ContactProps) {
+export function Contact() {
   const [formData, setFormData] = useState({ name: '', email: '', message: '' });
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [submitting, setSubmitting] = useState(false);
@@ -241,15 +238,13 @@ export function Contact({ onScheduleMeeting }: ContactProps) {
                   <span className="text-muted-foreground">Respondo em até 24 horas</span>
                 </div>
               </div>
-              {onScheduleMeeting && (
-                <button
-                  type="button"
-                  onClick={onScheduleMeeting}
-                  className="mt-4 w-full sm:w-auto px-6 py-3 rounded-lg border-2 border-primary text-primary hover:bg-primary hover:text-primary-foreground transition-colors font-medium focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary"
-                >
-                  Agendar reunião
-                </button>
-              )}
+              <button
+                type="button"
+                onClick={() => openWhatsApp('Olá! Gostaria de agendar uma reunião.')}
+                className="mt-4 w-full sm:w-auto px-6 py-3 rounded-lg border-2 border-primary text-primary hover:bg-primary hover:text-primary-foreground transition-colors font-medium focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary"
+              >
+                Agendar reunião
+              </button>
             </div>
 
             <div className="space-y-4">

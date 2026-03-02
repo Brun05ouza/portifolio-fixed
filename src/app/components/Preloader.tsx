@@ -1,28 +1,29 @@
 import { useEffect, useState } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
-import { Code2, Loader2 } from 'lucide-react';
+import Lottie from 'lottie-react';
+import { Loader2 } from 'lucide-react';
 import { useReducedMotion } from '../../hooks/useReducedMotion';
+import preloaderCodeIcon from '../../assets/preloader-code-icon.json';
 
 interface PreloaderProps {
   onComplete: () => void;
 }
 
-const PHRASE_LINE1 = 'Olá, seja bem vindo ao meu...';
+const PHRASE_LINE1 = 'Olá, seja bem-vindo ao meu...';
 const PHRASE_LINE2 = 'Portfólio';
 
 const LOADING_PHRASES = [
   'Carregando meus conhecimentos...',
-  'Ajustando links dos meus projetos...',
+  'Colocando o café na cafeteira...',
   'Preparando os cases...',
   'Organizando a stack...',
-  'Conectando os serviços...',
   'Quase lá...',
 ];
 
-const PHRASE_DURATION_MS = 2200;
+const PHRASE_DURATION_MS = 1400;
 const TOTAL_PHRASES_TIME_MS = LOADING_PHRASES.length * PHRASE_DURATION_MS;
-const WELCOME_TIME_MS = 2400; // tempo da mensagem de boas-vindas antes de começar as frases
-const CURTAIN_DURATION_MS = 850;
+const WELCOME_TIME_MS = 1500; // tempo da mensagem de boas-vindas antes de começar as frases
+const CURTAIN_DURATION_MS = 650;
 
 export function Preloader({ onComplete }: PreloaderProps) {
   const [curtainUp, setCurtainUp] = useState(false);
@@ -82,7 +83,7 @@ export function Preloader({ onComplete }: PreloaderProps) {
               width: 72,
               height: 72,
               backgroundColor: 'rgba(34, 211, 238, 0.2)',
-              color: '#22d3ee',
+              color: 'var(--accent-primary)',
             }}
             animate={{
               boxShadow: [
@@ -96,7 +97,12 @@ export function Preloader({ onComplete }: PreloaderProps) {
               repeatDelay: 0.3,
             }}
           >
-            <Code2 className="w-9 h-9" strokeWidth={1.8} />
+            <Lottie
+              animationData={preloaderCodeIcon}
+              loop
+              style={{ width: 44, height: 44 }}
+              aria-hidden
+            />
           </motion.div>
         </motion.div>
 

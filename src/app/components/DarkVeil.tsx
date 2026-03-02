@@ -1,4 +1,4 @@
-import { useRef, useEffect } from 'react';
+import { useRef, useEffect, type RefObject } from 'react';
 import { Renderer, Program, Mesh, Triangle, Vec2 } from 'ogl';
 import './DarkVeil.css';
 
@@ -75,6 +75,8 @@ void main(){
 `;
 
 export interface DarkVeilProps {
+  /** Se definido, o canvas usa as dimensões deste elemento (ex.: section#home) para preencher a tela. */
+  sizingRef?: RefObject<HTMLElement | null>;
   hueShift?: number;
   noiseIntensity?: number;
   scanlineIntensity?: number;
@@ -85,6 +87,7 @@ export interface DarkVeilProps {
 }
 
 export default function DarkVeil({
+  sizingRef,
   hueShift = 0,
   noiseIntensity = 0,
   scanlineIntensity = 0,
@@ -94,11 +97,13 @@ export default function DarkVeil({
   resolutionScale = 1,
 }: DarkVeilProps) {
   const ref = useRef<HTMLCanvasElement>(null);
+  const containerRef = useRef<HTMLDivElement>(null);
+  const visibleRef = useRef(true);
 
   useEffect(() => {
     const canvas = ref.current;
-    const parent = canvas?.parentElement;
-    if (!canvas || !parent) return;
+    const sizeTarget = sizingRef?.current ?? containerRef.current ?? canvas?.parentElement;
+    if (!canvas || !sizeTarget) return;
 
     const renderer = new Renderer({
       dpr: Math.min(window.devicePixelRatio, 2),
@@ -125,36 +130,68 @@ export default function DarkVeil({
     const mesh = new Mesh(gl, { geometry, program });
 
     const resize = () => {
-      const w = parent.clientWidth;
-      const h = parent.clientHeight;
-      renderer.setSize(w * resolutionScale, h * resolutionScale);
+      const w = Math.max(1, Math.floor(sizeTarget.clientWidth));
+      const h = Math.max(1, Math.floor(sizeTarget.clientHeight));
+      const bufferW = Math.max(1, Math.floor(w * resolutionScale));
+      const bufferH = Math.max(1, Math.floor(h * resolutionScale));
+      renderer.setSize(bufferW, bufferH);
       program.uniforms.uResolution.value.set(w, h);
+      // OGL setSize aplica tamanho em px no canvas; forçar preencher o container
+      canvas.style.width = '100%';
+      canvas.style.height = '100%';
     };
 
+    const resizeObserver = new ResizeObserver(resize);
+    resizeObserver.observe(sizeTarget);
     window.addEventListener('resize', resize);
     resize();
 
     const start = performance.now();
     let frame = 0;
+    let lastRender = 0;
+    const FPS_30 = 1000 / 30; // ~33ms entre frames para 30fps
 
     const loop = () => {
-      program.uniforms.uTime.value = ((performance.now() - start) / 1000) * speed;
-      program.uniforms.uHueShift.value = hueShift;
-      program.uniforms.uNoise.value = noiseIntensity;
-      program.uniforms.uScan.value = scanlineIntensity;
-      program.uniforms.uScanFreq.value = scanlineFrequency;
-      program.uniforms.uWarp.value = warpAmount;
-      renderer.render({ scene: mesh });
+      const now = performance.now();
+      const inView = visibleRef.current && !document.hidden;
+      if (!inView) {
+        frame = requestAnimationFrame(loop);
+        return;
+      }
+      if (now - lastRender >= FPS_30) {
+        lastRender = now;
+        program.uniforms.uTime.value = ((now - start) / 1000) * speed;
+        program.uniforms.uHueShift.value = hueShift;
+        program.uniforms.uNoise.value = noiseIntensity;
+        program.uniforms.uScan.value = scanlineIntensity;
+        program.uniforms.uScanFreq.value = scanlineFrequency;
+        program.uniforms.uWarp.value = warpAmount;
+        renderer.render({ scene: mesh });
+      }
       frame = requestAnimationFrame(loop);
     };
+
+    const observer = new IntersectionObserver(
+      (entries) => {
+        visibleRef.current = entries[0]?.isIntersecting ?? true;
+      },
+      { threshold: 0, rootMargin: '50px' }
+    );
+    observer.observe(sizeTarget);
 
     loop();
 
     return () => {
+      resizeObserver.disconnect();
+      observer.disconnect();
       cancelAnimationFrame(frame);
       window.removeEventListener('resize', resize);
     };
-  }, [hueShift, noiseIntensity, scanlineIntensity, speed, scanlineFrequency, warpAmount, resolutionScale]);
+  }, [sizingRef, hueShift, noiseIntensity, scanlineIntensity, speed, scanlineFrequency, warpAmount, resolutionScale]);
 
-  return <canvas ref={ref} className="darkveil-canvas" />;
+  return (
+    <div ref={containerRef} className="absolute inset-0 w-full h-full min-h-full overflow-hidden">
+      <canvas ref={ref} className="darkveil-canvas block w-full h-full min-h-full" />
+    </div>
+  );
 }

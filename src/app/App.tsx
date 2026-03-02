@@ -1,9 +1,15 @@
 import { useEffect, useState, useRef, lazy, Suspense } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
+import { Loader2 } from 'lucide-react';
 import { useTheme } from 'next-themes';
 import { Navbar } from './components/Navbar';
 import { Hero } from './components/Hero';
 import { Services } from './sections/Services';
+
+/** Carregado só quando a seção estiver visível e o site pronto — evita lentidão no primeiro carregamento. */
+const ComputersCanvas = lazy(() =>
+  import('./components/ComputersCanvas').then((m) => ({ default: m.default }))
+);
 import { Trust } from './sections/Trust';
 import { About } from './components/About';
 import { Projects } from './components/Projects';
@@ -15,7 +21,6 @@ import { Process } from './sections/Process';
 import { Certifications } from './components/Certifications';
 import { LiveStats } from './components/LiveStats';
 import { Stack } from './components/Stack';
-import { GitCommands } from './components/GitCommands';
 import { Contact } from './components/Contact';
 import { CTAFinal } from './sections/CTAFinal';
 import { Footer } from './components/Footer';
@@ -30,7 +35,38 @@ export default function App() {
   const lastScrollY = useRef(0);
   const [calendlyOpen, setCalendlyOpen] = useState(false);
   const [preloaderDone, setPreloaderDone] = useState(false);
+  /** Só carrega o PC 3D após o site estar pronto (evita travar a abertura). */
+  const [siteReady, setSiteReady] = useState(false);
+  /** Só carrega o PC 3D quando a seção entra no viewport (não carrega se o usuário não rolar). */
+  const [pcSectionInView, setPcSectionInView] = useState(false);
+  const pcSectionRef = useRef<HTMLElement>(null);
   useTheme(); // keep for next-themes provider
+
+  useEffect(() => {
+    if (!preloaderDone) return;
+    if (document.readyState === 'complete') {
+      setSiteReady(true);
+      return;
+    }
+    const onLoad = () => setSiteReady(true);
+    window.addEventListener('load', onLoad);
+    return () => window.removeEventListener('load', onLoad);
+  }, [preloaderDone]);
+
+  useEffect(() => {
+    const el = pcSectionRef.current;
+    if (!el) return;
+    const observer = new IntersectionObserver(
+      (entries) => {
+        if (entries[0]?.isIntersecting) setPcSectionInView(true);
+      },
+      { rootMargin: '100px', threshold: 0 }
+    );
+    observer.observe(el);
+    return () => observer.disconnect();
+  }, []);
+
+  const shouldLoadPc3d = siteReady && pcSectionInView;
 
   useEffect(() => {
     let ticking = false;
@@ -63,6 +99,36 @@ export default function App() {
         <Navbar onScheduleCall={() => setCalendlyOpen(true)} />
         <main>
           <Hero preloaderDone={preloaderDone} />
+          <section
+            ref={pcSectionRef}
+            className="relative w-full h-[320px] sm:h-[400px] md:h-[500px] flex items-center justify-center overflow-hidden bg-background"
+            aria-hidden
+          >
+            {shouldLoadPc3d ? (
+              <>
+                <div
+                  className="absolute inset-0 pointer-events-none"
+                  style={{
+                    background: 'radial-gradient(ellipse 80% 70% at 50% 45%, rgba(34, 211, 238, 0.12) 0%, rgba(34, 211, 238, 0.04) 40%, transparent 70%)',
+                  }}
+                  aria-hidden
+                />
+                <Suspense
+                  fallback={
+                    <div className="relative z-[1] w-full h-full flex items-center justify-center" style={{ color: 'var(--accent-primary)' }}>
+                      <Loader2 className="w-10 h-10 animate-spin opacity-60" aria-hidden />
+                    </div>
+                  }
+                >
+                  <ComputersCanvas className="relative z-[1] w-full h-full" />
+                </Suspense>
+              </>
+            ) : (
+              <div className="w-full h-full flex items-center justify-center" style={{ color: 'var(--foreground-muted)' }}>
+                <Loader2 className="w-8 h-8 animate-spin opacity-40" aria-hidden />
+              </div>
+            )}
+          </section>
           <Trust />
           <Services />
           <About />
@@ -74,8 +140,7 @@ export default function App() {
           <Process />
           <Certifications />
           <Stack />
-          <GitCommands />
-          <Contact onScheduleMeeting={() => setCalendlyOpen(true)} />
+          <Contact />
           <CTAFinal onScheduleMeeting={() => setCalendlyOpen(true)} />
         </main>
         <Footer />

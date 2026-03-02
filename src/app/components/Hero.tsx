@@ -1,3 +1,4 @@
+import { useRef, useState, useEffect } from 'react';
 import { motion } from 'motion/react';
 import { ArrowRight } from 'lucide-react';
 import { heroTexts } from '../../config/content';
@@ -28,26 +29,45 @@ const heroContainerVariants = {
 
 export function Hero({ preloaderDone = true }: HeroProps) {
   const reduceMotion = useReducedMotion();
+  const sectionRef = useRef<HTMLElement>(null);
+  const [sectionHeight, setSectionHeight] = useState<string>('100dvh');
   const projectsCount = stats.find((s) => s.label === 'Projetos Concluídos')?.value ?? 29;
   const shouldReveal = preloaderDone;
 
+  useEffect(() => {
+    const el = sectionRef.current;
+    if (!el) return;
+    const sync = () => {
+      const h = el.getBoundingClientRect().height;
+      setSectionHeight(`${Math.round(h)}px`);
+    };
+    sync();
+    const ro = new ResizeObserver(sync);
+    ro.observe(el);
+    return () => ro.disconnect();
+  }, []);
+
   return (
     <section
+      ref={sectionRef}
       id="home"
       className="relative min-h-screen flex items-center overflow-hidden pt-20 pb-10 sm:pt-24 sm:pb-12 md:pt-28 md:pb-12 lg:pt-32"
+      style={{ minHeight: '100dvh' }}
     >
       <div
-        className="absolute inset-0 z-0 min-h-full"
-        style={{ width: '100%', height: '100%' }}
+        className="absolute inset-0 z-0 w-full"
+        style={{ minHeight: '100dvh', height: sectionHeight }}
         aria-hidden
       >
         <DarkVeil
+          sizingRef={sectionRef}
           hueShift={33}
           noiseIntensity={0}
           scanlineIntensity={0}
           speed={0.9}
           scanlineFrequency={1.7}
           warpAmount={0}
+          resolutionScale={0.75}
         />
       </div>
       <div className="relative z-10 w-full max-w-6xl mx-auto px-4 sm:px-5 md:px-6">
