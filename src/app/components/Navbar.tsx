@@ -1,9 +1,17 @@
 import { useState, useEffect } from 'react';
 import { motion } from 'motion/react';
 import { Menu } from 'lucide-react';
-import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from './ui/sheet';
+import {
+  Sheet,
+  SheetContent,
+  SheetDescription,
+  SheetHeader,
+  SheetTitle,
+  SheetTrigger,
+} from './ui/sheet';
 import { ThemeToggle } from './ThemeToggle';
 import { navItems } from '../../config/content';
+import { getActiveNavId } from '../../utils/navScroll';
 
 interface NavbarProps {
   onScheduleCall?: () => void;
@@ -17,18 +25,20 @@ export function Navbar({ onScheduleCall }: NavbarProps) {
   useEffect(() => {
     let rafId: number | null = null;
     let ticking = false;
+    const sync = () => {
+      setScrolled(window.scrollY > 50);
+      setActiveId(getActiveNavId(navItems, 120));
+    };
     const handleScroll = () => {
       if (ticking) return;
       ticking = true;
       rafId = requestAnimationFrame(() => {
-        setScrolled(window.scrollY > 50);
-        const sections = navItems.map((item) => ({ id: item.id, element: document.getElementById(item.id) }));
-        const current = sections.find((s) => s.element && s.element.getBoundingClientRect().top <= 120 && s.element.getBoundingClientRect().bottom >= 120);
-        if (current) setActiveId(current.id);
+        sync();
         ticking = false;
       });
     };
     window.addEventListener('scroll', handleScroll, { passive: true });
+    sync();
     return () => {
       window.removeEventListener('scroll', handleScroll);
       if (rafId !== null) cancelAnimationFrame(rafId);
@@ -58,7 +68,7 @@ export function Navbar({ onScheduleCall }: NavbarProps) {
       >
         {/* Desktop: barra única centralizada; mobile: conteúdo à direita */}
         <div
-          className="flex justify-end md:justify-center items-center w-full md:max-w-6xl md:mx-auto md:px-4 md:py-2 md:rounded-2xl md:border md:border-white/10 md:bg-[rgba(10,10,15,0.55)] md:backdrop-blur-xl md:shadow-[0_4px_24px_rgba(0,0,0,0.12)]"
+          className="flex justify-end md:justify-center items-center w-full md:max-w-6xl md:mx-auto md:px-4 md:py-2 md:rounded-2xl md:border md:border-[var(--nav-glass-border)] md:bg-[var(--nav-glass-bg)] md:backdrop-blur-xl md:shadow-[var(--nav-glass-shadow)]"
         >
           {/* Links — visíveis só no desktop, centralizados junto ao tema */}
           <ul className="hidden md:flex items-center gap-1">
@@ -80,7 +90,7 @@ export function Navbar({ onScheduleCall }: NavbarProps) {
           </ul>
 
           {/* Direita: tema + menu mobile — no desktop sem fundo próprio (integra à barra) */}
-          <div className="flex items-center gap-2 ml-auto md:ml-0 rounded-xl sm:rounded-2xl px-1.5 py-1.5 bg-[rgba(10,10,15,0.45)] border border-white/[0.06] backdrop-blur-xl md:rounded-none md:px-0 md:py-0 md:bg-transparent md:border-0 md:backdrop-blur-none">
+          <div className="flex items-center gap-2 ml-auto md:ml-0 rounded-xl sm:rounded-2xl px-1.5 py-1.5 bg-[var(--nav-mobile-pill-bg)] border border-[var(--nav-mobile-pill-border)] backdrop-blur-xl md:rounded-none md:px-0 md:py-0 md:bg-transparent md:border-0 md:backdrop-blur-none">
             <ThemeToggle />
             <Sheet open={menuOpen} onOpenChange={setMenuOpen}>
               <SheetTrigger asChild>
@@ -99,6 +109,9 @@ export function Navbar({ onScheduleCall }: NavbarProps) {
               >
                 <SheetHeader>
                   <SheetTitle className="text-left" style={{ color: 'var(--foreground)' }}>Menu</SheetTitle>
+                  <SheetDescription className="sr-only">
+                    Links de navegação do site.
+                  </SheetDescription>
                 </SheetHeader>
                 <nav className="flex flex-col gap-1 mt-6" aria-label="Navegação móvel">
                   {navItems.map((item) => (

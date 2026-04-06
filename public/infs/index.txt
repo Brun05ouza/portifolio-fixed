@@ -1,0 +1,7 @@
+ apiKey: "AIzaSyCozFFvRlRD-E63ExcuDEKV3RlLGAM2hX4",
+  authDomain: "portifolio-268d7.firebaseapp.com",
+  projectId: "portifolio-268d7",
+  storageBucket: "portifolio-268d7.firebasestorage.app",
+  messagingSenderId: "106537125016",
+  appId: "1:106537125016:web:25dcdd41bfa87865a97ced",
+  measurementId: "G-C39DCQ698M"

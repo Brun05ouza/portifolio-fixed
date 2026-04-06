@@ -1,9 +1,10 @@
 import { motion } from 'motion/react';
 import { Heart, Code2 } from 'lucide-react';
-import { siteConfig } from '../../config/content';
 import { useReducedMotion } from '../../hooks/useReducedMotion';
+import { useSiteContent } from '../../contexts/SiteContentContext';
 
 export function Footer() {
+  const { siteConfig } = useSiteContent();
   const reduceMotion = useReducedMotion();
   return (
     <footer className="relative py-10 sm:py-14 md:py-16 px-4 sm:px-6 border-t border-[var(--border)]" style={{ backgroundColor: 'var(--background-elevated)' }}>
@@ -27,7 +28,7 @@ export function Footer() {
             <ul className="space-y-2 text-sm">
               <li><a href="#home" className="transition-colors hover:opacity-90" style={{ color: 'var(--foreground-muted)' }}>Início</a></li>
               <li><a href="#services" className="transition-colors hover:opacity-90" style={{ color: 'var(--foreground-muted)' }}>Serviços</a></li>
-              <li><a href="#work" className="transition-colors hover:opacity-90" style={{ color: 'var(--foreground-muted)' }}>Cases</a></li>
+              <li><a href="#work" className="transition-colors hover:opacity-90" style={{ color: 'var(--foreground-muted)' }}>Projetos</a></li>
               <li><a href="#about" className="transition-colors hover:opacity-90" style={{ color: 'var(--foreground-muted)' }}>Sobre</a></li>
               <li><a href="#contact" className="transition-colors hover:opacity-90" style={{ color: 'var(--foreground-muted)' }}>Contato</a></li>
             </ul>

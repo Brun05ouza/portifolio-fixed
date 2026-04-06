@@ -1,7 +1,7 @@
 import { motion } from 'motion/react';
 import { Container } from '../components/ds/Container';
 import { SectionTitle } from '../components/ds/SectionTitle';
-import { openWhatsApp } from '../../utils/whatsapp';
+import { useSiteContent } from '../../contexts/SiteContentContext';
 import { Cloud, Building2, LayoutTemplate, Gauge } from 'lucide-react';
 import { useReducedMotion } from '../../hooks/useReducedMotion';
 
@@ -33,6 +33,7 @@ const services = [
 ];
 
 export function Services() {
+  const { openSiteWhatsApp } = useSiteContent();
   const reduceMotion = useReducedMotion();
 
   return (
@@ -90,7 +91,9 @@ export function Services() {
                   </ul>
                   <button
                     type="button"
-                    onClick={() => openWhatsApp(`Olá Bruno, tenho interesse no serviço: ${service.title}.`)}
+                    onClick={() =>
+                      openSiteWhatsApp(`Olá Bruno, tenho interesse no serviço: ${service.title}.`)
+                    }
                     className="text-sm font-semibold transition-colors hover:opacity-90 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--ring)] focus-visible:ring-offset-2 rounded-lg px-4 py-2 -ml-2"
                     style={{ color: 'var(--accent-primary)' }}
                   >

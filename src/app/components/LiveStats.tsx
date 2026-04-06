@@ -2,8 +2,8 @@ import { useEffect, useState } from 'react';
 import { motion, useInView } from 'motion/react';
 import { useRef } from 'react';
 import { GlitchText } from './GlitchText';
-import { stats } from '../../config/content';
 import { useReducedMotion } from '../../hooks/useReducedMotion';
+import { useSiteContent } from '../../contexts/SiteContentContext';
 
 function AnimatedNumber({
   value,
@@ -47,6 +47,7 @@ function AnimatedNumber({
 }
 
 export function LiveStats() {
+  const { stats } = useSiteContent();
   const reduceMotion = useReducedMotion();
 
   return (

@@ -13,7 +13,6 @@ import {
   SiSupabase,
   SiVite,
   SiTailwindcss,
-  SiFirebase,
   SiExpress,
   SiNextdotjs,
   SiDocker,
@@ -125,10 +124,10 @@ export function Stack() {
           description: 'Design de interfaces e prototipagem',
         },
         {
-          icon: <SiFirebase className="w-6 h-6" color="#FFCA28" />,
-          name: 'Firebase',
-          level: 65,
-          description: 'Autenticação, Firestore e serviços em nuvem',
+          icon: <SiSupabase className="w-6 h-6" color="#3ECF8E" />,
+          name: 'Supabase (CMS)',
+          level: 72,
+          description: 'Auth, Postgres, RLS e Storage no painel do portfólio',
         },
         {
           icon: <SiDocker className="w-6 h-6" color="#2496ED" />,
@@ -155,7 +154,6 @@ export function Stack() {
     { name: 'Supabase', icon: SiSupabase, color: '#3ECF8E' },
     { name: 'Vite', icon: SiVite, color: '#646CFF' },
     { name: 'Tailwind CSS', icon: SiTailwindcss, color: '#06B6D4' },
-    { name: 'Firebase', icon: SiFirebase, color: '#FFCA28' },
     { name: 'Docker', icon: SiDocker, color: '#2496ED' },
     { name: 'Figma', icon: SiFigma, color: '#F24E1E' },
   ];

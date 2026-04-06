@@ -1,5 +1,5 @@
 import { Dialog, DialogContent } from './ui/dialog';
-import { siteConfig } from '../../config/content';
+import { useSiteContent } from '../../contexts/SiteContentContext';
 
 interface CalendlyModalProps {
   open: boolean;
@@ -7,6 +7,7 @@ interface CalendlyModalProps {
 }
 
 export function CalendlyModal({ open, onOpenChange }: CalendlyModalProps) {
+  const { siteConfig } = useSiteContent();
   const url = siteConfig.calendlyUrl;
 
   return (

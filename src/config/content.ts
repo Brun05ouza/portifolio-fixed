@@ -18,14 +18,15 @@ export const siteConfig = {
   calendlyUrl: import.meta.env.VITE_CALENDLY_URL || 'https://calendly.com/SEU_LINK_AQUI',
 };
 
+/** Itens do header; ordem segue o scroll na página (há seções só no corpo, sem link no menu). */
 export const navItems = [
   { id: 'home', label: 'Início', href: '#home' },
   { id: 'services', label: 'Serviços', href: '#services' },
-  { id: 'work', label: 'Cases', href: '#work' },
-  { id: 'process', label: 'Processo', href: '#process' },
   { id: 'about', label: 'Sobre', href: '#about' },
-  { id: 'stack', label: 'Skills', href: '#stack' },
+  { id: 'work', label: 'Projetos', href: '#work' },
+  { id: 'cursos', label: 'Cursos', href: '#cursos' },
   { id: 'certificados', label: 'Certificados', href: '#certificados' },
+  { id: 'stack', label: 'Skills', href: '#stack' },
   { id: 'contact', label: 'Contato', href: '#contact' },
 ];
 

@@ -4,12 +4,14 @@ import { Menu } from 'lucide-react';
 import {
   Sheet,
   SheetContent,
+  SheetDescription,
   SheetHeader,
   SheetTitle,
   SheetTrigger,
 } from './ui/sheet';
 import { ThemeToggle } from './ThemeToggle';
 import { navItems } from '../../config/content';
+import { getActiveNavId } from '../../utils/navScroll';
 
 export function PillNav() {
   const [activeId, setActiveId] = useState('home');
@@ -20,33 +22,21 @@ export function PillNav() {
     let rafId: number | null = null;
     let ticking = false;
 
+    const sync = () => {
+      setScrolled(window.scrollY > 50);
+      setActiveId(getActiveNavId(navItems, 100));
+    };
     const handleScroll = () => {
       if (ticking) return;
       ticking = true;
       rafId = requestAnimationFrame(() => {
-        setScrolled(window.scrollY > 50);
-
-        const sections = navItems.map((item) => ({
-          id: item.id,
-          element: document.getElementById(item.id),
-        }));
-
-        const currentSection = sections.find((section) => {
-          if (section.element) {
-            const rect = section.element.getBoundingClientRect();
-            return rect.top <= 100 && rect.bottom >= 100;
-          }
-          return false;
-        });
-
-        if (currentSection) {
-          setActiveId(currentSection.id);
-        }
+        sync();
         ticking = false;
       });
     };
 
     window.addEventListener('scroll', handleScroll, { passive: true });
+    sync();
     return () => {
       window.removeEventListener('scroll', handleScroll);
       if (rafId !== null) cancelAnimationFrame(rafId);
@@ -110,6 +100,9 @@ export function PillNav() {
           >
             <SheetHeader>
               <SheetTitle className="text-left text-foreground">Navegação</SheetTitle>
+              <SheetDescription className="sr-only">
+                Links de navegação do site.
+              </SheetDescription>
             </SheetHeader>
             <nav className="flex flex-col gap-1 mt-6" aria-label="Navegação principal">
               {navItems.map((item) => (

@@ -6,11 +6,12 @@ import {
 } from './ui/dialog';
 import { Badge } from './ui/badge';
 import { ExternalLink, Github } from 'lucide-react';
-import type { ProjectFromRepo } from '../services/githubService';
+import type { PortfolioProjectView } from '../../types/portfolio';
 import { getCaseDetails } from '../../config/cases';
+import { toAbsoluteHttpUrl } from '../../utils/externalUrl';
 
 interface CaseModalProps {
-  project: ProjectFromRepo | null;
+  project: PortfolioProjectView | null;
   open: boolean;
   onOpenChange: (open: boolean) => void;
 }
@@ -18,7 +19,15 @@ interface CaseModalProps {
 export function CaseModal({ project, open, onOpenChange }: CaseModalProps) {
   if (!project) return null;
 
-  const details = getCaseDetails(project.repoName);
+  const fallback = getCaseDetails(project.repoName);
+  const problem = project.caseProblem?.trim() || fallback.problem;
+  const solution = project.caseSolution?.trim() || fallback.solution;
+  const result = project.caseResult?.trim() || fallback.result;
+
+  const showGithub =
+    Boolean(project.githubLink?.trim()) &&
+    !project.hideGithubLink &&
+    project.repoName !== 'residencial-nature';
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
@@ -30,11 +39,11 @@ export function CaseModal({ project, open, onOpenChange }: CaseModalProps) {
         <div className="space-y-4 sm:space-y-6 text-sm">
           <div>
             <h4 className="font-semibold text-foreground mb-1">Problema</h4>
-            <p className="text-muted-foreground">{details.problem}</p>
+            <p className="text-muted-foreground">{problem}</p>
           </div>
           <div>
             <h4 className="font-semibold text-foreground mb-1">Solução técnica</h4>
-            <p className="text-muted-foreground">{details.solution}</p>
+            <p className="text-muted-foreground">{solution}</p>
           </div>
           <div>
             <h4 className="font-semibold text-foreground mb-2">Stack utilizada</h4>
@@ -57,13 +66,13 @@ export function CaseModal({ project, open, onOpenChange }: CaseModalProps) {
           </div>
           <div>
             <h4 className="font-semibold text-foreground mb-1">Resultado / Impacto</h4>
-            <p className="text-muted-foreground">{details.result}</p>
+            <p className="text-muted-foreground">{result}</p>
           </div>
 
           <div className="flex flex-wrap gap-3 pt-2 border-t border-border">
             {project.demoLink && (
               <a
-                href={project.demoLink}
+                href={toAbsoluteHttpUrl(project.demoLink)}
                 target="_blank"
                 rel="noopener noreferrer"
                 className="inline-flex items-center gap-2 text-primary hover:underline font-medium"
@@ -72,9 +81,9 @@ export function CaseModal({ project, open, onOpenChange }: CaseModalProps) {
                 Ver demo
               </a>
             )}
-            {project.githubLink && project.repoName !== 'residencial-nature' && (
+            {showGithub && (
               <a
-                href={project.githubLink}
+                href={toAbsoluteHttpUrl(project.githubLink ?? '')}
                 target="_blank"
                 rel="noopener noreferrer"
                 className="inline-flex items-center gap-2 text-primary hover:underline font-medium"

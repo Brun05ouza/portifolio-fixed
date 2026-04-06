@@ -4,12 +4,13 @@ import { ProjectCard } from './ProjectCard';
 import { CaseModal } from './CaseModal';
 import { Container } from './ds/Container';
 import { SectionTitle } from './ds/SectionTitle';
-import { fetchUserRepos } from '../services/githubService';
-import type { ProjectFromRepo } from '../services/githubService';
 import { Loader2, AlertCircle, ChevronDown } from 'lucide-react';
-import { siteConfig } from '../../config/content';
+import { useSiteContent } from '../../contexts/SiteContentContext';
+import { listProjectsPublic } from '../../services/portfolioDb';
+import { toPortfolioProjectView } from '../../types/portfolio';
+import type { PortfolioProjectView } from '../../types/portfolio';
 
-const MOBILE_BREAKPOINT = 640; // sm
+const MOBILE_BREAKPOINT = 640;
 
 function useIsMobile() {
   const [isMobile, setIsMobile] = useState(() =>
@@ -25,39 +26,41 @@ function useIsMobile() {
   return isMobile;
 }
 
-/** Projeto em destaque fixo no topo da lista */
-const FEATURED_PROJECT: ProjectFromRepo = {
-  title: 'Residencial Nature',
-  description: 'Site institucional do empreendimento residencial Nature — presença digital e experiência do usuário.',
-  image: '/nature-preview.jpeg',
-  tags: ['React', 'TypeScript', 'Responsivo'],
-  role: 'Front-end',
-  demoLink: 'https://residencialnature.com.br/',
-  githubLink: 'https://residencialnature.com.br/',
-  repoName: 'residencial-nature',
-};
-
 export function Projects() {
-  const [projects, setProjects] = useState<ProjectFromRepo[]>([]);
+  const { siteConfig } = useSiteContent();
+  const [projects, setProjects] = useState<PortfolioProjectView[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const [selectedCase, setSelectedCase] = useState<ProjectFromRepo | null>(null);
+  const [selectedCase, setSelectedCase] = useState<PortfolioProjectView | null>(null);
   const [showAllProjects, setShowAllProjects] = useState(false);
   const isMobile = useIsMobile();
 
   useEffect(() => {
-    fetchUserRepos(50).then(({ projects, error }) => {
-      setProjects([FEATURED_PROJECT, ...projects]);
-      setError(error);
-      setLoading(false);
-    });
+    let cancelled = false;
+    (async () => {
+      setLoading(true);
+      setError(null);
+      try {
+        const list = await listProjectsPublic();
+        if (!cancelled) {
+          setProjects(list.map(toPortfolioProjectView));
+        }
+      } catch {
+        if (!cancelled) setError('Não foi possível carregar os projetos.');
+      } finally {
+        if (!cancelled) setLoading(false);
+      }
+    })();
+    return () => {
+      cancelled = true;
+    };
   }, []);
 
   return (
     <section id="work" className="relative py-14 sm:py-20 md:py-28 border-t border-[var(--border)]">
       <Container>
         <SectionTitle
-          label="Cases"
+          label="Projetos"
           title="Projetos em destaque"
           subtitle="Problema, solução técnica, stack e resultado de cada projeto."
         />
@@ -83,7 +86,6 @@ export function Projects() {
           </div>
         ) : projects.length > 0 ? (
           <>
-            {/* No mobile: oculta projetos até clicar em "Ver todos" */}
             {isMobile && !showAllProjects ? (
               <div className="flex flex-col items-center gap-6 py-8">
                 <button
@@ -105,28 +107,35 @@ export function Projects() {
                 className="grid sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6 items-stretch"
               >
                 {projects.map((project, index) => (
-                    <motion.div
-                      key={project.githubLink}
-                      className="flex"
-                      initial={{ opacity: 0, y: 20 }}
-                      whileInView={{ opacity: 1, y: 0 }}
-                      viewport={{ once: true, margin: '-60px' }}
-                      transition={{ duration: 0.45, delay: index * 0.06 }}
-                    >
-                      <ProjectCard
-                        {...project}
-                        hideGithubLink={project.repoName === 'residencial-nature'}
-                        hideImageOverlay={project.repoName === 'residencial-nature'}
-                        onSelect={() => setSelectedCase(project)}
-                      />
-                    </motion.div>
-                  ))}
+                  <motion.div
+                    key={project.id}
+                    className="flex"
+                    initial={{ opacity: 0, y: 20 }}
+                    whileInView={{ opacity: 1, y: 0 }}
+                    viewport={{ once: true, margin: '-60px' }}
+                    transition={{ duration: 0.45, delay: index * 0.06 }}
+                  >
+                    <ProjectCard
+                      title={project.title}
+                      description={project.description}
+                      image={project.image}
+                      tags={project.tags}
+                      role={project.role}
+                      demoLink={project.demoLink}
+                      githubLink={project.githubLink}
+                      repoName={project.repoName}
+                      hideGithubLink={project.hideGithubLink}
+                      hideImageOverlay={project.hideImageOverlay}
+                      onSelect={() => setSelectedCase(project)}
+                    />
+                  </motion.div>
+                ))}
               </motion.div>
             )}
           </>
         ) : (
           <p className="text-center py-12" style={{ color: 'var(--foreground-muted)' }}>
-            Nenhum repositório encontrado. Verifique sua conexão ou o usuário do GitHub.
+            Nada por aqui, por enquanto.
           </p>
         )}
 

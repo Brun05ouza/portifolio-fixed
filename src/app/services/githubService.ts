@@ -1,8 +1,12 @@
 import { allowedRepos, knownDescriptions } from '../../config/projects';
 import { siteConfig } from '../../config/content';
 
-const CACHE_KEY = 'portfolio_github_repos';
+const CACHE_PREFIX = 'portfolio_github_repos_v2_';
 const CACHE_TTL_MS = 1000 * 60 * 10; // 10 minutos
+
+function cacheKeyForUser(githubUser: string) {
+  return `${CACHE_PREFIX}${githubUser}`;
+}
 
 export interface GitHubRepo {
   id: number;
@@ -38,8 +42,10 @@ export interface FetchReposResult {
 }
 
 const PROJECT_IMAGE = '/background-project.svg';
-const GITHUB_USER = siteConfig.githubUser;
-const API_URL = `https://api.github.com/users/${GITHUB_USER}/repos`;
+
+function apiUrlForUser(githubUser: string) {
+  return `https://api.github.com/users/${githubUser}/repos`;
+}
 
 function formatRepoName(name: string): string {
   return name
@@ -62,12 +68,12 @@ function getRole(repo: GitHubRepo): string {
   return fullStackLangs.includes(lang) ? 'Full Stack' : 'Front-end';
 }
 
-function parseApiResponse(data: GitHubRepo[]): ProjectFromRepo[] {
+function parseApiResponse(data: GitHubRepo[], githubUser: string): ProjectFromRepo[] {
   return data
     .filter(
       (repo) =>
         !repo.fork &&
-        repo.name !== GITHUB_USER &&
+        repo.name !== githubUser &&
         allowedRepos.some(
           (allowed) =>
             repo.name.toLowerCase() === allowed.toLowerCase() ||
@@ -92,9 +98,9 @@ function parseApiResponse(data: GitHubRepo[]): ProjectFromRepo[] {
     });
 }
 
-function getCached(): ProjectFromRepo[] | null {
+function getCached(githubUser: string): ProjectFromRepo[] | null {
   try {
-    const raw = localStorage.getItem(CACHE_KEY);
+    const raw = localStorage.getItem(cacheKeyForUser(githubUser));
     if (!raw) return null;
     const { data, expires } = JSON.parse(raw);
     if (Date.now() > expires) return null;
@@ -104,10 +110,10 @@ function getCached(): ProjectFromRepo[] | null {
   }
 }
 
-function setCache(projects: ProjectFromRepo[]): void {
+function setCache(projects: ProjectFromRepo[], githubUser: string): void {
   try {
     localStorage.setItem(
-      CACHE_KEY,
+      cacheKeyForUser(githubUser),
       JSON.stringify({ data: projects, expires: Date.now() + CACHE_TTL_MS })
     );
   } catch {
@@ -116,19 +122,20 @@ function setCache(projects: ProjectFromRepo[]): void {
 }
 
 /** Fallback estático quando a API falha */
-function getFallbackProjects(): ProjectFromRepo[] {
+function getFallbackProjects(githubUser: string): ProjectFromRepo[] {
   return allowedRepos.slice(0, 6).map((name) => ({
     title: formatRepoName(name),
     description: knownDescriptions[name] || `Projeto ${name}.`,
     image: PROJECT_IMAGE,
     tags: ['Projeto'],
     role: 'Full Stack',
-    githubLink: `https://github.com/${GITHUB_USER}/${name}`,
+    githubLink: `https://github.com/${githubUser}/${name}`,
   }));
 }
 
-export async function fetchUserRepos(limit = 12): Promise<FetchReposResult> {
-  const cached = getCached();
+export async function fetchUserRepos(limit = 12, githubUser?: string): Promise<FetchReposResult> {
+  const user = githubUser?.trim() || siteConfig.githubUser;
+  const cached = getCached(user);
   if (cached && cached.length > 0) {
     return { projects: cached.slice(0, limit), error: null, fromCache: true };
   }
@@ -143,13 +150,13 @@ export async function fetchUserRepos(limit = 12): Promise<FetchReposResult> {
 
   try {
     const res = await fetch(
-      `${API_URL}?sort=updated&per_page=${Math.min(limit, 100)}&type=owner`,
+      `${apiUrlForUser(user)}?sort=updated&per_page=${Math.min(limit, 100)}&type=owner`,
       { headers }
     );
 
     if (res.status === 403) {
-      const fallback = getFallbackProjects();
-      setCache(fallback);
+      const fallback = getFallbackProjects(user);
+      setCache(fallback, user);
       return {
         projects: fallback.slice(0, limit),
         error: 'Rate limit da API do GitHub atingido. Exibindo dados em cache.',
@@ -159,15 +166,15 @@ export async function fetchUserRepos(limit = 12): Promise<FetchReposResult> {
 
     if (res.status === 404) {
       return {
-        projects: getFallbackProjects().slice(0, limit),
-        error: `Usuário "${GITHUB_USER}" não encontrado no GitHub.`,
+        projects: getFallbackProjects(user).slice(0, limit),
+        error: `Usuário "${user}" não encontrado no GitHub.`,
         fromCache: false,
       };
     }
 
     if (!res.ok) {
-      const fallback = getFallbackProjects();
-      setCache(fallback);
+      const fallback = getFallbackProjects(user);
+      setCache(fallback, user);
       return {
         projects: fallback.slice(0, limit),
         error: `Erro ao buscar repositórios (${res.status}). Exibindo dados de fallback.`,
@@ -176,16 +183,16 @@ export async function fetchUserRepos(limit = 12): Promise<FetchReposResult> {
     }
 
     const data: GitHubRepo[] = await res.json();
-    const projects = parseApiResponse(data).slice(0, limit);
+    const projects = parseApiResponse(data, user).slice(0, limit);
 
     if (projects.length > 0) {
-      setCache(projects);
+      setCache(projects, user);
     }
 
     return { projects, error: null, fromCache: false };
   } catch (err) {
-    const fallback = getFallbackProjects();
-    const cachedForError = getCached();
+    const fallback = getFallbackProjects(user);
+    const cachedForError = getCached(user);
     const toShow = cachedForError && cachedForError.length > 0 ? cachedForError : fallback;
 
     return {

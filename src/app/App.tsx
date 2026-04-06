@@ -1,176 +1,50 @@
-import { useEffect, useState, useRef, lazy, Suspense } from 'react';
-import { motion, AnimatePresence } from 'motion/react';
-import { Loader2 } from 'lucide-react';
-import { useTheme } from 'next-themes';
-import { Navbar } from './components/Navbar';
-import { Hero } from './components/Hero';
-import { Services } from './sections/Services';
+import { useEffect } from 'react';
+import { Routes, Route, Navigate, useNavigate } from 'react-router-dom';
+import { SiteContentProvider } from '../contexts/SiteContentContext';
+import { PortfolioView } from './PortfolioView';
+import { AdminRoot } from './admin/AdminRoot';
+import { DashboardPanel } from './admin/panels/DashboardPanel';
+import { CoursesPanel } from './admin/panels/CoursesPanel';
+import { CertificatesPanel } from './admin/panels/CertificatesPanel';
+import { ProjectsPanel } from './admin/panels/ProjectsPanel';
+import { SiteSettingsPanel } from './admin/panels/SiteSettingsPanel';
 
-/** Carregado só quando a seção estiver visível e o site pronto — evita lentidão no primeiro carregamento. */
-const ComputersCanvas = lazy(() =>
-  import('./components/ComputersCanvas').then((m) => ({ default: m.default }))
-);
-import { Trust } from './sections/Trust';
-import { About } from './components/About';
-import { Projects } from './components/Projects';
-
-const TccEcoSphere = lazy(() =>
-  import('./components/TccEcoSphere').then((m) => ({ default: m.TccEcoSphere }))
-);
-import { Process } from './sections/Process';
-import { Certifications } from './components/Certifications';
-import { LiveStats } from './components/LiveStats';
-import { Stack } from './components/Stack';
-import { Contact } from './components/Contact';
-import { CTAFinal } from './sections/CTAFinal';
-import { Footer } from './components/Footer';
-import { BackgroundPremium } from './components/BackgroundPremium';
-import { Preloader } from './components/Preloader';
-import { Toaster } from './components/ui/sonner';
-import { FloatingWhatsApp } from './components/FloatingWhatsApp';
-import { CalendlyModal } from './components/CalendlyModal';
+function isEditableFocus(target: EventTarget | null): boolean {
+  const el = target instanceof HTMLElement ? target : null;
+  if (!el) return false;
+  const tag = el.tagName;
+  if (tag === 'INPUT' || tag === 'TEXTAREA' || tag === 'SELECT') return true;
+  if (el.isContentEditable) return true;
+  return el.closest('[contenteditable="true"]') != null;
+}
 
 export default function App() {
-  const [showScrollTop, setShowScrollTop] = useState(false);
-  const lastScrollY = useRef(0);
-  const [calendlyOpen, setCalendlyOpen] = useState(false);
-  const [preloaderDone, setPreloaderDone] = useState(false);
-  /** Só carrega o PC 3D após o site estar pronto (evita travar a abertura). */
-  const [siteReady, setSiteReady] = useState(false);
-  /** Só carrega o PC 3D quando a seção entra no viewport (não carrega se o usuário não rolar). */
-  const [pcSectionInView, setPcSectionInView] = useState(false);
-  const pcSectionRef = useRef<HTMLElement>(null);
-  useTheme(); // keep for next-themes provider
+  const navigate = useNavigate();
 
   useEffect(() => {
-    if (!preloaderDone) return;
-    if (document.readyState === 'complete') {
-      setSiteReady(true);
-      return;
-    }
-    const onLoad = () => setSiteReady(true);
-    window.addEventListener('load', onLoad);
-    return () => window.removeEventListener('load', onLoad);
-  }, [preloaderDone]);
-
-  useEffect(() => {
-    const el = pcSectionRef.current;
-    if (!el) return;
-    const observer = new IntersectionObserver(
-      (entries) => {
-        if (entries[0]?.isIntersecting) setPcSectionInView(true);
-      },
-      { rootMargin: '100px', threshold: 0 }
-    );
-    observer.observe(el);
-    return () => observer.disconnect();
-  }, []);
-
-  const shouldLoadPc3d = siteReady && pcSectionInView;
-
-  useEffect(() => {
-    let ticking = false;
-    const handleScroll = () => {
-      if (ticking) return;
-      ticking = true;
-      requestAnimationFrame(() => {
-        const y = window.scrollY;
-        const scrolledEnough = y > 80;
-        const scrollingUp = y < lastScrollY.current;
-        lastScrollY.current = y;
-        setShowScrollTop(scrolledEnough && scrollingUp);
-        ticking = false;
-      });
+    const onKeyDown = (e: KeyboardEvent) => {
+      if (!e.ctrlKey || !e.shiftKey || e.key.toLowerCase() !== 'a') return;
+      if (isEditableFocus(e.target)) return;
+      e.preventDefault();
+      void navigate('/admin');
     };
-
-    lastScrollY.current = window.scrollY;
-    window.addEventListener('scroll', handleScroll, { passive: true });
-    return () => window.removeEventListener('scroll', handleScroll);
-  }, []);
+    window.addEventListener('keydown', onKeyDown);
+    return () => window.removeEventListener('keydown', onKeyDown);
+  }, [navigate]);
 
   return (
-    <div className="min-h-screen bg-background text-foreground overflow-x-hidden relative">
-      {!preloaderDone && (
-        <Preloader onComplete={() => setPreloaderDone(true)} />
-      )}
-      <BackgroundPremium />
-
-      <div className="relative z-10">
-        <Navbar onScheduleCall={() => setCalendlyOpen(true)} />
-        <main>
-          <Hero preloaderDone={preloaderDone} />
-          <section
-            ref={pcSectionRef}
-            className="relative w-full h-[320px] sm:h-[400px] md:h-[500px] flex items-center justify-center overflow-hidden bg-background"
-            aria-hidden
-          >
-            {shouldLoadPc3d ? (
-              <>
-                <div
-                  className="absolute inset-0 pointer-events-none"
-                  style={{
-                    background: 'radial-gradient(ellipse 80% 70% at 50% 45%, rgba(34, 211, 238, 0.12) 0%, rgba(34, 211, 238, 0.04) 40%, transparent 70%)',
-                  }}
-                  aria-hidden
-                />
-                <Suspense
-                  fallback={
-                    <div className="relative z-[1] w-full h-full flex items-center justify-center" style={{ color: 'var(--accent-primary)' }}>
-                      <Loader2 className="w-10 h-10 animate-spin opacity-60" aria-hidden />
-                    </div>
-                  }
-                >
-                  <ComputersCanvas className="relative z-[1] w-full h-full" />
-                </Suspense>
-              </>
-            ) : (
-              <div className="w-full h-full flex items-center justify-center" style={{ color: 'var(--foreground-muted)' }}>
-                <Loader2 className="w-8 h-8 animate-spin opacity-40" aria-hidden />
-              </div>
-            )}
-          </section>
-          <Trust />
-          <Services />
-          <About />
-          <LiveStats />
-          <Suspense fallback={<div className="min-h-[50vh] flex items-center justify-center" style={{ color: 'var(--foreground-muted)' }}>Carregando...</div>}>
-            <TccEcoSphere />
-          </Suspense>
-          <Projects />
-          <Process />
-          <Certifications />
-          <Stack />
-          <Contact />
-          <CTAFinal onScheduleMeeting={() => setCalendlyOpen(true)} />
-        </main>
-        <Footer />
-        <Toaster />
-        <FloatingWhatsApp />
-        <CalendlyModal open={calendlyOpen} onOpenChange={setCalendlyOpen} />
-      </div>
-
-      {/* Scroll to top button — só aparece ao rolar para cima */}
-      <AnimatePresence mode="wait">
-        {showScrollTop && (
-          <motion.button
-            key="scroll-top"
-            onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
-            className="fixed bottom-20 right-4 sm:bottom-24 sm:right-6 z-40 w-12 h-12 min-w-[48px] min-h-[48px] rounded-full flex items-center justify-center text-white shadow-lg focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 focus-visible:ring-offset-background"
-            style={{
-              background: 'linear-gradient(135deg, var(--color-beam-start), var(--color-beam-end))',
-            }}
-            initial={{ opacity: 0, scale: 0.6, y: 8 }}
-            animate={{ opacity: 1, scale: 1, y: 0 }}
-            exit={{ opacity: 0, scale: 0.6, y: 8 }}
-            whileHover={{ scale: 1.1 }}
-            transition={{ duration: 0.25, ease: [0.22, 1, 0.36, 1] }}
-            aria-label="Voltar ao topo da página"
-            title="Voltar ao topo"
-          >
-            ↑
-          </motion.button>
-        )}
-      </AnimatePresence>
-    </div>
+    <SiteContentProvider>
+      <Routes>
+        <Route path="admin" element={<AdminRoot />}>
+          <Route index element={<Navigate to="dashboard" replace />} />
+          <Route path="dashboard" element={<DashboardPanel />} />
+          <Route path="cursos" element={<CoursesPanel />} />
+          <Route path="certificados" element={<CertificatesPanel />} />
+          <Route path="projetos" element={<ProjectsPanel />} />
+          <Route path="configuracao" element={<SiteSettingsPanel />} />
+        </Route>
+        <Route path="*" element={<PortfolioView />} />
+      </Routes>
+    </SiteContentProvider>
   );
 }

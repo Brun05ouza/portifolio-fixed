@@ -24,6 +24,9 @@
   /* Semantic */
   --card: #12121a;
   --card-foreground: #fafafa;
+  /* Dropdowns, Select, Popover (shadcn) */
+  --popover: #12121a;
+  --popover-foreground: #fafafa;
   --border: rgba(255, 255, 255, 0.06);
   --border-strong: rgba(255, 255, 255, 0.1);
   --input: #18181f;
@@ -82,6 +85,13 @@
   --color-chroma-1: #0891b2;
   --color-chroma-2: #22d3ee;
   --overlay-gradient: radial-gradient(ellipse 80% 50% at 50% -20%, rgba(34, 211, 238, 0.15), transparent 50%);
+
+  /* Navbar glass (escuro) */
+  --nav-glass-bg: rgba(10, 10, 15, 0.55);
+  --nav-glass-border: rgba(255, 255, 255, 0.1);
+  --nav-glass-shadow: 0 4px 24px rgba(0, 0, 0, 0.12);
+  --nav-mobile-pill-bg: rgba(10, 10, 15, 0.45);
+  --nav-mobile-pill-border: rgba(255, 255, 255, 0.06);
 }
 
 /* Light theme override (optional) */
@@ -91,14 +101,23 @@
   --surface: #f4f4f5;
   --surface-hover: #e4e4e7;
   --foreground: #09090b;
-  --foreground-muted: #71717a;
-  --foreground-subtle: #a1a1aa;
+  /* Contraste melhor sobre hero claro */
+  --foreground-muted: #52525b;
+  --foreground-subtle: #71717a;
   --card: #ffffff;
   --card-foreground: #09090b;
+  --popover: #ffffff;
+  --popover-foreground: #09090b;
   --border: rgba(0, 0, 0, 0.08);
-  --border-strong: rgba(0, 0, 0, 0.12);
+  --border-strong: rgba(0, 0, 0, 0.14);
   --input: #f4f4f5;
   --overlay-gradient: radial-gradient(ellipse 80% 50% at 50% -20%, rgba(34, 211, 238, 0.08), transparent 50%);
+  /* Navbar glass no claro */
+  --nav-glass-bg: rgba(255, 255, 255, 0.78);
+  --nav-glass-border: rgba(0, 0, 0, 0.08);
+  --nav-glass-shadow: 0 4px 24px rgba(0, 0, 0, 0.06);
+  --nav-mobile-pill-bg: rgba(255, 255, 255, 0.92);
+  --nav-mobile-pill-border: rgba(0, 0, 0, 0.1);
 }
 
 @theme inline {
@@ -106,6 +125,8 @@
   --color-foreground: var(--foreground);
   --color-card: var(--card);
   --color-card-foreground: var(--card-foreground);
+  --color-popover: var(--popover);
+  --color-popover-foreground: var(--popover-foreground);
   --color-primary: var(--accent-primary);
   --color-primary-foreground: var(--primary-foreground);
   --color-secondary: var(--secondary);

@@ -1,5 +1,5 @@
 import { motion } from 'motion/react';
-import { openWhatsApp } from '../../utils/whatsapp';
+import { useSiteContent } from '../../contexts/SiteContentContext';
 
 /** Ícone oficial do WhatsApp (logo Zap). */
 function WhatsAppIcon({ className }: { className?: string }) {
@@ -17,10 +17,11 @@ function WhatsAppIcon({ className }: { className?: string }) {
 }
 
 export function FloatingWhatsApp() {
+  const { openSiteWhatsApp } = useSiteContent();
   return (
     <motion.button
       type="button"
-      onClick={() => openWhatsApp()}
+      onClick={() => openSiteWhatsApp()}
       className="fixed bottom-5 right-4 sm:bottom-6 sm:right-6 z-40 flex items-center justify-center w-14 h-14 min-w-[56px] min-h-[56px] rounded-full text-white shadow-lg focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 focus-visible:ring-offset-background"
       style={{
         background: 'linear-gradient(135deg, #25D366, #128C7E)',

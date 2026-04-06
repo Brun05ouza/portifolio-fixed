@@ -1,10 +1,9 @@
 import { useRef, useState, useEffect } from 'react';
 import { motion } from 'motion/react';
+import { useTheme } from 'next-themes';
 import { ArrowRight } from 'lucide-react';
-import { heroTexts } from '../../config/content';
 import { useReducedMotion } from '../../hooks/useReducedMotion';
-import { openWhatsApp } from '../../utils/whatsapp';
-import { stats } from '../../config/content';
+import { useSiteContent } from '../../contexts/SiteContentContext';
 import DarkVeil from './DarkVeil';
 
 interface HeroProps {
@@ -28,11 +27,20 @@ const heroContainerVariants = {
 };
 
 export function Hero({ preloaderDone = true }: HeroProps) {
+  const { heroTexts, openSiteWhatsApp } = useSiteContent();
   const reduceMotion = useReducedMotion();
+  const { resolvedTheme } = useTheme();
+  const [themeMounted, setThemeMounted] = useState(false);
   const sectionRef = useRef<HTMLElement>(null);
   const [sectionHeight, setSectionHeight] = useState<string>('100dvh');
-  const projectsCount = stats.find((s) => s.label === 'Projetos Concluídos')?.value ?? 29;
   const shouldReveal = preloaderDone;
+
+  useEffect(() => {
+    setThemeMounted(true);
+  }, []);
+
+  /** Tema claro: fundo branco sem WebGL (shader sempre tende ao cinza). */
+  const showDarkVeil = !themeMounted || resolvedTheme !== 'light';
 
   useEffect(() => {
     const el = sectionRef.current;
@@ -51,7 +59,7 @@ export function Hero({ preloaderDone = true }: HeroProps) {
     <section
       ref={sectionRef}
       id="home"
-      className="relative min-h-screen flex items-center overflow-hidden pt-20 pb-10 sm:pt-24 sm:pb-12 md:pt-28 md:pb-12 lg:pt-32"
+      className="relative min-h-screen flex items-center overflow-hidden bg-white pt-20 pb-10 sm:pt-24 sm:pb-12 md:pt-28 md:pb-12 lg:pt-32 dark:bg-transparent"
       style={{ minHeight: '100dvh' }}
     >
       <div
@@ -59,16 +67,22 @@ export function Hero({ preloaderDone = true }: HeroProps) {
         style={{ minHeight: '100dvh', height: sectionHeight }}
         aria-hidden
       >
-        <DarkVeil
-          sizingRef={sectionRef}
-          hueShift={33}
-          noiseIntensity={0}
-          scanlineIntensity={0}
-          speed={0.9}
-          scanlineFrequency={1.7}
-          warpAmount={0}
-          resolutionScale={0.75}
-        />
+        {showDarkVeil ? (
+          <div className="absolute inset-0">
+            <DarkVeil
+              sizingRef={sectionRef}
+              hueShift={33}
+              noiseIntensity={0}
+              scanlineIntensity={0}
+              speed={0.9}
+              scanlineFrequency={1.7}
+              warpAmount={0}
+              resolutionScale={0.75}
+            />
+          </div>
+        ) : (
+          <div className="absolute inset-0 bg-white" />
+        )}
       </div>
       <div className="relative z-10 w-full max-w-6xl mx-auto px-4 sm:px-5 md:px-6">
         <motion.div
@@ -79,26 +93,11 @@ export function Hero({ preloaderDone = true }: HeroProps) {
           custom={reduceMotion}
           transition={{ duration: 0.5 }}
         >
-          {/* Chip: disponível / projetos */}
-          <motion.div variants={heroEntrance} transition={{ duration: 0.5, ease: [0.22, 1, 0.36, 1] }}>
-            <span
-              className="inline-flex items-center gap-2 px-3 py-1.5 sm:px-4 sm:py-2 rounded-full text-xs sm:text-sm font-medium border"
-              style={{
-                color: 'var(--accent-primary)',
-                borderColor: 'var(--border-strong)',
-                backgroundColor: 'var(--accent-primary-muted)',
-              }}
-            >
-              <span className="w-2 h-2 rounded-full bg-[var(--accent-primary)] animate-pulse" aria-hidden />
-              Disponível para novos projetos · +{projectsCount} entregas com sucesso
-            </span>
-          </motion.div>
-
           {/* Greeting */}
           <motion.p
             variants={heroEntrance}
             transition={{ duration: 0.5, ease: [0.22, 1, 0.36, 1] }}
-            className="text-sm md:text-base uppercase tracking-[0.2em]"
+            className="text-sm md:text-base uppercase tracking-[0.2em] text-[var(--foreground-muted)]"
             style={{ color: 'var(--foreground-muted)' }}
           >
             {heroTexts.greeting}
@@ -111,8 +110,8 @@ export function Hero({ preloaderDone = true }: HeroProps) {
               <motion.h1
                 variants={heroEntrance}
                 transition={{ duration: 0.55, ease: [0.22, 1, 0.36, 1] }}
-                className="text-3xl min-[480px]:text-4xl sm:text-5xl md:text-6xl lg:text-5xl xl:text-6xl font-bold leading-[1.15] tracking-tight"
-                style={{ fontFamily: 'var(--font-sans)' }}
+                className="text-3xl min-[480px]:text-4xl sm:text-5xl md:text-6xl lg:text-5xl xl:text-6xl font-bold leading-[1.15] tracking-tight text-foreground"
+                style={{ fontFamily: 'var(--font-sans)', color: 'var(--foreground)' }}
               >
                 {heroTexts.headline}
               </motion.h1>
@@ -121,7 +120,7 @@ export function Hero({ preloaderDone = true }: HeroProps) {
             <motion.p
               variants={heroEntrance}
               transition={{ duration: 0.5, ease: [0.22, 1, 0.36, 1] }}
-              className="text-lg md:text-xl leading-relaxed"
+              className="text-lg md:text-xl leading-relaxed text-[var(--foreground-muted)]"
               style={{ color: 'var(--foreground-muted)' }}
             >
               {heroTexts.subheadline}
@@ -134,7 +133,7 @@ export function Hero({ preloaderDone = true }: HeroProps) {
             >
             <button
               type="button"
-              onClick={() => openWhatsApp()}
+              onClick={() => openSiteWhatsApp()}
               className="group inline-flex items-center justify-center gap-2 px-4 py-3 sm:px-5 sm:py-3.5 rounded-xl font-semibold text-sm sm:text-base text-[var(--primary-foreground)] transition-all duration-200 hover:opacity-95 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--ring)] focus-visible:ring-offset-2 focus-visible:ring-offset-[var(--background)] min-h-[44px]"
               style={{ backgroundColor: 'var(--accent-primary)' }}
             >
@@ -159,11 +158,10 @@ export function Hero({ preloaderDone = true }: HeroProps) {
               transition={{ duration: 0.55, ease: [0.22, 1, 0.36, 1] }}
             >
               <div
-                className="relative rounded-2xl overflow-hidden border-2 w-[min(280px,85vw)] lg:w-72 xl:w-80"
+                className="relative rounded-2xl overflow-hidden border-2 w-[min(280px,85vw)] lg:w-72 xl:w-80 shadow-[0_12px_40px_rgba(15,23,42,0.1)] dark:shadow-[0_24px_48px_rgba(0,0,0,0.35)]"
                 style={{
                   aspectRatio: '1',
                   borderColor: 'var(--border-strong)',
-                  boxShadow: '0 24px 48px rgba(0,0,0,0.35)',
                 }}
               >
                 <div

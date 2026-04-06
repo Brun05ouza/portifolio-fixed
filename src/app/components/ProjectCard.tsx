@@ -1,6 +1,7 @@
 import { useState, useRef } from 'react';
 import { motion } from 'motion/react';
 import { ExternalLink, Github } from 'lucide-react';
+import { toAbsoluteHttpUrl } from '../../utils/externalUrl';
 
 const TITLE_MAX_LENGTH = 50;
 const DESCRIPTION_MAX_LENGTH = 120;
@@ -115,7 +116,7 @@ export function ProjectCard({
             {demoLink && (
               <>
                 <a
-                  href={demoLink}
+                  href={toAbsoluteHttpUrl(demoLink)}
                   target="_blank"
                   rel="noopener noreferrer"
                   className="flex items-center gap-2 text-sm hover:text-primary transition-colors"
@@ -140,7 +141,7 @@ export function ProjectCard({
             )}
             {githubLink && !hideGithubLink && (
               <a
-                href={githubLink}
+                href={toAbsoluteHttpUrl(githubLink)}
                 target="_blank"
                 rel="noopener noreferrer"
                 className="flex items-center gap-2 text-sm hover:text-primary transition-colors"

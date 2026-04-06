@@ -1,11 +1,12 @@
 import { motion } from 'motion/react';
-import { openWhatsApp } from '../../utils/whatsapp';
+import { useSiteContent } from '../../contexts/SiteContentContext';
 
 interface CTAFinalProps {
   onScheduleMeeting: () => void;
 }
 
 export function CTAFinal({ onScheduleMeeting }: CTAFinalProps) {
+  const { openSiteWhatsApp } = useSiteContent();
   return (
     <motion.section
       className="relative py-14 sm:py-20 md:py-24 px-4 sm:px-6"
@@ -24,7 +25,7 @@ export function CTAFinal({ onScheduleMeeting }: CTAFinalProps) {
         <div className="flex flex-wrap items-center justify-center gap-3 sm:gap-4">
           <button
             type="button"
-            onClick={() => openWhatsApp()}
+            onClick={() => openSiteWhatsApp()}
             className="w-full sm:w-auto min-h-[44px] px-5 py-3 sm:px-6 sm:py-3.5 rounded-xl font-semibold text-sm sm:text-base text-[var(--primary-foreground)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--ring)] focus-visible:ring-offset-2 focus-visible:ring-offset-[var(--background)]"
             style={{ backgroundColor: 'var(--accent-primary)' }}
           >

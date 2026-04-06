@@ -15,15 +15,13 @@ const PHRASE_LINE2 = 'Portfólio';
 const LOADING_PHRASES = [
   'Carregando meus conhecimentos...',
   'Colocando o café na cafeteira...',
-  'Preparando os cases...',
-  'Organizando a stack...',
   'Quase lá...',
 ];
 
-const PHRASE_DURATION_MS = 1400;
+const PHRASE_DURATION_MS = 650;
 const TOTAL_PHRASES_TIME_MS = LOADING_PHRASES.length * PHRASE_DURATION_MS;
-const WELCOME_TIME_MS = 1500; // tempo da mensagem de boas-vindas antes de começar as frases
-const CURTAIN_DURATION_MS = 650;
+const WELCOME_TIME_MS = 700;
+const CURTAIN_DURATION_MS = 420;
 
 export function Preloader({ onComplete }: PreloaderProps) {
   const [curtainUp, setCurtainUp] = useState(false);
@@ -75,7 +73,7 @@ export function Preloader({ onComplete }: PreloaderProps) {
           className="flex items-center justify-center"
           initial={{ opacity: 0, scale: 0.6 }}
           animate={{ opacity: 1, scale: 1 }}
-          transition={{ duration: 0.6, ease: 'easeOut' }}
+            transition={{ duration: 0.4, ease: 'easeOut' }}
         >
           <motion.div
             className="rounded-2xl flex items-center justify-center"
@@ -92,9 +90,9 @@ export function Preloader({ onComplete }: PreloaderProps) {
               ],
             }}
             transition={{
-              duration: 1.5,
+              duration: 1.1,
               repeat: Infinity,
-              repeatDelay: 0.3,
+              repeatDelay: 0.2,
             }}
           >
             <Lottie
@@ -111,7 +109,7 @@ export function Preloader({ onComplete }: PreloaderProps) {
             className="text-base sm:text-lg md:text-xl text-white/90 mb-2 text-center"
             initial={{ opacity: 0, y: 10 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.8, duration: 0.5 }}
+            transition={{ delay: 0.25, duration: 0.35 }}
           >
             {PHRASE_LINE1}
           </motion.p>
@@ -119,7 +117,7 @@ export function Preloader({ onComplete }: PreloaderProps) {
             className="text-xl sm:text-2xl md:text-3xl font-bold text-center"
             initial={{ opacity: 0, y: 10 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 1.4, duration: 0.5 }}
+            transition={{ delay: 0.5, duration: 0.35 }}
             style={{ color: '#22d3ee' }}
           >
             {PHRASE_LINE2}

@@ -2,22 +2,36 @@ import { useState } from 'react';
 import { motion } from 'motion/react';
 import { Mail, Github, Linkedin, Send, Sparkles, Loader2, CheckCircle2 } from 'lucide-react';
 import { GlitchText } from './GlitchText';
-import { siteConfig, socialLinks } from '../../config/content';
-import { openWhatsApp } from '../../utils/whatsapp';
+import { socialLinks } from '../../config/content';
+import { useSiteContent } from '../../contexts/SiteContentContext';
 import { toast } from 'sonner';
-import { submitContactToFirebase } from '../services/contactFirebase';
+import { submitContact } from '../services/contactDb';
 import { sendContactEmailJS, isEmailJSConfigured } from '../services/contactEmailJS';
 
 const iconMap = { Email: Mail, GitHub: Github, LinkedIn: Linkedin } as const;
 
-function getSocialDisplay(link: (typeof socialLinks)[0]) {
+function socialHref(
+  link: (typeof socialLinks)[0],
+  siteConfig: { contactEmail: string; githubUrl: string; linkedinUrl: string }
+) {
+  if (link.name === 'Email') return `mailto:${siteConfig.contactEmail}`;
+  if (link.name === 'GitHub') return siteConfig.githubUrl;
+  if (link.name === 'LinkedIn') return siteConfig.linkedinUrl;
+  return link.href;
+}
+
+function getSocialDisplay(
+  link: (typeof socialLinks)[0],
+  siteConfig: { contactEmail: string; githubUrl: string; linkedinUrl: string }
+) {
   if (link.name === 'Email') return siteConfig.contactEmail;
   if (link.name === 'GitHub') return siteConfig.githubUrl.replace('https://', '');
-  if (link.name === 'LinkedIn') return 'linkedin.com/in/bruno-souza';
+  if (link.name === 'LinkedIn') return siteConfig.linkedinUrl.replace(/^https?:\/\//, '');
   return link.href;
 }
 
 export function Contact() {
+  const { siteConfig, openSiteWhatsApp } = useSiteContent();
   const [formData, setFormData] = useState({ name: '', email: '', message: '' });
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [submitting, setSubmitting] = useState(false);
@@ -43,7 +57,7 @@ export function Contact() {
     setErrors({});
 
     try {
-      const result = await submitContactToFirebase(formData);
+      const result = await submitContact(formData);
 
       if (result.ok) {
         if (isEmailJSConfigured()) {
@@ -240,7 +254,7 @@ export function Contact() {
               </div>
               <button
                 type="button"
-                onClick={() => openWhatsApp('Olá! Gostaria de agendar uma reunião.')}
+                onClick={() => openSiteWhatsApp('Olá! Gostaria de agendar uma reunião.')}
                 className="mt-4 w-full sm:w-auto px-6 py-3 rounded-lg border-2 border-primary text-primary hover:bg-primary hover:text-primary-foreground transition-colors font-medium focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary"
               >
                 Agendar reunião
@@ -255,7 +269,7 @@ export function Contact() {
                   return (
                     <motion.a
                       key={link.name}
-                      href={link.href}
+                      href={socialHref(link, siteConfig)}
                       target="_blank"
                       rel="noopener noreferrer"
                       className="group relative p-4 rounded-lg bg-card border border-border hover:border-primary/50 transition-all duration-300 flex items-center gap-4 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary"
@@ -269,7 +283,7 @@ export function Contact() {
                       </div>
                       <div className="flex-1">
                         <div className="font-semibold">{link.name}</div>
-                        <div className="text-sm text-muted-foreground">{getSocialDisplay(link)}</div>
+                        <div className="text-sm text-muted-foreground">{getSocialDisplay(link, siteConfig)}</div>
                       </div>
                       <span className="opacity-0 group-hover:opacity-100 transition-opacity">→</span>
                     </motion.a>
