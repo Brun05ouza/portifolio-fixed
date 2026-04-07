@@ -20,7 +20,4 @@ export interface SiteSettings {
   updatedByUid?: string;
 }
 
-/** @deprecated use SiteSettings */
-export type SiteSettingsFirestore = SiteSettings;
-
 export const SITE_SETTINGS_ROW_ID = 'portfolio' as const;

@@ -116,8 +116,7 @@ export function DashboardPanel() {
             <h2 className="text-sm font-semibold text-zinc-400">Acessos</h2>
           </div>
           <p className="mt-3 text-sm leading-relaxed text-zinc-600">
-            Em breve: integração com Google Analytics ou Firebase Analytics para métricas reais de
-            visitas.
+            Em breve: integração com Google Analytics (ou similar) para métricas reais de visitas.
           </p>
         </div>
         <div className="rounded-xl border border-dashed border-zinc-700 bg-zinc-950/50 p-6">
