@@ -1,11 +1,13 @@
 import { motion } from 'motion/react';
 import { useReducedMotion } from '../../hooks/useReducedMotion';
 import { useSiteContent } from '../../contexts/SiteContentContext';
+import { useI18n } from '../../contexts/I18nContext';
 
 const techLogos = ['React', 'TypeScript', 'Node', 'Tailwind', 'Vite', 'Supabase'];
 
 export function Trust() {
   const { stats } = useSiteContent();
+  const { localeTag } = useI18n();
   const reduceMotion = useReducedMotion();
 
   return (
@@ -23,20 +25,20 @@ export function Trust() {
             const Icon = item.icon;
             return (
               <motion.div
-                key={item.label}
+                key={item.id}
                 className="text-center"
                 initial={{ opacity: 0, y: 12 }}
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true }}
                 transition={{ duration: 0.4, delay: i * 0.08 }}
               >
-                <div className="flex justify-center mb-2">
-                  <Icon className="w-6 h-6" style={{ color: item.color }} aria-hidden />
+                <div className="flex justify-center mb-2 [&>div]:flex [&>div]:items-center [&>div]:justify-center">
+                  <Icon size={24} className="shrink-0" style={{ color: item.color }} aria-hidden />
                 </div>
                 <div className="text-xl sm:text-2xl md:text-3xl font-bold text-foreground">
                   {typeof item.value === 'number' && item.value >= 1000
                     ? (item.value / 1000).toFixed(1) + 'k'
-                    : item.value.toLocaleString('pt-BR')}
+                    : item.value.toLocaleString(localeTag)}
                 </div>
                 <div className="text-sm mt-0.5" style={{ color: 'var(--foreground-muted)' }}>
                   {item.label}

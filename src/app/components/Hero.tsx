@@ -1,9 +1,10 @@
 import { useRef, useState, useEffect } from 'react';
 import { motion } from 'motion/react';
-import { useTheme } from 'next-themes';
 import { ArrowRight } from 'lucide-react';
+import { CoffeeIcon } from 'lucide-animated';
 import { useReducedMotion } from '../../hooks/useReducedMotion';
 import { useSiteContent } from '../../contexts/SiteContentContext';
+import { useI18n } from '../../contexts/I18nContext';
 import DarkVeil from './DarkVeil';
 
 interface HeroProps {
@@ -28,19 +29,11 @@ const heroContainerVariants = {
 
 export function Hero({ preloaderDone = true }: HeroProps) {
   const { heroTexts, openSiteWhatsApp } = useSiteContent();
+  const { t } = useI18n();
   const reduceMotion = useReducedMotion();
-  const { resolvedTheme } = useTheme();
-  const [themeMounted, setThemeMounted] = useState(false);
   const sectionRef = useRef<HTMLElement>(null);
   const [sectionHeight, setSectionHeight] = useState<string>('100dvh');
   const shouldReveal = preloaderDone;
-
-  useEffect(() => {
-    setThemeMounted(true);
-  }, []);
-
-  /** Tema claro: fundo branco sem WebGL (shader sempre tende ao cinza). */
-  const showDarkVeil = !themeMounted || resolvedTheme !== 'light';
 
   useEffect(() => {
     const el = sectionRef.current;
@@ -59,7 +52,7 @@ export function Hero({ preloaderDone = true }: HeroProps) {
     <section
       ref={sectionRef}
       id="home"
-      className="relative min-h-screen flex items-center overflow-hidden bg-white pt-20 pb-10 sm:pt-24 sm:pb-12 md:pt-28 md:pb-12 lg:pt-32 dark:bg-transparent"
+      className="relative min-h-screen flex items-center overflow-hidden bg-transparent pt-20 pb-10 sm:pt-24 sm:pb-12 md:pt-28 md:pb-12 lg:pt-32"
       style={{ minHeight: '100dvh' }}
     >
       <div
@@ -67,22 +60,18 @@ export function Hero({ preloaderDone = true }: HeroProps) {
         style={{ minHeight: '100dvh', height: sectionHeight }}
         aria-hidden
       >
-        {showDarkVeil ? (
-          <div className="absolute inset-0">
-            <DarkVeil
-              sizingRef={sectionRef}
-              hueShift={33}
-              noiseIntensity={0}
-              scanlineIntensity={0}
-              speed={0.9}
-              scanlineFrequency={1.7}
-              warpAmount={0}
-              resolutionScale={0.75}
-            />
-          </div>
-        ) : (
-          <div className="absolute inset-0 bg-white" />
-        )}
+        <div className="absolute inset-0">
+          <DarkVeil
+            sizingRef={sectionRef}
+            hueShift={33}
+            noiseIntensity={0}
+            scanlineIntensity={0}
+            speed={0.9}
+            scanlineFrequency={1.7}
+            warpAmount={0}
+            resolutionScale={0.75}
+          />
+        </div>
       </div>
       <div className="relative z-10 w-full max-w-6xl mx-auto px-4 sm:px-5 md:px-6">
         <motion.div
@@ -137,7 +126,7 @@ export function Hero({ preloaderDone = true }: HeroProps) {
               className="group inline-flex items-center justify-center gap-2 px-4 py-3 sm:px-5 sm:py-3.5 rounded-xl font-semibold text-sm sm:text-base text-[var(--primary-foreground)] transition-all duration-200 hover:opacity-95 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--ring)] focus-visible:ring-offset-2 focus-visible:ring-offset-[var(--background)] min-h-[44px]"
               style={{ backgroundColor: 'var(--accent-primary)' }}
             >
-              Solicitar orçamento
+              {t('hero.ctaQuote')}
               <ArrowRight className="w-4 h-4 transition-transform group-hover:translate-x-0.5" aria-hidden />
             </button>
             <a
@@ -145,7 +134,21 @@ export function Hero({ preloaderDone = true }: HeroProps) {
               className="inline-flex items-center justify-center gap-2 px-4 py-3 sm:px-5 sm:py-3.5 rounded-xl font-semibold text-sm sm:text-base border transition-all duration-200 hover:bg-[var(--surface-hover)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--ring)] focus-visible:ring-offset-2 focus-visible:ring-offset-[var(--background)] min-h-[44px]"
               style={{ borderColor: 'var(--border-strong)', color: 'var(--foreground)' }}
             >
-              Ver cases
+              {t('hero.ctaProjects')}
+            </a>
+            <a
+              href="https://buymeacoffee.com/brunosouza"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="group/cafe inline-flex items-center justify-center gap-2 px-4 py-3 sm:px-5 sm:py-3.5 rounded-xl font-semibold text-sm sm:text-base border transition-all duration-200 hover:bg-[var(--surface-hover)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--ring)] focus-visible:ring-offset-2 focus-visible:ring-offset-[var(--background)] min-h-[44px]"
+              style={{ borderColor: 'var(--border-strong)', color: 'var(--foreground)' }}
+            >
+              <CoffeeIcon
+                size={20}
+                className="shrink-0 text-[var(--accent-secondary)]"
+                aria-hidden
+              />
+              {t('hero.ctaCoffee')}
             </a>
             </motion.div>
               </div>
@@ -173,7 +176,7 @@ export function Hero({ preloaderDone = true }: HeroProps) {
                 />
                 <img
                   src="/eu.png"
-                  alt="Bruno Souza"
+                  alt={t('hero.photoAlt')}
                   width={400}
                   height={400}
                   className="w-full h-full object-cover"

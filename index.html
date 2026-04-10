@@ -17,7 +17,12 @@
       <meta name="twitter:description" content="Sistemas escaláveis, SaaS e interfaces modernas." />
       <meta name="twitter:image" content="/preview.png" />
       <script>
-        (function(){var t=localStorage.getItem('theme');document.documentElement.classList.toggle('dark',t!=='light')})();
+        (function () {
+          document.documentElement.classList.add('dark');
+          try {
+            localStorage.setItem('theme', 'dark');
+          } catch (e) {}
+        })();
       </script>
       <title>Bruno Souza - Desenvolvedor Fullstack | SaaS e Sistemas Web</title>
     </head>

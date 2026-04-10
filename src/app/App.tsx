@@ -1,5 +1,6 @@
 import { useEffect } from 'react';
 import { Routes, Route, Navigate, useNavigate } from 'react-router-dom';
+import { I18nProvider } from '../contexts/I18nContext';
 import { SiteContentProvider } from '../contexts/SiteContentContext';
 import { PortfolioView } from './PortfolioView';
 import { AdminRoot } from './admin/AdminRoot';
@@ -33,18 +34,20 @@ export default function App() {
   }, [navigate]);
 
   return (
-    <SiteContentProvider>
-      <Routes>
-        <Route path="admin" element={<AdminRoot />}>
-          <Route index element={<Navigate to="dashboard" replace />} />
-          <Route path="dashboard" element={<DashboardPanel />} />
-          <Route path="cursos" element={<CoursesPanel />} />
-          <Route path="certificados" element={<CertificatesPanel />} />
-          <Route path="projetos" element={<ProjectsPanel />} />
-          <Route path="configuracao" element={<SiteSettingsPanel />} />
-        </Route>
-        <Route path="*" element={<PortfolioView />} />
-      </Routes>
-    </SiteContentProvider>
+    <I18nProvider>
+      <SiteContentProvider>
+        <Routes>
+          <Route path="admin" element={<AdminRoot />}>
+            <Route index element={<Navigate to="dashboard" replace />} />
+            <Route path="dashboard" element={<DashboardPanel />} />
+            <Route path="cursos" element={<CoursesPanel />} />
+            <Route path="certificados" element={<CertificatesPanel />} />
+            <Route path="projetos" element={<ProjectsPanel />} />
+            <Route path="configuracao" element={<SiteSettingsPanel />} />
+          </Route>
+          <Route path="*" element={<PortfolioView />} />
+        </Routes>
+      </SiteContentProvider>
+    </I18nProvider>
   );
 }

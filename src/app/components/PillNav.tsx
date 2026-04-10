@@ -9,11 +9,12 @@ import {
   SheetTitle,
   SheetTrigger,
 } from './ui/sheet';
-import { ThemeToggle } from './ThemeToggle';
 import { navItems } from '../../config/content';
 import { getActiveNavId } from '../../utils/navScroll';
+import { useI18n } from '../../contexts/I18nContext';
 
 export function PillNav() {
+  const { t } = useI18n();
   const [activeId, setActiveId] = useState('home');
   const [scrolled, setScrolled] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
@@ -84,12 +85,11 @@ export function PillNav() {
           Portfolio
         </a>
         <div className="flex items-center gap-2">
-          <ThemeToggle />
           <Sheet open={menuOpen} onOpenChange={setMenuOpen}>
           <SheetTrigger asChild>
             <button
               className="flex items-center justify-center w-11 h-11 rounded-xl border border-white/20 hover:bg-white/10 active:bg-white/15 transition-colors touch-manipulation focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary"
-              aria-label="Abrir menu de navegação"
+              aria-label={t('navbar.openMenu')}
             >
               <Menu className="w-6 h-6 text-foreground" strokeWidth={2} />
             </button>
@@ -99,12 +99,10 @@ export function PillNav() {
             className="w-[min(280px,85vw)] sm:w-[320px] border-border bg-card/95 backdrop-blur-xl"
           >
             <SheetHeader>
-              <SheetTitle className="text-left text-foreground">Navegação</SheetTitle>
-              <SheetDescription className="sr-only">
-                Links de navegação do site.
-              </SheetDescription>
+              <SheetTitle className="text-left text-foreground">{t('navbar.menuTitle')}</SheetTitle>
+              <SheetDescription className="sr-only">{t('navbar.menuDesc')}</SheetDescription>
             </SheetHeader>
-            <nav className="flex flex-col gap-1 mt-6" aria-label="Navegação principal">
+            <nav className="flex flex-col gap-1 mt-6" aria-label={t('navbar.ariaMain')}>
               {navItems.map((item) => (
                 <a
                   key={item.id}
@@ -117,7 +115,7 @@ export function PillNav() {
                   }`}
                   aria-current={activeId === item.id ? 'true' : undefined}
                 >
-                  {item.label}
+                  {t(`nav.${item.id}`)}
                 </a>
               ))}
             </nav>
@@ -133,7 +131,7 @@ export function PillNav() {
         initial={{ y: -100, opacity: 0 }}
         animate={{ y: 0, opacity: 1 }}
         transition={{ duration: 0.6, ease: 'easeOut' }}
-        aria-label="Navegação principal"
+        aria-label={t('navbar.ariaMain')}
       >
         <ul className="flex items-center gap-1 px-3 py-2 relative">
           {navItems.map((item) => (
@@ -147,7 +145,7 @@ export function PillNav() {
                 }}
                 aria-current={activeId === item.id ? 'page' : undefined}
               >
-                {item.label}
+                {t(`nav.${item.id}`)}
               </a>
               {activeId === item.id && (
                 <motion.div
@@ -162,9 +160,6 @@ export function PillNav() {
               )}
             </li>
           ))}
-          <li className="flex items-center pl-2 ml-1 border-l border-border">
-            <ThemeToggle />
-          </li>
         </ul>
       </motion.nav>
     </>

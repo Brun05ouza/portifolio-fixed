@@ -3,27 +3,23 @@ import { motion, AnimatePresence } from 'motion/react';
 import Lottie from 'lottie-react';
 import { Loader2 } from 'lucide-react';
 import { useReducedMotion } from '../../hooks/useReducedMotion';
+import { useI18n } from '../../contexts/I18nContext';
 import preloaderCodeIcon from '../../assets/preloader-code-icon.json';
 
 interface PreloaderProps {
   onComplete: () => void;
 }
 
-const PHRASE_LINE1 = 'Olá, seja bem-vindo ao meu...';
-const PHRASE_LINE2 = 'Portfólio';
-
-const LOADING_PHRASES = [
-  'Carregando meus conhecimentos...',
-  'Colocando o café na cafeteira...',
-  'Quase lá...',
-];
-
 const PHRASE_DURATION_MS = 650;
-const TOTAL_PHRASES_TIME_MS = LOADING_PHRASES.length * PHRASE_DURATION_MS;
 const WELCOME_TIME_MS = 700;
 const CURTAIN_DURATION_MS = 420;
 
 export function Preloader({ onComplete }: PreloaderProps) {
+  const { bundle } = useI18n();
+  const pl = bundle.preloader;
+  const loadingPhrases = pl.phrases;
+  const totalPhrasesTimeMs = loadingPhrases.length * PHRASE_DURATION_MS;
+
   const [curtainUp, setCurtainUp] = useState(false);
   const [phraseIndex, setPhraseIndex] = useState(0);
   const reduceMotion = useReducedMotion();
@@ -32,10 +28,10 @@ export function Preloader({ onComplete }: PreloaderProps) {
   useEffect(() => {
     if (reduceMotion) return;
     const t = setInterval(() => {
-      setPhraseIndex((i) => (i + 1) % LOADING_PHRASES.length);
+      setPhraseIndex((i) => (i + 1) % loadingPhrases.length);
     }, PHRASE_DURATION_MS);
     return () => clearInterval(t);
-  }, [reduceMotion]);
+  }, [reduceMotion, loadingPhrases.length]);
 
   // Depois da mensagem de boas-vindas + todas as frases, sobe a cortina
   useEffect(() => {
@@ -45,9 +41,9 @@ export function Preloader({ onComplete }: PreloaderProps) {
     }
     const t = setTimeout(() => {
       setCurtainUp(true);
-    }, WELCOME_TIME_MS + TOTAL_PHRASES_TIME_MS);
+    }, WELCOME_TIME_MS + totalPhrasesTimeMs);
     return () => clearTimeout(t);
-  }, [onComplete, reduceMotion]);
+  }, [onComplete, reduceMotion, totalPhrasesTimeMs]);
 
   // Quando a cortina terminar de subir, avisa o App
   useEffect(() => {
@@ -111,7 +107,7 @@ export function Preloader({ onComplete }: PreloaderProps) {
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.25, duration: 0.35 }}
           >
-            {PHRASE_LINE1}
+            {pl.line1}
           </motion.p>
           <motion.p
             className="text-xl sm:text-2xl md:text-3xl font-bold text-center"
@@ -120,7 +116,7 @@ export function Preloader({ onComplete }: PreloaderProps) {
             transition={{ delay: 0.5, duration: 0.35 }}
             style={{ color: '#22d3ee' }}
           >
-            {PHRASE_LINE2}
+            {pl.line2}
           </motion.p>
         </div>
 
@@ -141,7 +137,7 @@ export function Preloader({ onComplete }: PreloaderProps) {
             exit={{ opacity: 0, y: -6 }}
             transition={{ duration: 0.35 }}
           >
-            {LOADING_PHRASES[phraseIndex]}
+            {loadingPhrases[phraseIndex]}
           </motion.p>
         </AnimatePresence>
         </div>

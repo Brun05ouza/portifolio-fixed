@@ -7,17 +7,29 @@ import {
   useState,
   type ReactNode,
 } from 'react';
-import type { LucideIcon } from 'lucide-react';
-import { heroTexts as defaultHero, siteConfig as defaultSite, stats as defaultStats } from '../config/content';
+import type { ComponentType, CSSProperties } from 'react';
+import { stats as defaultStats, siteConfig as defaultSite } from '../config/content';
 import { fetchSiteSettings } from '../services/siteSettingsDb';
 import { openWhatsApp as openWhatsAppRaw } from '../utils/whatsapp';
 import type { SiteSettings } from '../types/siteSettings';
+import type { HeroFull, Locale } from '../i18n/types';
+import { ptMessages } from '../i18n/messages/pt';
+import { messages } from '../i18n/messages';
+import { useI18n } from './I18nContext';
 
 export type MergedSiteConfig = typeof defaultSite;
-export type MergedHeroTexts = typeof defaultHero;
+export type MergedHeroTexts = HeroFull;
+
+/** Ícone das métricas (lucide-animated: `size` + estilo no wrapper). */
+export type StatIconComponent = ComponentType<{
+  className?: string;
+  style?: CSSProperties;
+  size?: number;
+}>;
 
 export type StatItem = {
-  icon: LucideIcon;
+  id: string;
+  icon: StatIconComponent;
   value: number;
   label: string;
   color: string;
@@ -35,7 +47,11 @@ type SiteContentContextValue = {
 
 const SiteContentContext = createContext<SiteContentContextValue | null>(null);
 
-function mergeFromRemote(remote: SiteSettings | null): {
+function mergeFromRemote(
+  remote: SiteSettings | null,
+  locale: Locale,
+  t: (key: string) => string
+): {
   siteConfig: MergedSiteConfig;
   heroTexts: MergedHeroTexts;
   stats: StatItem[];
@@ -52,35 +68,50 @@ function mergeFromRemote(remote: SiteSettings | null): {
     ...(remote?.calendlyUrl != null && remote.calendlyUrl !== '' ? { calendlyUrl: remote.calendlyUrl } : {}),
   };
 
-  const heroTexts: MergedHeroTexts = {
-    ...defaultHero,
-    ...(remote?.heroGreeting != null && remote.heroGreeting !== '' ? { greeting: remote.heroGreeting } : {}),
-    ...(remote?.heroHeadline != null && remote.heroHeadline !== '' ? { headline: remote.heroHeadline } : {}),
-    ...(remote?.heroSubheadline != null && remote.heroSubheadline !== ''
-      ? { subheadline: remote.heroSubheadline }
-      : {}),
-  };
+  const heroTexts: MergedHeroTexts =
+    locale === 'pt'
+      ? {
+          ...ptMessages.heroFull,
+          ...(remote?.heroGreeting != null && remote.heroGreeting.trim() !== ''
+            ? { greeting: remote.heroGreeting }
+            : {}),
+          ...(remote?.heroHeadline != null && remote.heroHeadline.trim() !== ''
+            ? { headline: remote.heroHeadline }
+            : {}),
+          ...(remote?.heroSubheadline != null && remote.heroSubheadline.trim() !== ''
+            ? { subheadline: remote.heroSubheadline }
+            : {}),
+        }
+      : { ...messages[locale].heroFull };
 
   const stats: StatItem[] = defaultStats.map((s) => {
-    if (s.label === 'Linhas de Código' && remote?.statLinesOfCode != null) {
-      return { ...s, value: remote.statLinesOfCode };
+    let value = s.value;
+    if (s.id === 'lines' && remote?.statLinesOfCode != null) {
+      value = remote.statLinesOfCode;
     }
-    if (s.label === 'Projetos Concluídos' && remote?.statProjects != null) {
-      return { ...s, value: remote.statProjects };
+    if (s.id === 'projects' && remote?.statProjects != null) {
+      value = remote.statProjects;
     }
-    if (s.label === 'Cafés Consumidos' && remote?.statCoffees != null) {
-      return { ...s, value: remote.statCoffees };
+    if (s.id === 'coffees' && remote?.statCoffees != null) {
+      value = remote.statCoffees;
     }
-    if (s.label === 'Horas de Estudo' && remote?.statStudyHours != null) {
-      return { ...s, value: remote.statStudyHours };
+    if (s.id === 'hours' && remote?.statStudyHours != null) {
+      value = remote.statStudyHours;
     }
-    return { ...s, icon: s.icon };
+    return {
+      id: s.id,
+      icon: s.icon as StatIconComponent,
+      value,
+      color: s.color,
+      label: t(`stats.${s.id}`),
+    };
   });
 
   return { siteConfig, heroTexts, stats };
 }
 
 export function SiteContentProvider({ children }: { children: ReactNode }) {
+  const { locale, t } = useI18n();
   const [remote, setRemote] = useState<SiteSettings | null>(null);
   const [remoteLoading, setRemoteLoading] = useState(true);
 
@@ -95,7 +126,10 @@ export function SiteContentProvider({ children }: { children: ReactNode }) {
     load();
   }, [load]);
 
-  const { siteConfig, heroTexts, stats } = useMemo(() => mergeFromRemote(remote), [remote]);
+  const { siteConfig, heroTexts, stats } = useMemo(
+    () => mergeFromRemote(remote, locale, t),
+    [remote, locale, t]
+  );
 
   const openSiteWhatsApp = useCallback(
     (message?: string) => {

@@ -3,45 +3,23 @@ import { Container } from '../components/ds/Container';
 import { SectionTitle } from '../components/ds/SectionTitle';
 import { Search, PencilRuler, Code2, Rocket } from 'lucide-react';
 import { useReducedMotion } from '../../hooks/useReducedMotion';
+import { useI18n } from '../../contexts/I18nContext';
 
-const steps = [
-  {
-    title: 'Descoberta',
-    icon: Search,
-    deliverables: ['Brief e alinhamento de objetivos', 'Análise de concorrência e referências', 'Escopo e cronograma'],
-  },
-  {
-    title: 'Design / Arquitetura',
-    icon: PencilRuler,
-    deliverables: ['Wireframes e fluxos', 'Arquitetura técnica e stack', 'Backlog priorizado'],
-  },
-  {
-    title: 'Implementação',
-    icon: Code2,
-    deliverables: ['Desenvolvimento iterativo', 'Code review e boas práticas', 'CI e testes automatizados'],
-  },
-  {
-    title: 'Deploy e Observabilidade',
-    icon: Rocket,
-    deliverables: ['Deploy em produção', 'Monitoramento e métricas', 'Documentação e handoff'],
-  },
-];
+const stepIcons = [Search, PencilRuler, Code2, Rocket] as const;
 
 export function Process() {
   const reduceMotion = useReducedMotion();
+  const { bundle } = useI18n();
+  const { label, title, subtitle, steps } = bundle.process;
 
   return (
     <section id="process" className="relative py-14 sm:py-20 md:py-28 border-t border-[var(--border)]">
       <Container>
-        <SectionTitle
-          label="Como eu trabalho"
-          title="Processo em 4 etapas"
-          subtitle="Da descoberta ao deploy, com entregáveis claros em cada fase."
-        />
+        <SectionTitle label={label} title={title} subtitle={subtitle} />
 
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-6 lg:gap-8">
           {steps.map((step, index) => {
-            const Icon = step.icon;
+            const Icon = stepIcons[index];
             return (
               <motion.div
                 key={step.title}
@@ -51,7 +29,6 @@ export function Process() {
                 viewport={{ once: true, margin: '-40px' }}
                 transition={{ duration: reduceMotion ? 0 : 0.4, delay: index * 0.08 }}
               >
-                {/* Mobile: card com borda e timeline; desktop: layout simples */}
                 <div className="flex flex-col h-full rounded-xl p-4 sm:p-0 sm:rounded-none border border-[var(--border)] sm:border-0 min-h-0 bg-[var(--surface)] sm:bg-transparent">
                   <div className="flex items-start gap-4 sm:gap-0 sm:flex-col">
                     <div className="flex items-center gap-3 shrink-0 sm:mb-4">

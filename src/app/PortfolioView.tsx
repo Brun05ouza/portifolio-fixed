@@ -1,7 +1,6 @@
 import { useEffect, useState, useRef, lazy, Suspense } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import { Loader2 } from 'lucide-react';
-import { useTheme } from 'next-themes';
 import { Navbar } from './components/Navbar';
 import { Hero } from './components/Hero';
 import { Services } from './sections/Services';
@@ -29,8 +28,11 @@ import { Preloader } from './components/Preloader';
 import { Toaster } from './components/ui/sonner';
 import { FloatingWhatsApp } from './components/FloatingWhatsApp';
 import { CalendlyModal } from './components/CalendlyModal';
+import { useI18n } from '../contexts/I18nContext';
 
 export function PortfolioView() {
+  const { bundle } = useI18n();
+  const pv = bundle.portfolio;
   const [showScrollTop, setShowScrollTop] = useState(false);
   const lastScrollY = useRef(0);
   const [calendlyOpen, setCalendlyOpen] = useState(false);
@@ -38,8 +40,6 @@ export function PortfolioView() {
   const [siteReady, setSiteReady] = useState(false);
   const [pcSectionInView, setPcSectionInView] = useState(false);
   const pcSectionRef = useRef<HTMLElement>(null);
-  useTheme();
-
   useEffect(() => {
     if (!preloaderDone) return;
     if (document.readyState === 'complete') {
@@ -92,7 +92,7 @@ export function PortfolioView() {
       <BackgroundPremium />
 
       <div className="relative z-10">
-        <Navbar onScheduleCall={() => setCalendlyOpen(true)} />
+        <Navbar preloaderDone={preloaderDone} onScheduleCall={() => setCalendlyOpen(true)} />
         <main>
           <Hero preloaderDone={preloaderDone} />
           <section
@@ -142,7 +142,7 @@ export function PortfolioView() {
                 className="min-h-[50vh] flex items-center justify-center"
                 style={{ color: 'var(--foreground-muted)' }}
               >
-                Carregando...
+                {pv.loading}
               </div>
             }
           >
@@ -176,8 +176,8 @@ export function PortfolioView() {
             exit={{ opacity: 0, scale: 0.6, y: 8 }}
             whileHover={{ scale: 1.1 }}
             transition={{ duration: 0.25, ease: [0.22, 1, 0.36, 1] }}
-            aria-label="Voltar ao topo da página"
-            title="Voltar ao topo"
+            aria-label={pv.scrollTop}
+            title={pv.scrollTopTitle}
           >
             ↑
           </motion.button>

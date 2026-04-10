@@ -2,52 +2,26 @@ import { motion } from 'motion/react';
 import { Container } from '../components/ds/Container';
 import { SectionTitle } from '../components/ds/SectionTitle';
 import { useSiteContent } from '../../contexts/SiteContentContext';
+import { useI18n } from '../../contexts/I18nContext';
 import { Cloud, Building2, LayoutTemplate, Gauge } from 'lucide-react';
 import { useReducedMotion } from '../../hooks/useReducedMotion';
 
-const services = [
-  {
-    title: 'Desenvolvimento de SaaS',
-    description: 'Plataformas sob demanda com arquitetura escalável, multi-tenant e métricas de uso.',
-    bullets: ['Arquitetura escalável e segura', 'APIs REST e integrações', 'Painéis administrativos'],
-    icon: Cloud,
-  },
-  {
-    title: 'Sistemas Internos Empresariais',
-    description: 'Soluções sob medida para gestão, fluxos de trabalho e automação de processos.',
-    bullets: ['Workflows e automação', 'Relatórios e dashboards', 'Integração com ERPs'],
-    icon: Building2,
-  },
-  {
-    title: 'Landing Pages de Alta Conversão',
-    description: 'Páginas focadas em conversão, performance e experiência do usuário.',
-    bullets: ['Design responsivo e acessível', 'SEO e Core Web Vitals', 'Formulários e CTAs otimizados'],
-    icon: LayoutTemplate,
-  },
-  {
-    title: 'Otimização e Performance Web',
-    description: 'Análise e melhoria de aplicações existentes: velocidade, bundle e UX.',
-    bullets: ['Auditoria de performance', 'Lazy load e code splitting', 'Métricas e monitoramento'],
-    icon: Gauge,
-  },
-];
+const serviceIcons = [Cloud, Building2, LayoutTemplate, Gauge] as const;
 
 export function Services() {
   const { openSiteWhatsApp } = useSiteContent();
+  const { bundle } = useI18n();
   const reduceMotion = useReducedMotion();
+  const { label, title, subtitle, items, cta, whatsapp } = bundle.services;
 
   return (
     <section id="services" className="relative py-14 sm:py-20 md:py-28">
       <Container>
-        <SectionTitle
-          label="Serviços"
-          title="O que eu entrego"
-          subtitle="Soluções sob medida para sua empresa, com foco em resultado e manutenção."
-        />
+        <SectionTitle label={label} title={title} subtitle={subtitle} />
 
         <div className="grid md:grid-cols-2 gap-4 sm:gap-6 lg:gap-8">
-          {services.map((service, index) => {
-            const Icon = service.icon;
+          {items.map((service, index) => {
+            const Icon = serviceIcons[index];
             return (
               <motion.article
                 key={service.title}
@@ -91,13 +65,11 @@ export function Services() {
                   </ul>
                   <button
                     type="button"
-                    onClick={() =>
-                      openSiteWhatsApp(`Olá Bruno, tenho interesse no serviço: ${service.title}.`)
-                    }
+                    onClick={() => openSiteWhatsApp(whatsapp.replace('{title}', service.title))}
                     className="text-sm font-semibold transition-colors hover:opacity-90 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--ring)] focus-visible:ring-offset-2 rounded-lg px-4 py-2 -ml-2"
                     style={{ color: 'var(--accent-primary)' }}
                   >
-                    Solicitar orçamento →
+                    {cta}
                   </button>
                 </div>
               </motion.article>

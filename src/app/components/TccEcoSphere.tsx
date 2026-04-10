@@ -1,10 +1,15 @@
-import React, { useRef, useState, useEffect } from 'react';
+import { useRef, useState, useEffect } from 'react';
 import { motion } from 'motion/react';
 import { GlitchText } from './GlitchText';
 import { Cpu, Brain, LayoutDashboard, Sparkles } from 'lucide-react';
 import { GlobeAnimation } from './GlobeAnimation';
+import { useI18n } from '../../contexts/I18nContext';
+
+const featureIcons = [Cpu, Brain, LayoutDashboard, Sparkles] as const;
 
 export function TccEcoSphere() {
+  const { bundle } = useI18n();
+  const tc = bundle.tcc;
   const sectionRef = useRef<HTMLElement>(null);
   const [isInView, setIsInView] = useState(false);
   const [globeReady, setGlobeReady] = useState(false);
@@ -22,7 +27,6 @@ export function TccEcoSphere() {
     return () => io.disconnect();
   }, []);
 
-  // Só monta o globo após a seção estar em view + pequeno delay para não travar o scroll
   useEffect(() => {
     if (!isInView) {
       setGlobeReady(false);
@@ -31,29 +35,6 @@ export function TccEcoSphere() {
     const t = setTimeout(() => setGlobeReady(true), 300);
     return () => clearTimeout(t);
   }, [isInView]);
-
-  const features = [
-    {
-      icon: <Cpu className="w-6 h-6" />,
-      title: 'IoT Sensors',
-      description: 'Sensores inteligentes para coleta de dados ambientais',
-    },
-    {
-      icon: <Brain className="w-6 h-6" />,
-      title: 'Machine Learning',
-      description: 'Algoritmos preditivos para análise ambiental',
-    },
-    {
-      icon: <LayoutDashboard className="w-6 h-6" />,
-      title: 'Dashboard Real-time',
-      description: 'Visualização de dados em tempo real',
-    },
-    {
-      icon: <Sparkles className="w-6 h-6" />,
-      title: 'Classificação de Resíduos com IA',
-      description: 'TensorFlow.js + Google Teachable Machine para categorização automática',
-    },
-  ];
 
   return (
     <section ref={sectionRef} id="tcc" className="relative py-32 px-6 overflow-hidden">
@@ -69,43 +50,41 @@ export function TccEcoSphere() {
             className="text-sm font-medium tracking-wide uppercase mb-3"
             style={{ color: 'var(--accent-primary)' }}
           >
-            TCC — Trabalho de conclusão de curso
+            {tc.kicker}
           </p>
           <h2 className="text-4xl md:text-5xl font-bold mb-4">
             <GlitchText text="EcoSphere" />
           </h2>
-          <p className="text-xl text-muted-foreground max-w-3xl mx-auto mb-4">
-            Sistema de Monitoramento Ambiental
-          </p>
-          <p className="text-lg text-muted-foreground max-w-3xl mx-auto">
-            Plataforma inovadora que integra IoT, Machine Learning e análise de dados em tempo real 
-            para monitoramento e preservação ambiental.
-          </p>
+          <p className="text-xl text-muted-foreground max-w-3xl mx-auto mb-4">{tc.subtitle}</p>
+          <p className="text-lg text-muted-foreground max-w-3xl mx-auto">{tc.lead}</p>
           <div className="w-20 h-1 mx-auto mt-6 rounded-full" style={{ background: 'linear-gradient(to right, var(--color-beam-start), var(--color-beam-end))' }} />
         </motion.div>
 
         <div className="grid md:grid-cols-2 gap-6">
-          {features.map((feature, index) => (
-            <motion.div
-              key={index}
-              initial={{ opacity: 0, y: 20 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              transition={{ duration: 0.5, delay: index * 0.1 }}
-              className="p-6 rounded-xl bg-card border border-border hover:border-primary/50 transition-all duration-300 group"
-            >
-              <div
-                className="w-14 h-14 rounded-lg mb-4 flex items-center justify-center text-white"
-                style={{
-                  background: 'linear-gradient(135deg, var(--color-beam-start), var(--color-beam-end))',
-                }}
+          {tc.features.map((feature, index) => {
+            const Icon = featureIcons[index];
+            return (
+              <motion.div
+                key={feature.title}
+                initial={{ opacity: 0, y: 20 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                transition={{ duration: 0.5, delay: index * 0.1 }}
+                className="p-6 rounded-xl bg-card border border-border hover:border-primary/50 transition-all duration-300 group"
               >
-                {feature.icon}
-              </div>
-              <h3 className="text-lg font-semibold mb-2">{feature.title}</h3>
-              <p className="text-sm text-muted-foreground">{feature.description}</p>
-            </motion.div>
-          ))}
+                <div
+                  className="w-14 h-14 rounded-lg mb-4 flex items-center justify-center text-white"
+                  style={{
+                    background: 'linear-gradient(135deg, var(--color-beam-start), var(--color-beam-end))',
+                  }}
+                >
+                  <Icon className="w-6 h-6" aria-hidden />
+                </div>
+                <h3 className="text-lg font-semibold mb-2">{feature.title}</h3>
+                <p className="text-sm text-muted-foreground">{feature.description}</p>
+              </motion.div>
+            );
+          })}
         </div>
 
         <motion.div
@@ -124,7 +103,7 @@ export function TccEcoSphere() {
               background: 'linear-gradient(135deg, var(--color-beam-start), var(--color-beam-end))',
             }}
           >
-            Ver Projeto Completo →
+            {tc.cta}
           </a>
         </motion.div>
 
@@ -139,7 +118,7 @@ export function TccEcoSphere() {
             <GlobeAnimation size={220} light className="rounded-full overflow-hidden border-2 border-primary/40 shadow-lg shadow-primary/20 ring-2 ring-primary/10" />
           ) : (
             <div className="w-[220px] h-[220px] rounded-full border-2 border-primary/20 bg-card/50 flex items-center justify-center" aria-hidden>
-              <span className="text-sm text-muted-foreground">Carregando...</span>
+              <span className="text-sm text-muted-foreground">{tc.globeLoading}</span>
             </div>
           )}
         </motion.div>

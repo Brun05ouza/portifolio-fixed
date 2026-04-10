@@ -5,7 +5,13 @@ import App from "./app/App.tsx";
 import "./styles/index.css";
 
 createRoot(document.getElementById("root")!).render(
-  <ThemeProvider attribute="class" defaultTheme="dark" enableSystem={false}>
+  <ThemeProvider
+    attribute="class"
+    defaultTheme="dark"
+    forcedTheme="dark"
+    enableSystem={false}
+    disableTransitionOnChange
+  >
     <BrowserRouter
       future={{
         v7_startTransition: true,

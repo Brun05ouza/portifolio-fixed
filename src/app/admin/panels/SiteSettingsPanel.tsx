@@ -1,29 +1,27 @@
 import { useEffect, useState } from 'react';
 import { Loader2, Save } from 'lucide-react';
 import { supabase } from '../../../config/supabase';
-import { heroTexts, siteConfig, stats as defaultStats } from '../../../config/content';
+import { siteConfig, stats as defaultStats } from '../../../config/content';
+import { ptMessages } from '../../../i18n/messages/pt';
 import { fetchSiteSettings, saveSiteSettings } from '../../../services/siteSettingsDb';
 import type { SiteSettings } from '../../../types/siteSettings';
 import { useSiteContent } from '../../../contexts/SiteContentContext';
 
 function buildFormState(remote: SiteSettings | null): Record<string, string | number> {
   return {
-    heroGreeting: remote?.heroGreeting ?? heroTexts.greeting,
-    heroHeadline: remote?.heroHeadline ?? heroTexts.headline,
-    heroSubheadline: remote?.heroSubheadline ?? heroTexts.subheadline,
+    heroGreeting: remote?.heroGreeting ?? ptMessages.heroFull.greeting,
+    heroHeadline: remote?.heroHeadline ?? ptMessages.heroFull.headline,
+    heroSubheadline: remote?.heroSubheadline ?? ptMessages.heroFull.subheadline,
     contactEmail: remote?.contactEmail ?? siteConfig.contactEmail,
     linkedinUrl: remote?.linkedinUrl ?? siteConfig.linkedinUrl,
     githubUrl: remote?.githubUrl ?? siteConfig.githubUrl,
     whatsappNumber: remote?.whatsappNumber ?? siteConfig.whatsappNumber,
     githubUser: remote?.githubUser ?? siteConfig.githubUser,
     calendlyUrl: remote?.calendlyUrl ?? siteConfig.calendlyUrl,
-    statLinesOfCode:
-      remote?.statLinesOfCode ?? defaultStats.find((s) => s.label === 'Linhas de Código')!.value,
-    statProjects:
-      remote?.statProjects ?? defaultStats.find((s) => s.label === 'Projetos Concluídos')!.value,
-    statCoffees: remote?.statCoffees ?? defaultStats.find((s) => s.label === 'Cafés Consumidos')!.value,
-    statStudyHours:
-      remote?.statStudyHours ?? defaultStats.find((s) => s.label === 'Horas de Estudo')!.value,
+    statLinesOfCode: remote?.statLinesOfCode ?? defaultStats.find((s) => s.id === 'lines')!.value,
+    statProjects: remote?.statProjects ?? defaultStats.find((s) => s.id === 'projects')!.value,
+    statCoffees: remote?.statCoffees ?? defaultStats.find((s) => s.id === 'coffees')!.value,
+    statStudyHours: remote?.statStudyHours ?? defaultStats.find((s) => s.id === 'hours')!.value,
   };
 }
 

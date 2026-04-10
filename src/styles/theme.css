@@ -1,6 +1,6 @@
 @custom-variant dark (&:is(.dark *));
 
-/* ========== PREMIUM DARK (default) ========== */
+/* ========== Tema dark (único — modo claro removido até nova definição) ========== */
 :root,
 .dark {
   /* Surfaces */
@@ -92,32 +92,6 @@
   --nav-glass-shadow: 0 4px 24px rgba(0, 0, 0, 0.12);
   --nav-mobile-pill-bg: rgba(10, 10, 15, 0.45);
   --nav-mobile-pill-border: rgba(255, 255, 255, 0.06);
-}
-
-/* Light theme override (optional) */
-:root:not(.dark) {
-  --background: #fafafa;
-  --background-elevated: #ffffff;
-  --surface: #f4f4f5;
-  --surface-hover: #e4e4e7;
-  --foreground: #09090b;
-  /* Contraste melhor sobre hero claro */
-  --foreground-muted: #52525b;
-  --foreground-subtle: #71717a;
-  --card: #ffffff;
-  --card-foreground: #09090b;
-  --popover: #ffffff;
-  --popover-foreground: #09090b;
-  --border: rgba(0, 0, 0, 0.08);
-  --border-strong: rgba(0, 0, 0, 0.14);
-  --input: #f4f4f5;
-  --overlay-gradient: radial-gradient(ellipse 80% 50% at 50% -20%, rgba(34, 211, 238, 0.08), transparent 50%);
-  /* Navbar glass no claro */
-  --nav-glass-bg: rgba(255, 255, 255, 0.78);
-  --nav-glass-border: rgba(0, 0, 0, 0.08);
-  --nav-glass-shadow: 0 4px 24px rgba(0, 0, 0, 0.06);
-  --nav-mobile-pill-bg: rgba(255, 255, 255, 0.92);
-  --nav-mobile-pill-border: rgba(0, 0, 0, 0.1);
 }
 
 @theme inline {

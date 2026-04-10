@@ -3,8 +3,7 @@
  * Edite aqui para alterar textos e configurações sem mexer na lógica de UI.
  */
 
-import type { LucideIcon } from 'lucide-react';
-import { Code2, Rocket, Coffee, Clock } from 'lucide-react';
+import { ClockIcon, CoffeeIcon, FolderCodeIcon, RocketIcon } from 'lucide-animated';
 
 export const siteConfig = {
   githubUser: import.meta.env.VITE_GITHUB_USER || 'Brun05ouza',
@@ -20,31 +19,23 @@ export const siteConfig = {
 
 /** Itens do header; ordem segue o scroll na página (há seções só no corpo, sem link no menu). */
 export const navItems = [
-  { id: 'home', label: 'Início', href: '#home' },
-  { id: 'services', label: 'Serviços', href: '#services' },
-  { id: 'about', label: 'Sobre', href: '#about' },
-  { id: 'work', label: 'Projetos', href: '#work' },
-  { id: 'cursos', label: 'Cursos', href: '#cursos' },
-  { id: 'certificados', label: 'Certificados', href: '#certificados' },
-  { id: 'stack', label: 'Skills', href: '#stack' },
-  { id: 'contact', label: 'Contato', href: '#contact' },
-];
+  { id: 'home', href: '#home' },
+  { id: 'services', href: '#services' },
+  { id: 'about', href: '#about' },
+  { id: 'work', href: '#work' },
+  { id: 'cursos', href: '#cursos' },
+  { id: 'certificados', href: '#certificados' },
+  { id: 'stack', href: '#stack' },
+  { id: 'contact', href: '#contact' },
+] as const;
 
+/** Valores padrão das métricas; rótulos vêm do i18n (`stats.${id}`). */
 export const stats = [
-  { icon: Code2 as LucideIcon, value: 43500, label: 'Linhas de Código', color: '#22c55e' },
-  { icon: Rocket as LucideIcon, value: 29, label: 'Projetos Concluídos', color: '#10b981' },
-  { icon: Coffee as LucideIcon, value: 350, label: 'Cafés Consumidos', color: '#f59e0b' },
-  { icon: Clock as LucideIcon, value: 1200, label: 'Horas de Estudo', color: '#8b5cf6' },
-];
-
-export const heroTexts = {
-  greeting: 'Olá, eu sou Bruno Souza',
-  headline: 'Desenvolvo sistemas web escaláveis e experiências digitais de alto impacto.',
-  subheadline: 'Especialista em SaaS, plataformas empresariais e interfaces modernas com foco em performance e conversão.',
-  rotating: ['Desenvolvimento', 'Tecnologia', 'Café'],
-  prefix: 'Apaixonado por',
-  subtitle: 'Estudante de desenvolvimento apaixonado por tecnologia, aprendendo e criando projetos para evoluir minhas habilidades',
-};
+  { id: 'lines', icon: FolderCodeIcon, value: 43500, color: '#22c55e' },
+  { id: 'projects', icon: RocketIcon, value: 29, color: '#10b981' },
+  { id: 'coffees', icon: CoffeeIcon, value: 350, color: '#f59e0b' },
+  { id: 'hours', icon: ClockIcon, value: 1200, color: '#8b5cf6' },
+] as const;
 
 export const socialLinks = [
   { name: 'Email', href: 'mailto:brunosouzagithub2003@gmail.com', color: 'from-red-500 to-orange-500' },

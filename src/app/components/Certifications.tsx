@@ -3,6 +3,7 @@ import { motion } from 'motion/react';
 import { GlitchText } from './GlitchText';
 import { Award } from 'lucide-react';
 import { listCertificatesPublic } from '../../services/portfolioDb';
+import { useI18n } from '../../contexts/I18nContext';
 import type { CertificateWithId } from '../../types/portfolio';
 import { getCertIcon } from '../../config/certIcons';
 import { Loader2 } from 'lucide-react';
@@ -10,6 +11,8 @@ import { Loader2 } from 'lucide-react';
 const INITIAL_COUNT = 4;
 
 export function Certifications() {
+  const { bundle } = useI18n();
+  const cert = bundle.certifications;
   const [items, setItems] = useState<CertificateWithId[]>([]);
   const [loading, setLoading] = useState(true);
   const [isExpanded, setIsExpanded] = useState(false);
@@ -41,10 +44,10 @@ export function Certifications() {
           transition={{ duration: 0.6 }}
         >
           <h2 className="text-3xl sm:text-4xl md:text-5xl font-bold mb-4">
-            <GlitchText text="Certificações" />
+            <GlitchText text={cert.title} />
           </h2>
           <p className="text-base sm:text-xl text-muted-foreground max-w-2xl mx-auto">
-            Cursos e certificações concluídos
+            {cert.subtitle}
           </p>
           <div className="w-20 h-1 mx-auto mt-6 rounded-full" style={{ background: 'linear-gradient(to right, var(--color-beam-start), var(--color-beam-end))' }} />
         </motion.div>
@@ -55,7 +58,7 @@ export function Certifications() {
           </div>
         ) : items.length === 0 ? (
           <p className="text-center text-muted-foreground py-12">
-            Nenhuma certificação cadastrada no painel ainda.
+            {cert.empty}
           </p>
         ) : (
           <>
@@ -99,7 +102,7 @@ export function Certifications() {
                     </div>
                     <div className="mt-auto flex items-center gap-2 text-xs text-green-600 dark:text-green-400">
                       <Award className="w-4 h-4 flex-shrink-0" />
-                      <span>Verificado</span>
+                      <span>{cert.verified}</span>
                     </div>
                   </motion.div>
                 );
@@ -119,7 +122,7 @@ export function Certifications() {
                   onClick={() => setIsExpanded(!isExpanded)}
                   className="inline-block w-full sm:w-auto px-6 py-3 rounded-full border-2 border-foreground hover:bg-foreground hover:text-background transition-all duration-300 font-semibold text-sm sm:text-base min-h-[44px] sm:min-h-0"
                 >
-                  {isExpanded ? 'Ver menos ←' : 'Ver Todos os Certificados →'}
+                  {isExpanded ? cert.showLess : cert.showAll}
                 </button>
               </motion.div>
             )}

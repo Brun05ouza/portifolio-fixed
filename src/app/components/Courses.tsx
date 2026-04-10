@@ -5,8 +5,11 @@ import { Container } from './ds/Container';
 import { SectionTitle } from './ds/SectionTitle';
 import { listCoursesPublic } from '../../services/portfolioDb';
 import type { CourseWithId } from '../../types/portfolio';
+import { useI18n } from '../../contexts/I18nContext';
 
 export function Courses() {
+  const { bundle } = useI18n();
+  const c = bundle.courses;
   const [courses, setCourses] = useState<CourseWithId[]>([]);
   const [loading, setLoading] = useState(true);
 
@@ -27,11 +30,7 @@ export function Courses() {
   return (
     <section id="cursos" className="relative py-14 sm:py-20 md:py-28 border-t border-[var(--border)]">
       <Container>
-        <SectionTitle
-          label="Formação"
-          title="Cursos"
-          subtitle="Trilhas e cursos que compõem a base técnica e continuam em evolução."
-        />
+        <SectionTitle label={c.label} title={c.title} subtitle={c.subtitle} />
 
         {loading ? (
           <div className="flex justify-center py-16">
@@ -39,7 +38,7 @@ export function Courses() {
           </div>
         ) : courses.length === 0 ? (
           <p className="text-center py-12" style={{ color: 'var(--foreground-muted)' }}>
-            Nenhum curso publicado. Adicione itens ativos no painel administrativo.
+            {c.empty}
           </p>
         ) : (
           <div className="grid gap-4 sm:gap-6 sm:grid-cols-2 lg:grid-cols-3">
@@ -89,7 +88,7 @@ export function Courses() {
                       className="mt-2 inline-flex items-center gap-2 text-sm font-medium text-primary hover:underline"
                     >
                       <ExternalLink className="h-4 w-4" />
-                      Abrir link
+                      {c.openLink}
                     </a>
                   ) : null}
                 </div>

@@ -4,6 +4,7 @@ import { Mail, Github, Linkedin, Send, Sparkles, Loader2, CheckCircle2 } from 'l
 import { GlitchText } from './GlitchText';
 import { socialLinks } from '../../config/content';
 import { useSiteContent } from '../../contexts/SiteContentContext';
+import { useI18n } from '../../contexts/I18nContext';
 import { toast } from 'sonner';
 import { submitContact } from '../services/contactDb';
 import { sendContactEmailJS, isEmailJSConfigured } from '../services/contactEmailJS';
@@ -32,6 +33,8 @@ function getSocialDisplay(
 
 export function Contact() {
   const { siteConfig, openSiteWhatsApp } = useSiteContent();
+  const { bundle } = useI18n();
+  const c = bundle.contact;
   const [formData, setFormData] = useState({ name: '', email: '', message: '' });
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [submitting, setSubmitting] = useState(false);
@@ -39,12 +42,12 @@ export function Contact() {
 
   const validate = () => {
     const next: Record<string, string> = {};
-    if (!formData.name.trim()) next.name = 'Informe seu nome';
-    else if (formData.name.trim().length < 2) next.name = 'Nome deve ter pelo menos 2 caracteres';
-    if (!formData.email.trim()) next.email = 'Informe seu e-mail';
-    else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.email)) next.email = 'E-mail inválido';
-    if (!formData.message.trim()) next.message = 'Escreva sua mensagem';
-    else if (formData.message.trim().length < 10) next.message = 'Mensagem deve ter pelo menos 10 caracteres';
+    if (!formData.name.trim()) next.name = c.errNameRequired;
+    else if (formData.name.trim().length < 2) next.name = c.errNameShort;
+    if (!formData.email.trim()) next.email = c.errEmailRequired;
+    else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.email)) next.email = c.errEmailInvalid;
+    if (!formData.message.trim()) next.message = c.errMessageRequired;
+    else if (formData.message.trim().length < 10) next.message = c.errMessageShort;
     setErrors(next);
     return Object.keys(next).length === 0;
   };
@@ -63,19 +66,19 @@ export function Contact() {
         if (isEmailJSConfigured()) {
           const emailResult = await sendContactEmailJS(formData);
           if (!emailResult.ok) {
-            toast.warning('Mensagem salva. O aviso por e-mail pode não ter sido enviado.');
+            toast.warning(c.toastSavedWarn);
           }
         }
         setFormData({ name: '', email: '', message: '' });
         setSubmitted(true);
-        toast.success('Mensagem enviada! Responderei em breve.');
+        toast.success(c.toastSuccess);
       } else {
         toast.error(result.error);
         setErrors({ submit: result.error });
       }
     } catch {
-      toast.error('Falha na conexão. Verifique sua internet e tente novamente.');
-      setErrors({ submit: 'Falha na conexão.' });
+      toast.error(c.toastConnection);
+      setErrors({ submit: c.errConnection });
     } finally {
       setSubmitting(false);
     }
@@ -92,11 +95,9 @@ export function Contact() {
           transition={{ duration: 0.6 }}
         >
           <h2 className="text-3xl sm:text-4xl md:text-5xl font-bold mb-4">
-            <GlitchText text="Vamos trabalhar juntos?" />
+            <GlitchText text={c.title} />
           </h2>
-          <p className="text-base sm:text-xl text-muted-foreground max-w-2xl mx-auto">
-            Estou sempre disponível para novos desafios e oportunidades. Vamos criar algo incrível!
-          </p>
+          <p className="text-base sm:text-xl text-muted-foreground max-w-2xl mx-auto">{c.subtitle}</p>
           <div className="w-20 h-1 mx-auto mt-6 rounded-full" style={{ background: 'linear-gradient(to right, var(--color-beam-start), var(--color-beam-end))' }} />
         </motion.div>
 
@@ -115,21 +116,21 @@ export function Contact() {
               {submitted ? (
                 <div className="flex flex-col items-center justify-center py-12 gap-4 text-center">
                   <CheckCircle2 className="w-16 h-16 text-green-500" />
-                  <h3 className="text-xl font-semibold">Mensagem enviada!</h3>
-                  <p className="text-muted-foreground">Obrigado pelo contato. Responderei em breve.</p>
+                  <h3 className="text-xl font-semibold">{c.successTitle}</h3>
+                  <p className="text-muted-foreground">{c.successBody}</p>
                   <button
                     type="button"
                     onClick={() => setSubmitted(false)}
                     className="text-primary hover:underline"
                   >
-                    Enviar outra mensagem
+                    {c.sendAnother}
                   </button>
                 </div>
               ) : (
                 <form onSubmit={handleSubmit} className="space-y-6">
                   <div>
                     <label htmlFor="contact-name" className="block mb-2 text-sm font-medium">
-                      Nome
+                      {c.name}
                     </label>
                     <input
                       type="text"
@@ -139,7 +140,7 @@ export function Contact() {
                       className={`w-full px-4 py-3 rounded-lg bg-background border transition-colors focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary ${
                         errors.name ? 'border-destructive' : 'border-border'
                       }`}
-                      placeholder="Seu nome"
+                      placeholder={c.phName}
                       disabled={submitting}
                       aria-invalid={!!errors.name}
                       aria-describedby={errors.name ? 'name-error' : undefined}
@@ -152,7 +153,7 @@ export function Contact() {
                   </div>
                   <div>
                     <label htmlFor="contact-email" className="block mb-2 text-sm font-medium">
-                      Email
+                      {c.email}
                     </label>
                     <input
                       type="email"
@@ -162,7 +163,7 @@ export function Contact() {
                       className={`w-full px-4 py-3 rounded-lg bg-background border transition-colors focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary ${
                         errors.email ? 'border-destructive' : 'border-border'
                       }`}
-                      placeholder="seu@email.com"
+                      placeholder={c.phEmail}
                       disabled={submitting}
                       aria-invalid={!!errors.email}
                       aria-describedby={errors.email ? 'email-error' : undefined}
@@ -175,7 +176,7 @@ export function Contact() {
                   </div>
                   <div>
                     <label htmlFor="contact-message" className="block mb-2 text-sm font-medium">
-                      Mensagem
+                      {c.message}
                     </label>
                     <textarea
                       id="contact-message"
@@ -185,7 +186,7 @@ export function Contact() {
                         errors.message ? 'border-destructive' : 'border-border'
                       }`}
                       rows={5}
-                      placeholder="Conte-me sobre seu projeto..."
+                      placeholder={c.phMessage}
                       disabled={submitting}
                       aria-invalid={!!errors.message}
                       aria-describedby={errors.message ? 'message-error' : undefined}
@@ -211,11 +212,11 @@ export function Contact() {
                       {submitting ? (
                         <>
                           <Loader2 className="w-5 h-5 animate-spin" />
-                          Enviando...
+                          {c.sending}
                         </>
                       ) : (
                         <>
-                          Enviar Mensagem
+                          {c.send}
                           <Send className="w-5 h-5" />
                         </>
                       )}
@@ -236,33 +237,30 @@ export function Contact() {
             <div className="p-8 rounded-2xl bg-card border border-border">
               <div className="flex items-center gap-3 mb-6">
                 <Sparkles className="w-8 h-8 text-primary" />
-                <h3 className="text-2xl font-bold">Vamos conversar!</h3>
+                <h3 className="text-2xl font-bold">{c.chatTitle}</h3>
               </div>
-              <p className="text-muted-foreground leading-relaxed mb-6">
-                Estou sempre interessado em ouvir sobre novos projetos, ideias criativas ou
-                oportunidades de fazer parte de projetos incríveis.
-              </p>
+              <p className="text-muted-foreground leading-relaxed mb-6">{c.chatBody}</p>
               <div className="space-y-3">
                 <div className="flex items-center gap-3 text-sm">
                   <div className="w-2 h-2 rounded-full bg-green-500 animate-pulse" aria-hidden />
-                  <span className="text-muted-foreground">Disponível para novos projetos</span>
+                  <span className="text-muted-foreground">{c.availableProjects}</span>
                 </div>
                 <div className="flex items-center gap-3 text-sm">
                   <div className="w-2 h-2 rounded-full bg-[var(--color-glow)]" aria-hidden />
-                  <span className="text-muted-foreground">Respondo em até 24 horas</span>
+                  <span className="text-muted-foreground">{c.respond24}</span>
                 </div>
               </div>
               <button
                 type="button"
-                onClick={() => openSiteWhatsApp('Olá! Gostaria de agendar uma reunião.')}
+                onClick={() => openSiteWhatsApp(c.whatsappSchedule)}
                 className="mt-4 w-full sm:w-auto px-6 py-3 rounded-lg border-2 border-primary text-primary hover:bg-primary hover:text-primary-foreground transition-colors font-medium focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary"
               >
-                Agendar reunião
+                {c.schedule}
               </button>
             </div>
 
             <div className="space-y-4">
-              <h4 className="font-semibold">Conecte-se comigo</h4>
+              <h4 className="font-semibold">{c.connect}</h4>
               <div className="grid gap-4">
                 {socialLinks.map((link, index) => {
                   const Icon = iconMap[link.name as keyof typeof iconMap];

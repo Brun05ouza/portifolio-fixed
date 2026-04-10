@@ -1,5 +1,6 @@
 import { motion } from 'motion/react';
 import { useSiteContent } from '../../contexts/SiteContentContext';
+import { useI18n } from '../../contexts/I18nContext';
 
 /** Ícone oficial do WhatsApp (logo Zap). */
 function WhatsAppIcon({ className }: { className?: string }) {
@@ -18,6 +19,7 @@ function WhatsAppIcon({ className }: { className?: string }) {
 
 export function FloatingWhatsApp() {
   const { openSiteWhatsApp } = useSiteContent();
+  const { t } = useI18n();
   return (
     <motion.button
       type="button"
@@ -32,7 +34,7 @@ export function FloatingWhatsApp() {
       transition={{ type: 'spring', stiffness: 260, damping: 20 }}
       whileHover={{ scale: 1.1 }}
       whileTap={{ scale: 0.95 }}
-      aria-label="Abrir conversa no WhatsApp"
+      aria-label={t('floatingWhatsapp.aria')}
     >
       <WhatsAppIcon className="w-7 h-7" />
     </motion.button>

@@ -4,6 +4,7 @@ import { useRef } from 'react';
 import { GlitchText } from './GlitchText';
 import { useReducedMotion } from '../../hooks/useReducedMotion';
 import { useSiteContent } from '../../contexts/SiteContentContext';
+import { useI18n } from '../../contexts/I18nContext';
 
 function AnimatedNumber({
   value,
@@ -48,6 +49,7 @@ function AnimatedNumber({
 
 export function LiveStats() {
   const { stats } = useSiteContent();
+  const { localeTag, bundle } = useI18n();
   const reduceMotion = useReducedMotion();
 
   return (
@@ -61,10 +63,10 @@ export function LiveStats() {
           transition={{ duration: reduceMotion ? 0 : 0.6 }}
         >
           <h2 className="text-3xl sm:text-4xl md:text-5xl font-bold mb-4">
-            <GlitchText text="Estatísticas em Tempo Real" />
+            <GlitchText text={bundle.liveStats.title} />
           </h2>
           <p className="text-base sm:text-xl text-muted-foreground max-w-2xl mx-auto">
-            Métricas da minha jornada como desenvolvedor
+            {bundle.liveStats.subtitle}
           </p>
           <div className="w-20 h-1 mx-auto mt-6 rounded-full" style={{ background: 'linear-gradient(to right, var(--color-beam-start), var(--color-beam-end))' }} />
         </motion.div>
@@ -83,10 +85,10 @@ export function LiveStats() {
               >
                 <div className="flex items-start gap-4">
                   <div
-                    className="w-12 h-12 rounded-lg flex items-center justify-center shrink-0 text-white"
+                    className="w-12 h-12 rounded-lg flex items-center justify-center shrink-0 text-white [&>div]:flex [&>div]:items-center [&>div]:justify-center"
                     style={{ backgroundColor: `${stat.color}25` }}
                   >
-                    <Icon className="w-6 h-6" style={{ color: stat.color }} />
+                    <Icon size={24} className="shrink-0" style={{ color: stat.color }} aria-hidden />
                   </div>
                   <div className="flex-1 min-w-0">
                     <div
@@ -95,7 +97,7 @@ export function LiveStats() {
                     >
                       <AnimatedNumber
                         value={stat.value}
-                        format={(n) => n.toLocaleString('pt-BR')}
+                        format={(n) => n.toLocaleString(localeTag)}
                         reduceMotion={reduceMotion}
                       />
                     </div>

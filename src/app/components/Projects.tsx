@@ -6,6 +6,7 @@ import { Container } from './ds/Container';
 import { SectionTitle } from './ds/SectionTitle';
 import { Loader2, AlertCircle, ChevronDown } from 'lucide-react';
 import { useSiteContent } from '../../contexts/SiteContentContext';
+import { useI18n } from '../../contexts/I18nContext';
 import { listProjectsPublic } from '../../services/portfolioDb';
 import { toPortfolioProjectView } from '../../types/portfolio';
 import type { PortfolioProjectView } from '../../types/portfolio';
@@ -28,9 +29,11 @@ function useIsMobile() {
 
 export function Projects() {
   const { siteConfig } = useSiteContent();
+  const { bundle } = useI18n();
+  const p = bundle.projects;
   const [projects, setProjects] = useState<PortfolioProjectView[]>([]);
   const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
+  const [loadFailed, setLoadFailed] = useState(false);
   const [selectedCase, setSelectedCase] = useState<PortfolioProjectView | null>(null);
   const [showAllProjects, setShowAllProjects] = useState(false);
   const isMobile = useIsMobile();
@@ -39,14 +42,14 @@ export function Projects() {
     let cancelled = false;
     (async () => {
       setLoading(true);
-      setError(null);
+      setLoadFailed(false);
       try {
         const list = await listProjectsPublic();
         if (!cancelled) {
           setProjects(list.map(toPortfolioProjectView));
         }
       } catch {
-        if (!cancelled) setError('Não foi possível carregar os projetos.');
+        if (!cancelled) setLoadFailed(true);
       } finally {
         if (!cancelled) setLoading(false);
       }
@@ -59,13 +62,9 @@ export function Projects() {
   return (
     <section id="work" className="relative py-14 sm:py-20 md:py-28 border-t border-[var(--border)]">
       <Container>
-        <SectionTitle
-          label="Projetos"
-          title="Projetos em destaque"
-          subtitle="Problema, solução técnica, stack e resultado de cada projeto."
-        />
+        <SectionTitle label={p.label} title={p.title} subtitle={p.subtitle} />
 
-        {error && (
+        {loadFailed && (
           <motion.div
             initial={{ opacity: 0, y: -10 }}
             animate={{ opacity: 1, y: 0 }}
@@ -74,8 +73,8 @@ export function Projects() {
           >
             <AlertCircle className="w-5 h-5 shrink-0 mt-0.5" style={{ color: 'var(--accent-secondary)' }} />
             <div>
-              <p className="font-medium text-foreground">Aviso</p>
-              <p className="text-sm" style={{ color: 'var(--foreground-muted)' }}>{error}</p>
+              <p className="font-medium text-foreground">{p.warning}</p>
+              <p className="text-sm" style={{ color: 'var(--foreground-muted)' }}>{p.loadError}</p>
             </div>
           </motion.div>
         )}
@@ -94,7 +93,7 @@ export function Projects() {
                   className="inline-flex items-center justify-center gap-2 w-full min-h-[48px] px-6 py-3.5 rounded-xl font-semibold text-base border-2 transition-colors hover:bg-[var(--surface-hover)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--ring)]"
                   style={{ borderColor: 'var(--accent-primary)', color: 'var(--accent-primary)' }}
                 >
-                  Ver todos os projetos
+                  {p.showAll}
                   <ChevronDown className="w-5 h-5" aria-hidden />
                 </button>
               </div>
@@ -135,7 +134,7 @@ export function Projects() {
           </>
         ) : (
           <p className="text-center py-12" style={{ color: 'var(--foreground-muted)' }}>
-            Nada por aqui, por enquanto.
+            {p.empty}
           </p>
         )}
 
@@ -154,7 +153,7 @@ export function Projects() {
               className="inline-flex items-center justify-center w-full sm:w-auto min-h-[44px] px-5 py-3 sm:px-6 rounded-xl font-semibold text-sm sm:text-base border transition-colors hover:bg-[var(--surface-hover)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--ring)]"
               style={{ borderColor: 'var(--border-strong)', color: 'var(--foreground)' }}
             >
-              Ver repositórios no GitHub
+              {p.githubCta}
             </a>
           </motion.div>
         )}
