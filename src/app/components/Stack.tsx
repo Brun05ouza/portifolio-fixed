@@ -11,7 +11,6 @@ import {
   SiGit,
   SiMongodb,
   SiPostgresql,
-  SiSupabase,
   SiVite,
   SiTailwindcss,
   SiExpress,
@@ -40,7 +39,7 @@ const feMeta: SkillMeta[] = [
 
 const beMeta: SkillMeta[] = [
   { icon: <SiNodedotjs className="w-6 h-6" color="#339933" />, name: 'Node.js', level: 70 },
-  { icon: <SiSupabase className="w-6 h-6" color="#3ECF8E" />, name: 'Supabase', level: 70 },
+  { icon: <SiPostgresql className="w-6 h-6" color="#4169E1" />, name: 'Neon/PostgreSQL', level: 70 },
   { icon: <SiExpress className="w-6 h-6" color="#68A063" />, name: 'Express', level: 68 },
   { icon: <SiPostgresql className="w-6 h-6" color="#4169E1" />, name: 'PostgreSQL', level: 65 },
   { icon: <SiMongodb className="w-6 h-6" color="#47A248" />, name: 'MongoDB', level: 60 },
@@ -50,7 +49,7 @@ const toolsMeta: SkillMeta[] = [
   { icon: <SiGit className="w-6 h-6" color="#F05032" />, name: 'Git', level: 85 },
   { icon: <SiVite className="w-6 h-6" color="#646CFF" />, name: 'Vite', level: 78 },
   { icon: <SiFigma className="w-6 h-6" color="#F24E1E" />, name: 'Figma', level: 70 },
-  { icon: <SiSupabase className="w-6 h-6" color="#3ECF8E" />, name: 'Supabase (CMS)', level: 72 },
+  { icon: <SiPostgresql className="w-6 h-6" color="#4169E1" />, name: 'PostgreSQL', level: 72 },
   { icon: <SiDocker className="w-6 h-6" color="#2496ED" />, name: 'Docker', level: 10 },
 ];
 
@@ -100,7 +99,7 @@ export function Stack() {
     { name: 'Git', icon: SiGit, color: '#F05032' },
     { name: 'MongoDB', icon: SiMongodb, color: '#47A248' },
     { name: 'PostgreSQL', icon: SiPostgresql, color: '#4169E1' },
-    { name: 'Supabase', icon: SiSupabase, color: '#3ECF8E' },
+    { name: 'Neon', icon: SiPostgresql, color: '#4169E1' },
     { name: 'Vite', icon: SiVite, color: '#646CFF' },
     { name: 'Tailwind CSS', icon: SiTailwindcss, color: '#06B6D4' },
     { name: 'Docker', icon: SiDocker, color: '#2496ED' },

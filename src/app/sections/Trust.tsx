@@ -3,7 +3,7 @@ import { useReducedMotion } from '../../hooks/useReducedMotion';
 import { useSiteContent } from '../../contexts/SiteContentContext';
 import { useI18n } from '../../contexts/I18nContext';
 
-const techLogos = ['React', 'TypeScript', 'Node', 'Tailwind', 'Vite', 'Supabase'];
+const techLogos = ['React', 'TypeScript', 'Node', 'Tailwind', 'Vite', 'PostgreSQL'];
 
 export function Trust() {
   const { stats } = useSiteContent();

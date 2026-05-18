@@ -1,5 +1,5 @@
 /**
- * Configurações do site (tabela site_settings no Supabase).
+ * Configuracoes do site (tabela site_settings).
  * Ausência de linha ou campos vazios → defaults em content.ts
  */
 export interface SiteSettings {

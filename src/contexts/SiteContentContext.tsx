@@ -39,7 +39,7 @@ type SiteContentContextValue = {
   siteConfig: MergedSiteConfig;
   heroTexts: MergedHeroTexts;
   stats: StatItem[];
-  /** Carregando override do Supabase (site público continua com defaults até terminar). */
+  /** Carregando override remoto (site publico continua com defaults ate terminar). */
   remoteLoading: boolean;
   reload: () => Promise<void>;
   openSiteWhatsApp: (message?: string) => void;

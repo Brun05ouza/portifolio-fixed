@@ -1,6 +1,5 @@
 import { useEffect, useState } from 'react';
 import { Loader2, Save } from 'lucide-react';
-import { supabase } from '../../../config/supabase';
 import { siteConfig, stats as defaultStats } from '../../../config/content';
 import { ptMessages } from '../../../i18n/messages/pt';
 import { fetchSiteSettings, saveSiteSettings } from '../../../services/siteSettingsDb';
@@ -43,11 +42,6 @@ export function SiteSettingsPanel() {
   }, []);
 
   const handleSave = async () => {
-    if (!supabase) return;
-    const {
-      data: { user },
-    } = await supabase.auth.getUser();
-    if (!user) return;
     setSaveMsg('');
     setLoading(true);
     const payload: SiteSettings = {
@@ -65,7 +59,7 @@ export function SiteSettingsPanel() {
       statCoffees: Number(form.statCoffees) || 0,
       statStudyHours: Number(form.statStudyHours) || 0,
     };
-    const res = await saveSiteSettings(payload, user.id);
+    const res = await saveSiteSettings(payload, 'local-admin');
     setLoading(false);
     if (res.ok) {
       setSaveMsg('Salvo. O site público atualiza ao recarregar.');
@@ -157,7 +151,7 @@ export function SiteSettingsPanel() {
         className="inline-flex items-center gap-2 rounded-lg bg-cyan-600 px-5 py-2.5 text-sm font-semibold text-white shadow-lg shadow-cyan-900/20 transition-all hover:-translate-y-0.5 hover:bg-cyan-500 hover:shadow-cyan-900/40 disabled:opacity-50 disabled:hover:translate-y-0"
       >
         {loading ? <Loader2 className="h-4 w-4 animate-spin" /> : <Save className="h-4 w-4" />}
-        Salvar no Supabase
+        Salvar
       </button>
     </div>
   );

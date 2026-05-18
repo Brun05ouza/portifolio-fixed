@@ -1,5 +1,3 @@
-import { supabase } from '../../config/supabase';
-
 export interface ContactFormData {
   name: string;
   email: string;
@@ -7,31 +5,14 @@ export interface ContactFormData {
 }
 
 /**
- * Guarda a mensagem na tabela contacts (Supabase).
- * RLS: insert permitido a anon/authenticated; leitura só admin.
+ * A gravacao direta em banco foi removida do frontend. Use EmailJS ou uma API
+ * server-side para persistir contatos no Neon.
  */
 export async function submitContact(
-  data: ContactFormData
+  _data: ContactFormData
 ): Promise<{ ok: true } | { ok: false; error: string }> {
-  if (!supabase) {
-    return {
-      ok: false,
-      error: 'Supabase não configurado. Defina VITE_SUPABASE_URL e VITE_SUPABASE_ANON_KEY no .env.',
-    };
-  }
-
-  try {
-    const { error } = await supabase.from('contacts').insert({
-      name: data.name.trim(),
-      email: data.email.trim(),
-      message: data.message.trim(),
-    });
-    if (error) {
-      return { ok: false, error: error.message };
-    }
-    return { ok: true };
-  } catch (e) {
-    const message = e instanceof Error ? e.message : 'Erro ao salvar mensagem. Tente novamente.';
-    return { ok: false, error: message };
-  }
+  return {
+    ok: false,
+    error: 'Banco desativado no frontend. Envie por EmailJS ou crie uma API para o Neon.',
+  };
 }

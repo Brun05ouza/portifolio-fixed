@@ -1,5 +1,5 @@
 /**
- * Registros Supabase (tabelas courses, certificates, projects).
+ * Registros das tabelas courses, certificates e projects.
  */
 
 export interface CourseDoc {

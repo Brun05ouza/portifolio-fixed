@@ -1,5 +1,4 @@
 import { NavLink, Outlet } from 'react-router-dom';
-import type { User } from '@supabase/supabase-js';
 import {
   LayoutDashboard,
   BookOpen,
@@ -9,7 +8,6 @@ import {
   LogOut,
   ExternalLink,
 } from 'lucide-react';
-import { supabase } from '../../config/supabase';
 
 const nav = [
   { to: '/admin/dashboard', label: 'Dashboard', icon: LayoutDashboard },
@@ -20,7 +18,9 @@ const nav = [
 ] as const;
 
 interface AdminLayoutProps {
-  user: User;
+  user: {
+    email?: string | null;
+  };
 }
 
 export function AdminLayout({ user }: AdminLayoutProps) {
@@ -72,9 +72,7 @@ export function AdminLayout({ user }: AdminLayoutProps) {
             </a>
             <button
               type="button"
-              onClick={() => {
-                if (supabase) void supabase.auth.signOut();
-              }}
+              onClick={() => undefined}
               className="inline-flex items-center gap-1.5 rounded-lg border border-zinc-700 px-3 py-1.5 text-xs font-medium text-zinc-300 transition hover:bg-zinc-800"
             >
               <LogOut className="h-3.5 w-3.5" />

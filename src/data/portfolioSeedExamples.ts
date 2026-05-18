@@ -1,5 +1,5 @@
 /**
- * Exemplos para popular o Supabase manualmente (SQL ou Table Editor).
+ * Exemplos para popular o banco manualmente.
  * Tabelas: projects, certificates, courses.
  * Ajuste `active`, `order` e imagens conforme necessário.
  */
