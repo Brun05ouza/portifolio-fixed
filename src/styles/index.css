@@ -6,7 +6,7 @@
 html {
   scrollbar-width: none; /* Firefox */
   -ms-overflow-style: none; /* IE / Edge antigo */
-  scroll-behavior: smooth;
+  scroll-behavior: auto;
 }
 
 html::-webkit-scrollbar,

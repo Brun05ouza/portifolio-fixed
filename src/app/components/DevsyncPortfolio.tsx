@@ -1,9 +1,9 @@
-import { useEffect, useMemo, useRef, useState } from 'react';
-import { AnimatePresence, motion, useInView } from 'motion/react';
+import { useEffect, useMemo, useRef, useState, type CSSProperties, type PointerEvent as ReactPointerEvent } from 'react';
+import { AnimatePresence, motion, useInView, useScroll, useTransform } from 'motion/react';
+import Lenis from 'lenis';
 import {
   ArrowDown,
   ArrowUpRight,
-  ExternalLink,
   Github,
   Linkedin,
   Mail,
@@ -13,15 +13,17 @@ import {
   X,
 } from 'lucide-react';
 import { siteConfig } from '../../config/content';
+import { listCoursesPublic, listProjectsPublic } from '../../services/portfolioDb';
+import type { CourseWithId, ProjectWithId } from '../../types/portfolio';
 import { openWhatsApp } from '../../utils/whatsapp';
+import { useReducedMotion } from '../../hooks/useReducedMotion';
 import { Toaster } from './ui/sonner';
-import { FloatingWhatsApp } from './FloatingWhatsApp';
 import './DevsyncPortfolio.css';
 
 const socials = [
   { label: 'LinkedIn', href: siteConfig.linkedinUrl, icon: Linkedin },
   { label: 'GitHub', href: siteConfig.githubUrl, icon: Github },
-  { label: 'Email', href: `mailto:${siteConfig.contactEmail}`, icon: Mail },
+  { label: 'E-mail', href: `mailto:${siteConfig.contactEmail}`, icon: Mail },
 ];
 
 const skillGroups = [
@@ -36,41 +38,6 @@ const skillGroups = [
   {
     title: 'Ferramentas',
     items: ['Git', 'GitHub', 'Vite', 'Figma', 'Docker', 'Deploy'],
-  },
-];
-
-const projects = [
-  {
-    title: 'EcoSphere',
-    description:
-      'Plataforma de sustentabilidade com IA, gamificacao e monitoramento ambiental em tempo real.',
-    tags: ['React', 'IA', 'IoT', 'Dashboard'],
-    image: '/background-project.svg',
-    href: siteConfig.githubUrl,
-  },
-  {
-    title: 'Residencial Nature',
-    description:
-      'Site institucional responsivo para empreendimento residencial, focado em presenca digital e conversao.',
-    tags: ['React', 'TypeScript', 'Responsivo'],
-    image: '/nature-preview.jpeg',
-    href: 'https://residencialnature.com.br/',
-  },
-  {
-    title: 'Nexus Flow Web',
-    description:
-      'Sistema web para organizar fluxos, interfaces administrativas e jornadas operacionais.',
-    tags: ['Full Stack', 'API', 'UI'],
-    image: '/background-project.svg',
-    href: `${siteConfig.githubUrl}/nexus-flow-web`,
-  },
-  {
-    title: 'Gestor Pro',
-    description:
-      'Experimento de gestao profissional com foco em produtividade, dados e experiencia clara.',
-    tags: ['React', 'Gestao', 'PostgreSQL'],
-    image: '/background-project.svg',
-    href: `${siteConfig.githubUrl}/gestor-pro`,
   },
 ];
 
@@ -105,6 +72,26 @@ const stats = [
   { value: 3, suffix: '+', label: 'Anos aprendendo e construindo' },
   { value: 29, suffix: '+', label: 'Projetos concluidos' },
   { value: 43, suffix: 'k+', label: 'Linhas de codigo' },
+];
+
+const clients = ['Neon', 'React', 'Vite', 'GitHub', 'Supabase', 'Figma', 'TypeScript', 'Node'];
+
+const processSteps = [
+  {
+    number: '01',
+    title: 'Planejar e Arquitetar',
+    text: 'Antes de escrever codigo, entendo objetivos, necessidades do usuario e limites tecnicos do projeto.',
+  },
+  {
+    number: '02',
+    title: 'Construir e Desenvolver',
+    text: 'Crio interfaces bem acabadas e sistemas robustos em paralelo, mantendo UI, API e dados organizados.',
+  },
+  {
+    number: '03',
+    title: 'Lancar e Sustentar',
+    text: 'Depois da entrega, acompanho ajustes, performance e melhorias para manter o produto evoluindo.',
+  },
 ];
 
 function RollingText({ children }: { children: string }) {
@@ -194,34 +181,250 @@ function CountUpStat({ value, suffix, label }: { value: number; suffix: string; 
   );
 }
 
+function CursorDot() {
+  const [position, setPosition] = useState({ x: -80, y: -80 });
+
+  useEffect(() => {
+    const onPointerMove = (event: globalThis.PointerEvent) => {
+      setPosition({ x: event.clientX, y: event.clientY });
+    };
+    window.addEventListener('pointermove', onPointerMove);
+    return () => window.removeEventListener('pointermove', onPointerMove);
+  }, []);
+
+  return (
+    <motion.span
+      className="dv-cursor-dot"
+      aria-hidden
+      animate={{ x: position.x, y: position.y }}
+      transition={{ type: 'spring', stiffness: 520, damping: 38, mass: 0.45 }}
+    />
+  );
+}
+
+function CodeDivider() {
+  return (
+    <div className="dv-code-divider" aria-hidden>
+      <span>&lt;/</span>
+      <i />
+      <span>&gt;</span>
+    </div>
+  );
+}
+
+function getProjectHref(project: ProjectWithId): string {
+  return project.demoLink || project.githubLink || siteConfig.githubUrl;
+}
+
+function RotatingDeck({ projects }: { projects: ProjectWithId[] }) {
+  const sectionRef = useRef<HTMLElement>(null);
+  const { scrollYProgress } = useScroll({
+    target: sectionRef,
+    offset: ['start start', 'end end'],
+  });
+  const trackX = useTransform(scrollYProgress, [0, 1], ['42vw', '-112vw']);
+  const deckRotate = useTransform(scrollYProgress, [0, 0.5, 1], [-4, 0, 4]);
+  const marqueeX = useTransform(scrollYProgress, [0, 1], ['0%', '-24%']);
+
+  return (
+    <section ref={sectionRef} className="dv-deck-stage" aria-label="Destaques visuais do portfolio">
+      <div className="dv-deck-sticky">
+        <motion.div className="dv-name-marquee" style={{ x: marqueeX }} aria-hidden>
+          <span>MEUS PROJETOS * MEUS PROJETOS * MEUS PROJETOS *</span>
+          <span>MEUS PROJETOS * MEUS PROJETOS * MEUS PROJETOS *</span>
+        </motion.div>
+        <motion.div className="dv-floating-deck" style={{ x: trackX, rotate: deckRotate }}>
+          {projects.slice(0, 6).map((project, index) => (
+            <motion.article
+              key={project.id}
+              className="dv-deck-card"
+              style={{ '--deck-index': index } as CSSProperties}
+              initial={{ opacity: 0.2, y: 50, scale: 0.86 }}
+              whileInView={{ opacity: 1, y: 0, scale: 1 }}
+              viewport={{ once: false, margin: '-20% 0px -20% 0px' }}
+              transition={{ duration: 0.8, delay: index * 0.08, ease: [0.22, 1, 0.36, 1] }}
+            >
+              <img src={project.imageUrl || '/background-project.svg'} alt="" />
+              <div>
+                <strong>{project.title}</strong>
+                <span>{project.role || 'Projeto web'}</span>
+              </div>
+            </motion.article>
+          ))}
+        </motion.div>
+      </div>
+    </section>
+  );
+}
+
+function FooterCTA({ onNavigate }: { onNavigate: (href: string) => void }) {
+  const [buttonOffset, setButtonOffset] = useState({ x: 0, y: 0 });
+
+  const handlePointerMove = (event: ReactPointerEvent<HTMLButtonElement>) => {
+    const rect = event.currentTarget.getBoundingClientRect();
+    const x = (event.clientX - rect.left - rect.width / 2) * 0.18;
+    const y = (event.clientY - rect.top - rect.height / 2) * 0.18;
+    setButtonOffset({ x, y });
+  };
+
+  const handleStartProject = () => {
+    openWhatsApp('Ola Bruno! Quero tirar uma ideia do papel e iniciar um projeto.');
+  };
+
+  return (
+    <section id="contact" className="dv-final-footer">
+      <div className="dv-final-heading">
+        <h2>
+          <span>PRONTO PARA LEVAR SUA</span>
+          <span>
+            IDEIA AO
+            <motion.button
+              type="button"
+              className="dv-start-project"
+              onPointerMove={handlePointerMove}
+              onPointerLeave={() => setButtonOffset({ x: 0, y: 0 })}
+              onClick={handleStartProject}
+              animate={buttonOffset}
+              transition={{ type: 'spring', stiffness: 240, damping: 18, mass: 0.5 }}
+            >
+              Iniciar projeto
+            </motion.button>
+          </span>
+          <span>PROXIMO NIVEL?</span>
+        </h2>
+      </div>
+
+      <div className="dv-footer-divider" aria-hidden>
+        <span>&lt;/</span>
+        <span>&gt;</span>
+      </div>
+
+      <div className="dv-footer-columns">
+        <div>
+          <h3>Links rapidos</h3>
+          <button type="button" onClick={() => onNavigate('#home')}><RollingText>INICIO</RollingText></button>
+          <button type="button" onClick={() => onNavigate('#skills')}><RollingText>SOBRE</RollingText></button>
+          <button type="button" onClick={() => onNavigate('#projects')}><RollingText>PROJETOS</RollingText></button>
+          <button type="button" onClick={() => onNavigate('#courses')}><RollingText>CURSOS</RollingText></button>
+          <button type="button" onClick={() => onNavigate('#services')}><RollingText>SERVICOS</RollingText></button>
+          <button type="button" onClick={() => onNavigate('#contact')}><RollingText>CONTATO</RollingText></button>
+        </div>
+
+        <div>
+          <h3>Portfolio</h3>
+          <a href={siteConfig.githubUrl} target="_blank" rel="noopener noreferrer"><RollingText>GITHUB</RollingText></a>
+          <a href={`${siteConfig.githubUrl}?tab=repositories`} target="_blank" rel="noopener noreferrer"><RollingText>PROJETOS</RollingText></a>
+          <a href={`mailto:${siteConfig.contactEmail}`}><RollingText>E-MAIL</RollingText></a>
+        </div>
+
+        <div>
+          <h3>Redes sociais</h3>
+          <a href={siteConfig.linkedinUrl} target="_blank" rel="noopener noreferrer"><RollingText>LINKEDIN</RollingText></a>
+          <a href={siteConfig.githubUrl} target="_blank" rel="noopener noreferrer"><RollingText>GITHUB</RollingText></a>
+          <a href={`mailto:${siteConfig.contactEmail}`}><RollingText>E-MAIL</RollingText></a>
+        </div>
+      </div>
+
+      <div className="dv-footer-contact">
+        <a href={`mailto:${siteConfig.contactEmail}`} aria-label="Enviar e-mail">
+          <Mail size={18} />
+          <RollingText>E-MAIL</RollingText>
+        </a>
+        <a href={`https://wa.me/${siteConfig.whatsappNumber}`} target="_blank" rel="noopener noreferrer" aria-label="Abrir WhatsApp">
+          <Phone size={18} />
+          <RollingText>WHATSAPP</RollingText>
+        </a>
+      </div>
+
+      <div className="dv-footer-bottom">
+        <span>2026</span>
+        <span>BRUNO SOUZA</span>
+        <button type="button" onClick={() => onNavigate('#home')}>VOLTAR AO TOPO</button>
+      </div>
+    </section>
+  );
+}
+
 export function DevsyncPortfolio() {
+  const prefersReducedMotion = useReducedMotion();
+  const lenisRef = useRef<Lenis | null>(null);
   const [menuOpen, setMenuOpen] = useState(false);
   const [activeService, setActiveService] = useState(0);
-  const [selectedProject, setSelectedProject] = useState<(typeof projects)[number] | null>(null);
+  const [portfolioProjects, setPortfolioProjects] = useState<ProjectWithId[]>([]);
+  const [courses, setCourses] = useState<CourseWithId[]>([]);
 
   const nav = useMemo(
     () => [
       { label: 'Inicio', href: '#home' },
       { label: 'Skills', href: '#skills' },
       { label: 'Projetos', href: '#projects' },
+      { label: 'Cursos', href: '#courses' },
       { label: 'Servicos', href: '#services' },
       { label: 'Contato', href: '#contact' },
     ],
     []
   );
 
+  useEffect(() => {
+    if (prefersReducedMotion) {
+      lenisRef.current?.destroy();
+      lenisRef.current = null;
+      return;
+    }
+
+    const lenis = new Lenis({
+      duration: 1.08,
+      easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
+      smoothWheel: true,
+      touchMultiplier: 1.25,
+    });
+    lenisRef.current = lenis;
+
+    let frame = 0;
+    const raf = (time: number) => {
+      lenis.raf(time);
+      frame = requestAnimationFrame(raf);
+    };
+    frame = requestAnimationFrame(raf);
+
+    return () => {
+      cancelAnimationFrame(frame);
+      lenis.destroy();
+      if (lenisRef.current === lenis) lenisRef.current = null;
+    };
+  }, [prefersReducedMotion]);
+
+  useEffect(() => {
+    let cancelled = false;
+
+    Promise.all([listProjectsPublic(), listCoursesPublic()]).then(([projectList, courseList]) => {
+      if (cancelled) return;
+      setPortfolioProjects(projectList);
+      setCourses(courseList);
+    });
+
+    return () => {
+      cancelled = true;
+    };
+  }, []);
+
   const handleNav = (href: string) => {
     setMenuOpen(false);
-    document.querySelector(href)?.scrollIntoView({ behavior: 'smooth' });
+    if (lenisRef.current) {
+      lenisRef.current.scrollTo(href);
+      return;
+    }
+    document.querySelector(href)?.scrollIntoView({ behavior: 'auto' });
   };
 
   return (
     <div className="dv-page">
+      <CursorDot />
       <header className="dv-header">
         <a className="dv-brand" href="#home" onClick={(event) => { event.preventDefault(); handleNav('#home'); }}>
           Bruno Souza
         </a>
-        <nav className="dv-nav" aria-label="Main navigation">
+        <nav className="dv-nav" aria-label="Navegacao principal">
           {nav.map((item) => (
             <button key={item.href} type="button" onClick={() => handleNav(item.href)}>
               <RollingText>{item.label}</RollingText>
@@ -257,7 +460,7 @@ export function DevsyncPortfolio() {
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.8, ease: [0.22, 1, 0.36, 1] }}
             >
-              <p className="dv-eyebrow">Hey,</p>
+              <p className="dv-eyebrow">Ola,</p>
               <p className="dv-role">sou desenvolvedor Full Stack</p>
               <AnimatedName />
               <p className="dv-lead">
@@ -277,7 +480,7 @@ export function DevsyncPortfolio() {
               <div className="dv-portrait-card">
                 <img src="/eu.jpeg" alt="" />
               </div>
-              <span className="dv-portrait-tag">Full Stack Developer</span>
+              <span className="dv-portrait-tag">Desenvolvedor Full Stack</span>
             </motion.div>
 
             <motion.aside
@@ -306,11 +509,13 @@ export function DevsyncPortfolio() {
           </div>
 
           <div className="dv-scroll-cue">
-            <span>SCROLL</span>
+            <span>ROLAR</span>
             <ArrowDown size={16} />
           </div>
 
         </section>
+
+        <RotatingDeck projects={portfolioProjects} />
 
         <section id="skills" className="dv-section dv-skills-section">
           <div className="dv-skill-showcase">
@@ -369,7 +574,7 @@ export function DevsyncPortfolio() {
           </motion.div>
         </section>
 
-        <section className="dv-stats" aria-label="Portfolio stats">
+        <section className="dv-stats" aria-label="Metricas do portfolio">
           {stats.map((item) => (
             <CountUpStat key={item.label} {...item} />
           ))}
@@ -386,21 +591,23 @@ export function DevsyncPortfolio() {
               <ArrowUpRight size={18} />
             </a>
           </div>
+          <CodeDivider />
 
           <div className="dv-project-list">
-            {projects.map((project, index) => (
-              <motion.button
-                key={project.title}
-                type="button"
+            {portfolioProjects.map((project, index) => (
+              <motion.a
+                key={project.id}
                 className="dv-project-card"
-                onClick={() => setSelectedProject(project)}
+                href={getProjectHref(project)}
+                target="_blank"
+                rel="noopener noreferrer"
                 initial={{ opacity: 0, y: 34 }}
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true, margin: '-80px' }}
                 transition={{ duration: 0.6, delay: index * 0.05 }}
               >
                 <div className="dv-project-image">
-                  <img src={project.image} alt="" loading="lazy" />
+                  <img src={project.imageUrl || '/background-project.svg'} alt="" loading="lazy" />
                 </div>
                 <div className="dv-project-copy">
                   <div className="dv-project-topline">
@@ -415,7 +622,41 @@ export function DevsyncPortfolio() {
                     ))}
                   </div>
                 </div>
-              </motion.button>
+              </motion.a>
+            ))}
+          </div>
+        </section>
+
+        <section id="courses" className="dv-section dv-courses">
+          <div className="dv-section-head dv-split-head">
+            <div>
+              <SectionKicker>// Cursos</SectionKicker>
+              <h2>Estudos recentes que fortalecem meus projetos</h2>
+            </div>
+          </div>
+          <CodeDivider />
+
+          <div className="dv-course-grid">
+            {courses.map((course, index) => (
+              <motion.a
+                key={course.id}
+                className="dv-course-card"
+                href={course.url || siteConfig.githubUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+                initial={{ opacity: 0, y: 28 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true, margin: '-80px' }}
+                transition={{ duration: 0.55, delay: index * 0.05 }}
+              >
+                <span>{course.provider || 'Curso'}</span>
+                <h3>{course.title}</h3>
+                <p>{course.description}</p>
+                <div>
+                  <RollingText>Ver curso</RollingText>
+                  <ArrowUpRight size={18} />
+                </div>
+              </motion.a>
             ))}
           </div>
         </section>
@@ -425,6 +666,7 @@ export function DevsyncPortfolio() {
             <SectionKicker>// Servicos</SectionKicker>
             <h2>Desenvolvimento web de ponta a ponta</h2>
           </div>
+          <CodeDivider />
 
           <div className="dv-service-board">
             <div className="dv-service-preview">
@@ -473,86 +715,58 @@ export function DevsyncPortfolio() {
           </div>
         </section>
 
-        <section id="contact" className="dv-contact">
-          <SectionKicker>// Contact</SectionKicker>
-          <h2>Tem uma ideia? Vamos construir algo profissional.</h2>
-          <p>
-            Estou disponivel para projetos, sistemas internos, landing pages e experiencias digitais com
-            performance de verdade.
-          </p>
-          <div className="dv-contact-actions">
-            <a href={`mailto:${siteConfig.contactEmail}`}>
-              <Mail size={18} />
-              <RollingText>Send Email</RollingText>
-            </a>
-            <button type="button" onClick={() => openWhatsApp('Ola Bruno! Quero falar sobre um projeto.')}>
-              <Phone size={18} />
-              <RollingText>WhatsApp</RollingText>
-            </button>
+        <section className="dv-clients dv-section" aria-label="Tecnologias e parceiros">
+          <div className="dv-section-head dv-split-head">
+            <div>
+              <SectionKicker>// Ecossistema</SectionKicker>
+              <h2>Ferramentas que aparecem nos bastidores</h2>
+            </div>
+          </div>
+          <CodeDivider />
+          <div className="dv-client-grid">
+            {clients.map((client, index) => (
+              <motion.span
+                key={client}
+                initial={{ opacity: 0, y: 22 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true, margin: '-80px' }}
+                transition={{ duration: 0.45, delay: index * 0.04 }}
+              >
+                {client}
+              </motion.span>
+            ))}
           </div>
         </section>
+
+        <section className="dv-process dv-section">
+          <div className="dv-section-head dv-split-head">
+            <div>
+              <SectionKicker>// Processo</SectionKicker>
+              <h2>Meu fluxo de desenvolvimento</h2>
+            </div>
+          </div>
+          <CodeDivider />
+          <div className="dv-process-grid">
+            {processSteps.map((step) => (
+              <motion.article
+                key={step.number}
+                initial={{ opacity: 0, y: 46 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true, margin: '-80px' }}
+                transition={{ duration: 0.65, ease: [0.22, 1, 0.36, 1] }}
+              >
+                <span>{step.number}</span>
+                <h3>{step.title}</h3>
+                <p>{step.text}</p>
+              </motion.article>
+            ))}
+          </div>
+        </section>
+
+        <FooterCTA onNavigate={handleNav} />
       </main>
 
-      <footer className="dv-footer">
-        <span>Bruno Souza</span>
-        <span>Portfolio de desenvolvedor</span>
-        <a href="#home" onClick={(event) => { event.preventDefault(); handleNav('#home'); }}>
-          Voltar ao topo
-        </a>
-      </footer>
-
-      <AnimatePresence>
-        {selectedProject && (
-          <motion.div
-            className="dv-project-modal"
-            role="dialog"
-            aria-modal="true"
-            aria-labelledby="project-modal-title"
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            onClick={() => setSelectedProject(null)}
-          >
-            <motion.div
-              className="dv-project-modal-panel"
-              initial={{ opacity: 0, y: 60, scale: 0.96 }}
-              animate={{ opacity: 1, y: 0, scale: 1 }}
-              exit={{ opacity: 0, y: 30, scale: 0.98 }}
-              transition={{ duration: 0.36, ease: [0.22, 1, 0.36, 1] }}
-              onClick={(event) => event.stopPropagation()}
-            >
-              <button
-                type="button"
-                className="dv-modal-close"
-                onClick={() => setSelectedProject(null)}
-                aria-label="Fechar projeto"
-              >
-                <X size={18} />
-              </button>
-              <div className="dv-modal-image">
-                <img src={selectedProject.image} alt="" />
-              </div>
-              <div className="dv-modal-copy">
-                <p>// Projeto selecionado</p>
-                <h3 id="project-modal-title">{selectedProject.title}</h3>
-                <span>{selectedProject.description}</span>
-                <div>
-                  {selectedProject.tags.map((tag) => (
-                    <em key={tag}>{tag}</em>
-                  ))}
-                </div>
-                <a href={selectedProject.href} target="_blank" rel="noopener noreferrer">
-                  <RollingText>Abrir projeto</RollingText>
-                  <ExternalLink size={18} />
-                </a>
-              </div>
-            </motion.div>
-          </motion.div>
-        )}
-      </AnimatePresence>
-
       <Toaster />
-      <FloatingWhatsApp />
     </div>
   );
 }
