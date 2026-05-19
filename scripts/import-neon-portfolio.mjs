@@ -86,6 +86,7 @@ const courses = readCsv(coursesPath);
 const sql = neon(connectionString);
 
 await sql`select 1`;
+await sql`alter table public.projects add column if not exists collaborators jsonb not null default '[]'::jsonb`;
 
 for (const row of courses) {
   await sql`

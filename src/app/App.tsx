@@ -3,6 +3,7 @@ import { Routes, Route, Navigate, useNavigate } from 'react-router-dom';
 import { I18nProvider } from '../contexts/I18nContext';
 import { SiteContentProvider } from '../contexts/SiteContentContext';
 import { PortfolioView } from './PortfolioView';
+import { ProjectFormPage } from './ProjectFormPage';
 import { AdminRoot } from './admin/AdminRoot';
 import { DashboardPanel } from './admin/panels/DashboardPanel';
 import { CoursesPanel } from './admin/panels/CoursesPanel';
@@ -45,6 +46,7 @@ export default function App() {
             <Route path="projetos" element={<ProjectsPanel />} />
             <Route path="configuracao" element={<SiteSettingsPanel />} />
           </Route>
+          <Route path="formulario" element={<ProjectFormPage />} />
           <Route path="*" element={<PortfolioView />} />
         </Routes>
       </SiteContentProvider>

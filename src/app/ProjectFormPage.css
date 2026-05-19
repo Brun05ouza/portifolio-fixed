@@ -1,0 +1,164 @@
+.project-form-page {
+  min-height: 100svh;
+  padding: 34px clamp(22px, 6vw, 96px);
+  background:
+    linear-gradient(90deg, rgba(255, 255, 255, 0.018) 1px, transparent 1px),
+    linear-gradient(180deg, rgba(255, 255, 255, 0.014) 1px, transparent 1px),
+    radial-gradient(ellipse at 48% 0%, rgba(255, 255, 255, 0.07), transparent 34rem),
+    #080909;
+  background-size: 56px 56px, 56px 56px, auto, auto;
+  color: #f6f7f4;
+  font-family: "Space Grotesk", var(--font-sans);
+}
+
+.project-form-brand {
+  color: #f6f7f4;
+  font-size: 0.9rem;
+  font-weight: 900;
+  text-decoration: none;
+  text-transform: uppercase;
+}
+
+.project-form-shell {
+  width: min(1340px, 100%);
+  min-height: calc(100svh - 92px);
+  display: grid;
+  grid-template-columns: minmax(0, 0.9fr) minmax(320px, 520px);
+  align-items: center;
+  gap: clamp(42px, 8vw, 130px);
+  margin: 0 auto;
+}
+
+.project-form-copy > span {
+  color: #69f58b;
+  font-size: 0.96rem;
+  font-weight: 800;
+}
+
+.project-form-copy h1 {
+  max-width: 11ch;
+  margin: 24px 0;
+  font-family: "Arial Narrow", "Aptos Display", "Space Grotesk", var(--font-sans);
+  font-size: clamp(3rem, 7vw, 5.7rem);
+  font-weight: 900;
+  line-height: 0.95;
+  text-transform: uppercase;
+}
+
+.project-form-copy p {
+  max-width: 620px;
+  margin: 0;
+  color: #b9beb8;
+  font-size: 1.08rem;
+  line-height: 1.65;
+}
+
+.project-form-socials,
+.project-form-contact {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 22px;
+  margin-top: 34px;
+}
+
+.project-form-socials a,
+.project-form-contact a {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  color: #f6f7f4;
+  font-weight: 800;
+  text-decoration: none;
+}
+
+.project-form-socials a::first-letter {
+  color: #69f58b;
+}
+
+.project-form-contact {
+  display: grid;
+  gap: 18px;
+  margin-top: 70px;
+}
+
+.project-form-contact svg {
+  color: #69f58b;
+}
+
+.project-form-card {
+  display: grid;
+  gap: 26px;
+}
+
+.project-form-card label {
+  display: grid;
+  gap: 12px;
+  color: #f6f7f4;
+  font-size: 0.95rem;
+  font-weight: 800;
+}
+
+.project-form-card label::first-letter {
+  color: #69f58b;
+}
+
+.project-form-card input,
+.project-form-card textarea {
+  width: 100%;
+  border: 1px solid rgba(255, 255, 255, 0.24);
+  border-radius: 0;
+  padding: 18px 16px;
+  background: rgba(8, 9, 9, 0.74);
+  color: #f6f7f4;
+  font: inherit;
+  outline: none;
+  transition: border-color 0.24s ease, box-shadow 0.24s ease;
+}
+
+.project-form-card textarea {
+  resize: vertical;
+}
+
+.project-form-card input:focus,
+.project-form-card textarea:focus {
+  border-color: rgba(105, 245, 139, 0.56);
+  box-shadow: 0 0 0 3px rgba(105, 245, 139, 0.1);
+}
+
+.project-form-card button {
+  width: max-content;
+  min-height: 48px;
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  border: 0;
+  border-radius: 999px;
+  padding: 0 26px;
+  background: #69f58b;
+  color: #07100a;
+  font: inherit;
+  font-weight: 900;
+  cursor: pointer;
+}
+
+.project-form-card button:disabled {
+  cursor: wait;
+  opacity: 0.68;
+}
+
+.project-form-message {
+  margin: 0;
+  color: #69f58b;
+  font-weight: 800;
+}
+
+@media (max-width: 900px) {
+  .project-form-shell {
+    grid-template-columns: 1fr;
+    padding: 70px 0;
+  }
+
+  .project-form-contact {
+    margin-top: 38px;
+  }
+}

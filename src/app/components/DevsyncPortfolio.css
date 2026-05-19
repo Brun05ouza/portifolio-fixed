@@ -100,38 +100,56 @@
 .dv-menu-button {
   display: none;
   justify-self: end;
-  width: 108px;
+  width: 52px;
   height: 46px;
   place-items: center;
   border: 1px solid rgba(255, 255, 255, 0.18);
   border-radius: 999px;
   background: rgba(250, 250, 250, 0.94);
   color: #050508;
+  cursor: pointer;
+  transition: background 0.2s ease;
+}
+
+.dv-menu-button:hover {
+  background: rgba(250, 250, 250, 1);
 }
 
 .dv-mobile-menu {
   position: fixed;
-  z-index: 55;
+  z-index: 70;
   top: 78px;
-  right: 20px;
-  left: 20px;
+  right: 18px;
+  left: 18px;
   display: grid;
-  gap: 8px;
+  gap: 4px;
   border: 1px solid var(--border);
   border-radius: 18px;
-  padding: 14px;
-  background: rgba(10, 10, 15, 0.96);
-  backdrop-filter: blur(18px);
+  padding: 10px;
+  background: rgba(10, 10, 15, 0.97);
+  backdrop-filter: blur(24px);
+  -webkit-backdrop-filter: blur(24px);
+  box-shadow: 0 16px 48px rgba(0, 0, 0, 0.5);
 }
 
 .dv-mobile-menu button {
-  min-height: 46px;
+  min-height: 52px;
   border: 0;
   border-radius: 12px;
+  padding: 0 16px;
   background: transparent;
   color: var(--foreground);
   font: inherit;
+  font-size: 1.05rem;
+  font-weight: 600;
   text-align: left;
+  cursor: pointer;
+  transition: background 0.2s ease, color 0.2s ease;
+}
+
+.dv-mobile-menu button:hover {
+  background: rgba(105, 245, 139, 0.08);
+  color: var(--dv-green);
 }
 
 .dv-roll {
@@ -225,10 +243,13 @@ button:hover .dv-roll span {
   content: "";
   position: absolute;
   z-index: -2;
-  inset: -18%;
-  border-radius: 50%;
-  border: 1px solid rgba(105, 245, 139, 0.12);
-  background: conic-gradient(from 120deg, transparent, rgba(255, 255, 255, 0.08), transparent, rgba(105, 245, 139, 0.14), transparent);
+  inset: -22% -30% -20%;
+  border-radius: 34% 66% 58% 42% / 48% 38% 62% 52%;
+  background:
+    radial-gradient(ellipse at 54% 48%, rgba(105, 245, 139, 0.18), transparent 58%),
+    linear-gradient(135deg, transparent 8%, rgba(105, 245, 139, 0.08), transparent 78%);
+  filter: blur(28px);
+  opacity: 0.86;
 }
 
 .dv-portrait-card {
@@ -331,7 +352,7 @@ button:hover .dv-roll span {
 
 .dv-deck-stage {
   position: relative;
-  height: 300vh;
+  height: var(--deck-stage-height, 600vh);
   overflow: visible;
   border-block: 1px solid var(--border);
   background: rgba(5, 5, 8, 0.42);
@@ -353,10 +374,10 @@ button:hover .dv-roll span {
   display: flex;
   align-items: center;
   gap: 34px;
-  color: rgba(246, 247, 244, 0.15);
+  color: rgba(246, 247, 244, 0.13);
   font-size: clamp(3rem, 9vw, 10rem);
   font-family: var(--dv-display-font);
-  font-weight: 700;
+  font-weight: 800;
   line-height: 1;
   white-space: nowrap;
   text-transform: uppercase;
@@ -709,12 +730,56 @@ button:hover .dv-roll span {
   margin-top: auto;
 }
 
-.dv-project-copy span {
+.dv-project-tags span {
+  width: 36px;
+  height: 36px;
+  display: inline-grid;
+  place-items: center;
   border: 1px solid var(--border);
+  border-radius: 50%;
+  padding: 0;
+  color: var(--foreground-muted);
+  background: rgba(255, 255, 255, 0.03);
+  transition: border-color 0.24s ease, color 0.24s ease, transform 0.24s ease;
+}
+
+.dv-project-tags span:hover {
+  border-color: rgba(105, 245, 139, 0.42);
+  color: var(--dv-ink);
+  transform: translateY(-2px);
+}
+
+.dv-project-collaborators {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+  margin-top: 18px;
+}
+
+.dv-project-collaborators strong {
+  width: 100%;
+  color: var(--foreground-subtle);
+  font-size: 0.75rem;
+  text-transform: uppercase;
+}
+
+.dv-project-collaborators a {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  border: 1px solid rgba(105, 245, 139, 0.22);
   border-radius: 999px;
   padding: 7px 10px;
-  color: var(--foreground-muted);
-  font-size: 0.8rem;
+  color: var(--dv-ink);
+  font-size: 0.82rem;
+  font-weight: 700;
+}
+
+.dv-project-collaborators em {
+  color: var(--dv-green);
+  font-size: 0.7rem;
+  font-style: normal;
 }
 
 .dv-project-arrow {
@@ -1155,11 +1220,8 @@ button:hover .dv-roll span {
   }
 
   .dv-menu-button {
-    position: fixed;
-    top: 22px;
-    right: 18px;
     display: grid;
-    width: 58px;
+    width: 52px;
     height: 44px;
   }
 

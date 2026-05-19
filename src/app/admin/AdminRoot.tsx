@@ -1,22 +1,47 @@
-import { Link } from 'react-router-dom';
+import { useEffect, useState } from 'react';
+import { Loader2 } from 'lucide-react';
+import { AdminLayout } from './AdminLayout';
+import { AdminLogin } from './AdminLogin';
+import './admin-theme.css';
 
-/**
- * O CMS antigo dependia de banco direto no navegador. Ele fica desativado enquanto
- * a nova integracao com backend/Neon nao existir.
- */
+type AdminUser = { id: string; email: string };
+
 export function AdminRoot() {
-  return (
-    <div className="min-h-screen bg-[#0a0a0b] p-8 text-zinc-100">
-      <div className="mx-auto max-w-lg">
-        <h1 className="text-2xl font-semibold text-white">Admin</h1>
-        <p className="mt-2 text-sm text-zinc-400">
-          O painel antigo foi desativado porque a integracao direta com banco foi removida. Para usar o Neon com
-          seguranca, este app precisa de uma API/backend entre o navegador e o banco.
-        </p>
-        <Link to="/" className="mt-6 inline-block text-sm text-cyan-400 hover:underline">
-          Voltar ao site
-        </Link>
+  const [user, setUser] = useState<AdminUser | null>(null);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    document.body.classList.add('admin-mode');
+    let cancelled = false;
+
+    fetch('/api/auth/me')
+      .then(async (response) => {
+        if (!response.ok) return null;
+        const payload = await response.json() as { user?: AdminUser };
+        return payload.user || null;
+      })
+      .catch(() => null)
+      .then((sessionUser) => {
+        if (cancelled) return;
+        setUser(sessionUser);
+        setLoading(false);
+      });
+
+    return () => {
+      cancelled = true;
+      document.body.classList.remove('admin-mode');
+    };
+  }, []);
+
+  if (loading) {
+    return (
+      <div className="admin-login-page">
+        <Loader2 className="h-8 w-8 animate-spin text-cyan-500" />
       </div>
-    </div>
-  );
+    );
+  }
+
+  if (!user) return <AdminLogin onLogin={setUser} />;
+
+  return <AdminLayout user={user} onLogout={() => setUser(null)} />;
 }

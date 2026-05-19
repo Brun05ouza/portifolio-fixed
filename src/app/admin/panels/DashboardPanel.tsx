@@ -1,12 +1,14 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState, type ReactNode } from 'react';
 import {
-  BookOpen,
   Award,
-  FolderKanban,
   BarChart3,
+  BookOpen,
+  ClipboardList,
+  FolderKanban,
+  Loader2,
   MousePointerClick,
   Settings,
-  Loader2,
+  Users,
 } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import {
@@ -15,6 +17,8 @@ import {
   countActiveProjects,
 } from '../../../services/portfolioDb';
 import { fetchSiteSettings } from '../../../services/siteSettingsDb';
+import { fetchAnalyticsSummary, type AnalyticsSummary } from '../../../services/analyticsDb';
+import { fetchProjectRequestSummary, type ProjectRequestSummary } from '../../../services/projectRequestsDb';
 
 export function DashboardPanel() {
   const [loading, setLoading] = useState(true);
@@ -22,21 +26,27 @@ export function DashboardPanel() {
   const [certificates, setCertificates] = useState(0);
   const [projects, setProjects] = useState(0);
   const [settingsUpdated, setSettingsUpdated] = useState<string | null>(null);
+  const [analytics, setAnalytics] = useState<AnalyticsSummary | null>(null);
+  const [requests, setRequests] = useState<ProjectRequestSummary | null>(null);
 
   useEffect(() => {
     let cancelled = false;
     (async () => {
       setLoading(true);
-      const [c, ce, p, settings] = await Promise.all([
+      const [c, ce, p, settings, analyticsData, requestData] = await Promise.all([
         countActiveCourses(),
         countActiveCertificates(),
         countActiveProjects(),
         fetchSiteSettings(),
+        fetchAnalyticsSummary(),
+        fetchProjectRequestSummary(),
       ]);
       if (cancelled) return;
       setCourses(c);
       setCertificates(ce);
       setProjects(p);
+      setAnalytics(analyticsData);
+      setRequests(requestData);
       const ts = settings?.updatedAt;
       if (typeof ts === 'string' && ts.length > 0) {
         try {
@@ -55,7 +65,7 @@ export function DashboardPanel() {
   }, []);
 
   const statCard = (
-    icon: React.ReactNode,
+    icon: ReactNode,
     label: string,
     value: string | number,
     hint?: string
@@ -86,6 +96,12 @@ export function DashboardPanel() {
           {statCard(<FolderKanban className="h-5 w-5" />, 'Projetos ativos', projects)}
           {statCard(<BookOpen className="h-5 w-5" />, 'Cursos ativos', courses)}
           {statCard(<Award className="h-5 w-5" />, 'Certificados ativos', certificates)}
+          {statCard(<BarChart3 className="h-5 w-5" />, 'Acessos totais', analytics?.totalViews ?? 0)}
+          {statCard(<MousePointerClick className="h-5 w-5" />, 'Acessos hoje', analytics?.viewsToday ?? 0)}
+          {statCard(<Users className="h-5 w-5" />, 'Visitantes únicos', analytics?.uniqueVisitors ?? 0, 'hash anônimo')}
+          {statCard(<ClipboardList className="h-5 w-5" />, 'Pedidos de projeto', requests?.total ?? 0)}
+          {statCard(<ClipboardList className="h-5 w-5" />, 'Novos pedidos', requests?.newCount ?? 0)}
+          {statCard(<ClipboardList className="h-5 w-5" />, 'Pedidos em 7 dias', requests?.last7d ?? 0)}
         </div>
       )}
 
@@ -100,34 +116,68 @@ export function DashboardPanel() {
                 : 'Nenhuma data de atualização registrada ainda.'}
             </p>
           </div>
-          <Link
-            to="/admin/configuracao"
-            className="ml-auto text-sm font-medium text-cyan-400 hover:text-cyan-300"
-          >
+          <Link to="/admin/configuracao" className="ml-auto text-sm font-medium text-cyan-400 hover:text-cyan-300">
             Editar
           </Link>
         </div>
       </div>
 
       <div className="grid gap-4 lg:grid-cols-2">
-        <div className="rounded-xl border border-dashed border-zinc-700 bg-zinc-950/50 p-6">
+        <div className="rounded-xl border border-zinc-800 bg-zinc-950/50 p-6">
           <div className="flex items-center gap-2 text-zinc-500">
             <BarChart3 className="h-5 w-5" />
-            <h2 className="text-sm font-semibold text-zinc-400">Acessos</h2>
+            <h2 className="text-sm font-semibold text-zinc-400">Acessos dos últimos 7 dias</h2>
           </div>
-          <p className="mt-3 text-sm leading-relaxed text-zinc-600">
-            Em breve: integração com Google Analytics (ou similar) para métricas reais de visitas.
-          </p>
+          <p className="mt-3 text-4xl font-semibold tabular-nums text-white">{analytics?.views7d ?? 0}</p>
+          <p className="mt-1 text-sm text-zinc-500">Registrado no Neon por abertura do site público.</p>
         </div>
-        <div className="rounded-xl border border-dashed border-zinc-700 bg-zinc-950/50 p-6">
+
+        <div className="rounded-xl border border-zinc-800 bg-zinc-950/50 p-6">
           <div className="flex items-center gap-2 text-zinc-500">
             <MousePointerClick className="h-5 w-5" />
-            <h2 className="text-sm font-semibold text-zinc-400">Interações</h2>
+            <h2 className="text-sm font-semibold text-zinc-400">Seções mais vistas</h2>
           </div>
-          <p className="mt-3 text-sm leading-relaxed text-zinc-600">
-            Em breve: eventos de cliques, formulário e CTAs agregados neste painel.
-          </p>
+          {analytics?.topPages.length ? (
+            <div className="mt-4 space-y-3">
+              {analytics.topPages.map((item) => (
+                <div key={item.path} className="flex items-center justify-between gap-3 text-sm">
+                  <span className="truncate text-zinc-300">{item.path}</span>
+                  <strong className="tabular-nums text-cyan-400">{item.views}</strong>
+                </div>
+              ))}
+            </div>
+          ) : (
+            <p className="mt-3 text-sm leading-relaxed text-zinc-600">Nenhum acesso registrado ainda.</p>
+          )}
         </div>
+      </div>
+
+      <div className="rounded-xl border border-zinc-800 bg-zinc-950/50 p-6">
+        <div className="flex items-center gap-2 text-zinc-500">
+          <ClipboardList className="h-5 w-5" />
+          <h2 className="text-sm font-semibold text-zinc-400">Análise geral dos formulários</h2>
+        </div>
+
+        {requests?.latest.length ? (
+          <div className="mt-5 grid gap-3">
+            {requests.latest.map((item) => (
+              <article key={item.id} className="rounded-lg border border-zinc-800 bg-zinc-900/40 p-4">
+                <div className="flex flex-wrap items-start justify-between gap-3">
+                  <div>
+                    <h3 className="text-sm font-semibold text-white">{item.name}</h3>
+                    <a className="text-xs text-cyan-400" href={`mailto:${item.email}`}>{item.email}</a>
+                  </div>
+                  <span className="text-xs text-zinc-500">
+                    {item.createdAt ? new Date(item.createdAt).toLocaleString('pt-BR') : 'Sem data'}
+                  </span>
+                </div>
+                <p className="mt-3 line-clamp-2 text-sm leading-relaxed text-zinc-400">{item.description}</p>
+              </article>
+            ))}
+          </div>
+        ) : (
+          <p className="mt-3 text-sm leading-relaxed text-zinc-600">Nenhum formulário enviado ainda.</p>
+        )}
       </div>
     </div>
   );

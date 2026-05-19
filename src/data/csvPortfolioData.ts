@@ -79,6 +79,7 @@ export const csvProjects: ProjectWithId[] = parseCsv(projectsRowsCsv)
     active: toBoolean(row.active),
     order: Number(row.sort_order || 0),
     repoName: row.repo_name || undefined,
+    collaborators: [],
   }))
   .sort((a, b) => a.order - b.order);
 

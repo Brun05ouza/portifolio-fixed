@@ -43,6 +43,13 @@ export interface ProjectDoc {
   order: number;
   /** Opcional: fallback para texto do case em config/cases.ts */
   repoName?: string;
+  collaborators: ProjectCollaborator[];
+}
+
+export interface ProjectCollaborator {
+  name: string;
+  platform: 'github' | 'instagram' | 'site';
+  url: string;
 }
 
 export type CourseWithId = CourseDoc & { id: string };
@@ -65,6 +72,7 @@ export interface PortfolioProjectView {
   caseSolution: string;
   caseResult: string;
   repoName?: string;
+  collaborators: ProjectCollaborator[];
 }
 
 export function toPortfolioProjectView(p: ProjectWithId): PortfolioProjectView {
@@ -83,5 +91,6 @@ export function toPortfolioProjectView(p: ProjectWithId): PortfolioProjectView {
     caseSolution: p.caseSolution,
     caseResult: p.caseResult,
     repoName: p.repoName,
+    collaborators: p.collaborators,
   };
 }

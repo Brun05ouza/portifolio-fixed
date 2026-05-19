@@ -5,6 +5,7 @@ import {
   ArrowDown,
   ArrowUpRight,
   Github,
+  Instagram,
   Linkedin,
   Mail,
   Menu,
@@ -13,7 +14,9 @@ import {
   X,
 } from 'lucide-react';
 import { siteConfig } from '../../config/content';
+import { TechnologyIcon } from '../../config/technologies';
 import { listCoursesPublic, listProjectsPublic } from '../../services/portfolioDb';
+import { trackPortfolioSection } from '../../services/analyticsDb';
 import type { CourseWithId, ProjectWithId } from '../../types/portfolio';
 import { openWhatsApp } from '../../utils/whatsapp';
 import { useReducedMotion } from '../../hooks/useReducedMotion';
@@ -24,6 +27,19 @@ const socials = [
   { label: 'LinkedIn', href: siteConfig.linkedinUrl, icon: Linkedin },
   { label: 'GitHub', href: siteConfig.githubUrl, icon: Github },
   { label: 'E-mail', href: `mailto:${siteConfig.contactEmail}`, icon: Mail },
+];
+
+const trackedPortfolioSections = [
+  { selector: '#home', label: 'Hero' },
+  { selector: '#visual-projects', label: 'Destaques visuais' },
+  { selector: '#skills', label: 'Skills' },
+  { selector: '#metrics', label: 'Métricas' },
+  { selector: '#projects', label: 'Projetos' },
+  { selector: '#courses', label: 'Cursos' },
+  { selector: '#services', label: 'Serviços' },
+  { selector: '#ecosystem', label: 'Ecossistema' },
+  { selector: '#process', label: 'Processo' },
+  { selector: '#contact', label: 'Contato' },
 ];
 
 const skillGroups = [
@@ -216,25 +232,40 @@ function getProjectHref(project: ProjectWithId): string {
   return project.demoLink || project.githubLink || siteConfig.githubUrl;
 }
 
+function collaboratorLabel(platform: string): string {
+  if (platform === 'instagram') return 'Instagram';
+  if (platform === 'site') return 'Site';
+  return 'GitHub';
+}
+
 function RotatingDeck({ projects }: { projects: ProjectWithId[] }) {
   const sectionRef = useRef<HTMLElement>(null);
+  const deckProjects = projects.slice(0, 5);
+  const sectionHeight = `${Math.max(5, deckProjects.length) + 1}00vh`;
+  const trackEnd = `-${Math.max(190, deckProjects.length * 38)}vw`;
   const { scrollYProgress } = useScroll({
     target: sectionRef,
     offset: ['start start', 'end end'],
   });
-  const trackX = useTransform(scrollYProgress, [0, 1], ['42vw', '-112vw']);
+  const trackX = useTransform(scrollYProgress, [0, 1], ['46vw', trackEnd]);
   const deckRotate = useTransform(scrollYProgress, [0, 0.5, 1], [-4, 0, 4]);
-  const marqueeX = useTransform(scrollYProgress, [0, 1], ['0%', '-24%']);
+  const marqueeX = useTransform(scrollYProgress, [0, 1], ['0%', '-32%']);
 
   return (
-    <section ref={sectionRef} className="dv-deck-stage" aria-label="Destaques visuais do portfolio">
+    <section
+      id="visual-projects"
+      ref={sectionRef}
+      className="dv-deck-stage"
+      style={{ '--deck-stage-height': sectionHeight } as CSSProperties}
+      aria-label="Destaques visuais do portfolio"
+    >
       <div className="dv-deck-sticky">
         <motion.div className="dv-name-marquee" style={{ x: marqueeX }} aria-hidden>
-          <span>MEUS PROJETOS * MEUS PROJETOS * MEUS PROJETOS *</span>
-          <span>MEUS PROJETOS * MEUS PROJETOS * MEUS PROJETOS *</span>
+          <span>BRUNO SOUZA * BRUNO SOUZA * BRUNO SOUZA *</span>
+          <span>BRUNO SOUZA * BRUNO SOUZA * BRUNO SOUZA *</span>
         </motion.div>
         <motion.div className="dv-floating-deck" style={{ x: trackX, rotate: deckRotate }}>
-          {projects.slice(0, 6).map((project, index) => (
+          {deckProjects.map((project, index) => (
             <motion.article
               key={project.id}
               className="dv-deck-card"
@@ -268,7 +299,7 @@ function FooterCTA({ onNavigate }: { onNavigate: (href: string) => void }) {
   };
 
   const handleStartProject = () => {
-    openWhatsApp('Ola Bruno! Quero tirar uma ideia do papel e iniciar um projeto.');
+    window.location.href = '/formulario';
   };
 
   return (
@@ -405,6 +436,32 @@ export function DevsyncPortfolio() {
 
     return () => {
       cancelled = true;
+    };
+  }, []);
+
+  useEffect(() => {
+    const observer = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          if (!entry.isIntersecting) return;
+          const label = entry.target.getAttribute('data-track-section');
+          if (label) void trackPortfolioSection(label);
+        });
+      },
+      { threshold: 0.45 }
+    );
+
+    trackedPortfolioSections.forEach(({ selector, label }) => {
+      const element = document.querySelector(selector);
+      if (!element) return;
+      element.setAttribute('data-track-section', label);
+      observer.observe(element);
+    });
+
+    void trackPortfolioSection('Hero');
+
+    return () => {
+      observer.disconnect();
     };
   }, []);
 
@@ -574,7 +631,7 @@ export function DevsyncPortfolio() {
           </motion.div>
         </section>
 
-        <section className="dv-stats" aria-label="Metricas do portfolio">
+        <section id="metrics" className="dv-stats" aria-label="Metricas do portfolio">
           {stats.map((item) => (
             <CountUpStat key={item.label} {...item} />
           ))}
@@ -618,9 +675,26 @@ export function DevsyncPortfolio() {
                   <p>{project.description}</p>
                   <div className="dv-project-tags">
                     {project.tags.map((tag) => (
-                      <span key={tag}>{tag}</span>
+                      <span key={tag} title={tag} aria-label={tag}>
+                        <TechnologyIcon name={tag} size={18} />
+                      </span>
                     ))}
                   </div>
+                  {project.collaborators.length > 0 ? (
+                    <div className="dv-project-collaborators">
+                      <strong>Com apoio de</strong>
+                      {project.collaborators.map((collaborator) => {
+                        const Icon = collaborator.platform === 'instagram' ? Instagram : Github;
+                        return (
+                          <a key={`${project.id}-${collaborator.name}`} href={collaborator.url} target="_blank" rel="noopener noreferrer">
+                            <Icon size={14} />
+                            <span>{collaborator.name}</span>
+                            <em>{collaboratorLabel(collaborator.platform)}</em>
+                          </a>
+                        );
+                      })}
+                    </div>
+                  ) : null}
                 </div>
               </motion.a>
             ))}
@@ -715,7 +789,7 @@ export function DevsyncPortfolio() {
           </div>
         </section>
 
-        <section className="dv-clients dv-section" aria-label="Tecnologias e parceiros">
+        <section id="ecosystem" className="dv-clients dv-section" aria-label="Tecnologias e parceiros">
           <div className="dv-section-head dv-split-head">
             <div>
               <SectionKicker>// Ecossistema</SectionKicker>
@@ -738,7 +812,7 @@ export function DevsyncPortfolio() {
           </div>
         </section>
 
-        <section className="dv-process dv-section">
+        <section id="process" className="dv-process dv-section">
           <div className="dv-section-head dv-split-head">
             <div>
               <SectionKicker>// Processo</SectionKicker>

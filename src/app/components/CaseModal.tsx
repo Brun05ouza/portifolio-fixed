@@ -10,6 +10,7 @@ import type { PortfolioProjectView } from '../../types/portfolio';
 import { getCaseDetails } from '../../config/cases';
 import { toAbsoluteHttpUrl } from '../../utils/externalUrl';
 import { useI18n } from '../../contexts/I18nContext';
+import { TechnologyIcon } from '../../config/technologies';
 
 interface CaseModalProps {
   project: PortfolioProjectView | null;
@@ -52,14 +53,16 @@ export function CaseModal({ project, open, onOpenChange }: CaseModalProps) {
             <Badge
               key={tag}
               variant="secondary"
-              className="text-xs"
+              className="grid h-8 w-8 place-items-center rounded-full p-0"
+              title={tag}
+              aria-label={tag}
               style={{
                 background: 'linear-gradient(135deg, var(--color-chroma-1), var(--color-chroma-2))',
                 color: 'white',
                 border: 'none',
               }}
             >
-              {tag}
+              <TechnologyIcon name={tag} size={16} />
             </Badge>
           ))}
         </div>

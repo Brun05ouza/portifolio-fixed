@@ -27,7 +27,8 @@ export default async function handler(request, response) {
         case_result,
         active,
         sort_order,
-        repo_name
+        repo_name,
+        collaborators
       from public.projects
       where active = true
       order by sort_order asc, created_at desc

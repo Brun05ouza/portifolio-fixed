@@ -1,5 +1,5 @@
 import type { CertificateDoc, CourseDoc, ProjectDoc } from '../types/portfolio';
-import type { CourseWithId, CertificateWithId, ProjectWithId } from '../types/portfolio';
+import type { CourseWithId, CertificateWithId, ProjectCollaborator, ProjectWithId } from '../types/portfolio';
 import { csvCourses, csvProjects } from '../data/csvPortfolioData';
 
 const DB_DISABLED_ERROR = 'Banco desativado no frontend. Crie uma API/backend para salvar e ler dados do Neon.';
@@ -60,6 +60,19 @@ function normalizeProject(row: Record<string, unknown>): ProjectWithId {
     active: toBoolean(row.active),
     order: toNumber(row.order ?? row.sort_order),
     repoName: String(row.repoName ?? row.repo_name ?? '') || undefined,
+    collaborators: Array.isArray(row.collaborators)
+      ? row.collaborators.map((item): ProjectCollaborator => {
+          const collaborator = item as Record<string, unknown>;
+          const platform = collaborator.platform === 'instagram' || collaborator.platform === 'site'
+            ? collaborator.platform
+            : 'github';
+          return {
+            name: String(collaborator.name ?? ''),
+            platform,
+            url: String(collaborator.url ?? ''),
+          };
+        }).filter((item) => item.name && item.url)
+      : [],
   };
 }
 
@@ -100,7 +113,7 @@ export async function listCertificatesAll(): Promise<CertificateWithId[]> {
 }
 
 export async function listProjectsAll(): Promise<ProjectWithId[]> {
-  return listProjectsPublic();
+  return fetchCollection('/api/admin/projects', normalizeProject, csvProjects);
 }
 
 export async function countActiveCourses(): Promise<number> {
@@ -140,13 +153,28 @@ export async function deleteCertificate(_id: string): Promise<WriteResult> {
 }
 
 export async function createProject(_data: ProjectDoc): Promise<WriteResult & { id?: string }> {
-  return { ok: false, error: DB_DISABLED_ERROR };
+  return writeJson('/api/admin/projects', 'POST', _data);
 }
 
 export async function updateProject(_id: string, _data: ProjectDoc): Promise<WriteResult> {
-  return { ok: false, error: DB_DISABLED_ERROR };
+  return writeJson(`/api/admin/projects?id=${encodeURIComponent(_id)}`, 'PUT', _data);
 }
 
 export async function deleteProject(_id: string): Promise<WriteResult> {
-  return { ok: false, error: DB_DISABLED_ERROR };
+  return writeJson(`/api/admin/projects?id=${encodeURIComponent(_id)}`, 'DELETE');
+}
+
+async function writeJson(endpoint: string, method: string, data?: unknown): Promise<WriteResult & { id?: string }> {
+  try {
+    const response = await fetch(endpoint, {
+      method,
+      headers: data ? { 'Content-Type': 'application/json' } : undefined,
+      body: data ? JSON.stringify(data) : undefined,
+    });
+    const payload = await response.json().catch(() => ({})) as { id?: string; error?: string };
+    if (!response.ok) return { ok: false, error: payload.error || DB_DISABLED_ERROR };
+    return { ok: true, id: payload.id };
+  } catch {
+    return { ok: false, error: DB_DISABLED_ERROR };
+  }
 }

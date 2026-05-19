@@ -2,6 +2,7 @@ import { useState, useRef } from 'react';
 import { motion } from 'motion/react';
 import { ExternalLink, Github } from 'lucide-react';
 import { toAbsoluteHttpUrl } from '../../utils/externalUrl';
+import { TechnologyIcon } from '../../config/technologies';
 
 const TITLE_MAX_LENGTH = 50;
 const DESCRIPTION_MAX_LENGTH = 120;
@@ -100,13 +101,14 @@ export function ProjectCard({
             {tags.map((tag, index) => (
               <span
                 key={index}
-                className="px-2 py-1 text-xs rounded-md truncate max-w-[100px]"
+                className="grid h-8 w-8 place-items-center rounded-full border border-white/15 bg-white/5"
+                title={tag}
+                aria-label={tag}
                 style={{
-                  background: 'linear-gradient(135deg, var(--color-chroma-1), var(--color-chroma-2))',
                   color: 'white',
                 }}
               >
-                {tag}
+                <TechnologyIcon name={tag} size={16} />
               </span>
             ))}
           </div>

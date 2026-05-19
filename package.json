@@ -7,6 +7,7 @@
     "build": "vite build",
     "dev": "vite",
     "import:neon": "node scripts/import-neon-portfolio.mjs",
+    "admin:create": "node scripts/create-admin-user.mjs",
     "lint": "eslint src --max-warnings 0",
     "typecheck": "tsc --noEmit"
   },

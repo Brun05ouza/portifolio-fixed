@@ -1,5 +1,5 @@
-import { useCallback, useEffect, useState } from 'react';
-import { Loader2, Pencil, Plus, Trash2, Upload } from 'lucide-react';
+import { useCallback, useEffect, useState, type ChangeEvent } from 'react';
+import { Loader2, Pencil, Plus, Trash2, Upload, UserPlus } from 'lucide-react';
 import {
   createProject,
   deleteProject,
@@ -7,21 +7,22 @@ import {
   updateProject,
 } from '../../../services/portfolioDb';
 import { uploadPortfolioFile } from '../../../services/storageUpload';
+import { TECHNOLOGIES, TechnologyIcon } from '../../../config/technologies';
 import type { ProjectDoc, ProjectWithId } from '../../../types/portfolio';
 import { toAbsoluteHttpUrl } from '../../../utils/externalUrl';
 import { Button } from '../../components/ui/button';
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from '../../components/ui/dialog';
 import { Input } from '../../components/ui/input';
 import { Label } from '../../components/ui/label';
 import { Switch } from '../../components/ui/switch';
 import { Textarea } from '../../components/ui/textarea';
-import {
-  Sheet,
-  SheetContent,
-  SheetDescription,
-  SheetHeader,
-  SheetTitle,
-  SheetFooter,
-} from '../../components/ui/sheet';
 import {
   Table,
   TableBody,
@@ -47,13 +48,11 @@ const empty: ProjectDoc = {
   active: true,
   order: 0,
   repoName: '',
+  collaborators: [],
 };
 
-function parseTags(s: string): string[] {
-  return s
-    .split(',')
-    .map((t) => t.trim())
-    .filter(Boolean);
+function getNextOrder(rows: ProjectWithId[]): number {
+  return Math.max(0, ...rows.map((row) => Number(row.order) || 0)) + 1;
 }
 
 export function ProjectsPanel() {
@@ -62,7 +61,7 @@ export function ProjectsPanel() {
   const [open, setOpen] = useState(false);
   const [editingId, setEditingId] = useState<string | null>(null);
   const [form, setForm] = useState<ProjectDoc>(empty);
-  const [tagsStr, setTagsStr] = useState('');
+  const [selectedTechnologies, setSelectedTechnologies] = useState<string[]>([]);
   const [saving, setSaving] = useState(false);
   const [msg, setMsg] = useState('');
   const [uploading, setUploading] = useState(false);
@@ -80,8 +79,8 @@ export function ProjectsPanel() {
 
   const openNew = () => {
     setEditingId(null);
-    setForm({ ...empty, order: rows.length });
-    setTagsStr('');
+    setForm({ ...empty, order: getNextOrder(rows) });
+    setSelectedTechnologies([]);
     setMsg('');
     setOpen(true);
   };
@@ -92,7 +91,7 @@ export function ProjectsPanel() {
       title: row.title,
       description: row.description,
       imageUrl: row.imageUrl,
-      tags: Array.isArray(row.tags) ? row.tags : [],
+      tags: row.tags,
       role: row.role,
       demoLink: row.demoLink ?? '',
       githubLink: row.githubLink ?? '',
@@ -104,52 +103,96 @@ export function ProjectsPanel() {
       active: row.active,
       order: row.order,
       repoName: row.repoName ?? '',
+      collaborators: row.collaborators ?? [],
     });
-    setTagsStr((Array.isArray(row.tags) ? row.tags : []).join(', '));
+    setSelectedTechnologies(row.tags);
     setMsg('');
     setOpen(true);
   };
 
-  const handleFile = async (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
+  const toggleTechnology = (technologyId: string) => {
+    setSelectedTechnologies((current) => {
+      if (current.includes(technologyId)) {
+        return current.filter((item) => item !== technologyId);
+      }
+      return [...current, technologyId];
+    });
+  };
+
+  const handleFile = async (event: ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
     if (!file) return;
     setUploading(true);
     setMsg('');
     const path = `portfolio/media/${Date.now()}-${file.name.replace(/[^\w.-]/g, '_')}`;
     const res = await uploadPortfolioFile(path, file);
     setUploading(false);
-    e.target.value = '';
+    event.target.value = '';
     if ('error' in res) {
-      setMsg(res.error);
+      setMsg(res.error ?? 'Falha ao enviar imagem.');
       return;
     }
-    setForm((f) => ({ ...f, imageUrl: res.url }));
+    setForm((current) => ({ ...current, imageUrl: res.url ?? '' }));
+  };
+
+  const addCollaborator = () => {
+    setForm((current) => ({
+      ...current,
+      collaborators: [...current.collaborators, { name: '', platform: 'github', url: '' }],
+    }));
+  };
+
+  const updateCollaborator = (index: number, field: 'name' | 'platform' | 'url', value: string) => {
+    setForm((current) => ({
+      ...current,
+      collaborators: current.collaborators.map((item, itemIndex) => {
+        if (itemIndex !== index) return item;
+        if (field === 'platform') {
+          return { ...item, platform: value === 'instagram' || value === 'site' ? value : 'github' };
+        }
+        return { ...item, [field]: value };
+      }),
+    }));
+  };
+
+  const removeCollaborator = (index: number) => {
+    setForm((current) => ({
+      ...current,
+      collaborators: current.collaborators.filter((_, itemIndex) => itemIndex !== index),
+    }));
   };
 
   const buildPayload = (): ProjectDoc => {
-    const tags = parseTags(tagsStr);
-    const repoName = form.repoName?.trim() || undefined;
     const demo = form.demoLink.trim();
-    const gh = form.githubLink.trim();
+    const github = form.githubLink.trim();
     return {
       ...form,
-      tags,
+      tags: selectedTechnologies,
+      order: editingId ? form.order : getNextOrder(rows),
       demoLink: demo ? toAbsoluteHttpUrl(demo) : '',
-      githubLink: gh ? toAbsoluteHttpUrl(gh) : '',
-      repoName,
+      githubLink: github ? toAbsoluteHttpUrl(github) : '',
+      repoName: form.repoName?.trim() || undefined,
+      collaborators: form.collaborators
+        .map((item) => ({
+          ...item,
+          name: item.name.trim(),
+          url: item.url.trim() ? toAbsoluteHttpUrl(item.url.trim()) : '',
+        }))
+        .filter((item) => item.name && item.url),
     };
   };
 
   const save = async () => {
     const payload = buildPayload();
     if (!payload.title.trim()) {
-      setMsg('Informe o título.');
+      setMsg('Informe o titulo.');
       return;
     }
     if (!payload.imageUrl.trim()) {
-      setMsg('Informe a URL da imagem ou envie um arquivo.');
+      setMsg('Informe a imagem do projeto.');
       return;
     }
+
     setSaving(true);
     setMsg('');
     const res = editingId
@@ -180,13 +223,10 @@ export function ProjectsPanel() {
         <div>
           <h1 className="text-2xl font-semibold tracking-tight text-white">Projetos</h1>
           <p className="mt-1 text-sm text-zinc-400">
-            Cards na seção Projetos. Imagem obrigatória para aparecer no site (ativos).
+            Cards na seção Projetos. Imagem obrigatória para aparecer no site.
           </p>
         </div>
-        <Button
-          onClick={openNew}
-          className="bg-cyan-600 text-white hover:bg-cyan-500 shadow-lg shadow-cyan-900/20 transition-all hover:-translate-y-0.5 hover:shadow-cyan-900/40"
-        >
+        <Button onClick={openNew} className="bg-cyan-600 text-white hover:bg-cyan-500">
           <Plus className="mr-2 h-4 w-4" />
           Novo projeto
         </Button>
@@ -206,6 +246,7 @@ export function ProjectsPanel() {
                 <TableHead className="text-zinc-400">Ordem</TableHead>
                 <TableHead className="text-zinc-400">Título</TableHead>
                 <TableHead className="text-zinc-400">Papel</TableHead>
+                <TableHead className="text-zinc-400">Apoio</TableHead>
                 <TableHead className="text-zinc-400">Ativo</TableHead>
                 <TableHead className="text-zinc-400">Imagem</TableHead>
                 <TableHead className="text-right text-zinc-400">Ações</TableHead>
@@ -214,8 +255,8 @@ export function ProjectsPanel() {
             <TableBody>
               {rows.length === 0 ? (
                 <TableRow className="border-zinc-800">
-                  <TableCell colSpan={6} className="text-center text-zinc-500 py-12">
-                    Nenhum projeto. Adicione o primeiro (ex.: Residencial Nature — veja seed no repo).
+                  <TableCell colSpan={7} className="text-center text-zinc-500 py-12">
+                    Nenhum projeto. Adicione o primeiro projeto para publicar no portfolio.
                   </TableCell>
                 </TableRow>
               ) : (
@@ -224,25 +265,16 @@ export function ProjectsPanel() {
                     <TableCell className="text-zinc-300">{row.order}</TableCell>
                     <TableCell className="font-medium text-white">{row.title}</TableCell>
                     <TableCell className="text-zinc-400">{row.role}</TableCell>
+                    <TableCell className="text-zinc-400">{row.collaborators?.length ?? 0}</TableCell>
                     <TableCell className="text-zinc-400">{row.active ? 'Sim' : 'Não'}</TableCell>
                     <TableCell className="text-zinc-500 max-w-[120px] truncate">
-                      {row.imageUrl ? 'OK' : '—'}
+                      {row.imageUrl ? 'OK' : '-'}
                     </TableCell>
                     <TableCell className="text-right">
-                      <Button
-                        variant="ghost"
-                        size="sm"
-                        className="text-zinc-300"
-                        onClick={() => openEdit(row)}
-                      >
+                      <Button variant="ghost" size="sm" className="text-zinc-300" onClick={() => openEdit(row)}>
                         <Pencil className="h-4 w-4" />
                       </Button>
-                      <Button
-                        variant="ghost"
-                        size="sm"
-                        className="text-red-400"
-                        onClick={() => void remove(row.id)}
-                      >
+                      <Button variant="ghost" size="sm" className="text-red-400" onClick={() => void remove(row.id)}>
                         <Trash2 className="h-4 w-4" />
                       </Button>
                     </TableCell>
@@ -254,168 +286,147 @@ export function ProjectsPanel() {
         </div>
       )}
 
-      <Sheet open={open} onOpenChange={setOpen}>
-        <SheetContent className="flex h-full max-h-[100dvh] w-full flex-col gap-0 overflow-hidden border-zinc-800 bg-zinc-950 p-0 text-white sm:max-w-xl">
-          <SheetHeader className="shrink-0 space-y-1 border-b border-zinc-800/60 px-6 pb-4 pt-6 pr-14 sm:px-8">
-            <SheetTitle>{editingId ? 'Editar projeto' : 'Novo projeto'}</SheetTitle>
-            <SheetDescription className="sr-only">
-              Formulário para criar ou editar um projeto do portfólio.
-            </SheetDescription>
-          </SheetHeader>
-          <div className="min-h-0 flex-1 space-y-5 overflow-y-auto overscroll-y-contain px-6 py-4 sm:px-8">
-            {msg && <p className="text-sm text-red-400">{msg}</p>}
-            <div>
-              <Label className="mb-2 block text-zinc-400">Título</Label>
-              <Input
-                value={form.title}
-                onChange={(e) => setForm((f) => ({ ...f, title: e.target.value }))}
-                className="border-zinc-700 bg-zinc-900"
-              />
-            </div>
-            <div>
-              <Label className="mb-2 block text-zinc-400">Descrição (card)</Label>
-              <Textarea
-                value={form.description}
-                onChange={(e) => setForm((f) => ({ ...f, description: e.target.value }))}
-                className="border-zinc-700 bg-zinc-900"
-                rows={3}
-              />
-            </div>
-            <div>
-              <Label className="mb-2 block text-zinc-400">URL da imagem (capa)</Label>
-              <Input
-                value={form.imageUrl}
-                onChange={(e) => setForm((f) => ({ ...f, imageUrl: e.target.value }))}
-                className="border-zinc-700 bg-zinc-900"
-              />
-              <label className="mt-3 inline-flex cursor-pointer items-center gap-2 text-sm text-cyan-400">
-                <Upload className="h-4 w-4" />
-                {uploading ? 'Enviando…' : 'Enviar imagem'}
-                <input type="file" accept="image/*" className="hidden" onChange={(e) => void handleFile(e)} />
-              </label>
-            </div>
-            <div>
-              <Label className="mb-2 block text-zinc-400">Tags (separadas por vírgula)</Label>
-              <Input
-                value={tagsStr}
-                onChange={(e) => setTagsStr(e.target.value)}
-                className="border-zinc-700 bg-zinc-900"
-                placeholder="React, TypeScript, SaaS"
-              />
-            </div>
-            <div>
-              <Label className="mb-2 block text-zinc-400">Papel / função</Label>
-              <Input
-                value={form.role}
-                onChange={(e) => setForm((f) => ({ ...f, role: e.target.value }))}
-                className="border-zinc-700 bg-zinc-900"
-              />
-            </div>
-            <div>
-              <Label className="mb-2 block text-zinc-400">Link demo / site (redirecionamento principal)</Label>
-              <Input
-                value={form.demoLink}
-                onChange={(e) => setForm((f) => ({ ...f, demoLink: e.target.value }))}
-                className="border-zinc-700 bg-zinc-900"
-              />
-            </div>
-            <div>
-              <Label className="mb-2 block text-zinc-400">Link GitHub (opcional)</Label>
-              <Input
-                value={form.githubLink}
-                onChange={(e) => setForm((f) => ({ ...f, githubLink: e.target.value }))}
-                className="border-zinc-700 bg-zinc-900"
-              />
-            </div>
-            <div>
-              <Label className="mb-2 block text-zinc-400">repoName (opcional — ex.: residencial-nature para texto Gênesis no card)</Label>
-              <Input
-                value={form.repoName ?? ''}
-                onChange={(e) => setForm((f) => ({ ...f, repoName: e.target.value }))}
-                className="border-zinc-700 bg-zinc-900"
-              />
-            </div>
-            <div className="flex flex-col gap-3 sm:flex-row sm:items-center">
-              <div className="flex items-center gap-2">
-                <Switch
-                  checked={form.hideGithubLink}
-                  onCheckedChange={(v) => setForm((f) => ({ ...f, hideGithubLink: v }))}
-                />
-                <Label className="mb-2 block text-zinc-400">Ocultar link GitHub no card</Label>
+      <Dialog open={open} onOpenChange={setOpen}>
+        <DialogContent className="admin-project-modal">
+          <DialogHeader>
+            <DialogTitle>{editingId ? 'Editar projeto' : 'Novo projeto'}</DialogTitle>
+            <DialogDescription>
+              Preencha apenas o essencial. Você pode completar os detalhes depois.
+            </DialogDescription>
+          </DialogHeader>
+
+          <div className="admin-simple-form">
+            {msg && <p className="admin-project-error">{msg}</p>}
+
+            <div className="admin-simple-grid">
+              <div className="admin-field admin-field-wide">
+                <Label>Título</Label>
+                <Input value={form.title} onChange={(event) => setForm((current) => ({ ...current, title: event.target.value }))} />
               </div>
-              <div className="flex items-center gap-2">
-                <Switch
-                  checked={form.hideImageOverlay}
-                  onCheckedChange={(v) => setForm((f) => ({ ...f, hideImageOverlay: v }))}
-                />
-                <Label className="mb-2 block text-zinc-400">Sem overlay escuro na imagem</Label>
-              </div>
-            </div>
-            <div className="flex items-center gap-2">
-              <Switch
-                checked={form.active}
-                onCheckedChange={(v) => setForm((f) => ({ ...f, active: v }))}
-              />
-              <Label className="mb-2 block text-zinc-400">Ativo no site</Label>
-            </div>
-            <div>
-              <Label className="mb-2 block text-zinc-400">Ordem</Label>
-              <Input
-                type="number"
-                value={form.order}
-                onChange={(e) =>
-                  setForm((f) => ({ ...f, order: Number(e.target.value) || 0 }))
-                }
-                className="border-zinc-700 bg-zinc-900"
-              />
-            </div>
-            <div className="border-t border-zinc-800 pt-4 space-y-3">
-              <p className="text-xs font-semibold uppercase tracking-wide text-zinc-500">
-                Case (modal)
-              </p>
-              <div>
-                <Label className="mb-2 block text-zinc-400">Problema</Label>
+
+              <div className="admin-field admin-field-wide">
+                <Label>Descrição</Label>
                 <Textarea
-                  value={form.caseProblem}
-                  onChange={(e) => setForm((f) => ({ ...f, caseProblem: e.target.value }))}
-                  className="border-zinc-700 bg-zinc-900"
-                  rows={2}
+                  value={form.description}
+                  onChange={(event) => setForm((current) => ({ ...current, description: event.target.value }))}
+                  rows={3}
                 />
               </div>
-              <div>
-                <Label className="mb-2 block text-zinc-400">Solução técnica</Label>
-                <Textarea
-                  value={form.caseSolution}
-                  onChange={(e) => setForm((f) => ({ ...f, caseSolution: e.target.value }))}
-                  className="border-zinc-700 bg-zinc-900"
-                  rows={2}
-                />
+
+              <div className="admin-field">
+                <Label>Papel</Label>
+                <Input value={form.role} onChange={(event) => setForm((current) => ({ ...current, role: event.target.value }))} />
               </div>
-              <div>
-                <Label className="mb-2 block text-zinc-400">Resultado / impacto</Label>
-                <Textarea
-                  value={form.caseResult}
-                  onChange={(e) => setForm((f) => ({ ...f, caseResult: e.target.value }))}
-                  className="border-zinc-700 bg-zinc-900"
-                  rows={2}
-                />
+
+              <div className="admin-field admin-field-wide">
+                <Label>Tecnologias</Label>
+                <div className="admin-tech-picker">
+                  {TECHNOLOGIES.map((technology) => {
+                    const selected = selectedTechnologies.includes(technology.id);
+                    return (
+                      <button
+                        key={technology.id}
+                        type="button"
+                        className={selected ? 'is-selected' : ''}
+                        title={technology.label}
+                        aria-label={technology.label}
+                        aria-pressed={selected}
+                        onClick={() => toggleTechnology(technology.id)}
+                      >
+                        <TechnologyIcon name={technology.id} size={18} />
+                      </button>
+                    );
+                  })}
+                </div>
               </div>
+
+              <div className="admin-field admin-field-wide">
+                <Label>Imagem</Label>
+                <div className="admin-image-input-row">
+                  <Input value={form.imageUrl} onChange={(event) => setForm((current) => ({ ...current, imageUrl: event.target.value }))} />
+                  <label className="admin-upload-button">
+                    <Upload className="h-4 w-4" />
+                    {uploading ? 'Enviando...' : 'Upload'}
+                    <input type="file" accept="image/*" className="hidden" onChange={(event) => void handleFile(event)} />
+                  </label>
+                </div>
+              </div>
+
+              <div className="admin-field">
+                <Label>Link do site/demo</Label>
+                <Input value={form.demoLink} onChange={(event) => setForm((current) => ({ ...current, demoLink: event.target.value }))} />
+              </div>
+
+              <div className="admin-field">
+                <Label>GitHub</Label>
+                <Input value={form.githubLink} onChange={(event) => setForm((current) => ({ ...current, githubLink: event.target.value }))} />
+              </div>
+
+              <div className="admin-simple-switches">
+                <label>
+                  <Switch checked={form.active} onCheckedChange={(value) => setForm((current) => ({ ...current, active: value }))} />
+                  Ativo
+                </label>
+                <label>
+                  <Switch checked={form.hideGithubLink} onCheckedChange={(value) => setForm((current) => ({ ...current, hideGithubLink: value }))} />
+                  Ocultar GitHub
+                </label>
+              </div>
+            </div>
+
+            <div className="admin-simple-collaborators">
+              <div className="admin-simple-collaborators-head">
+                <strong>Apoio / colaboradores</strong>
+                <Button type="button" variant="outline" className="border-zinc-700" onClick={addCollaborator}>
+                  <UserPlus className="mr-2 h-4 w-4" />
+                  Adicionar
+                </Button>
+              </div>
+
+              {form.collaborators.length === 0 ? (
+                <p>Nenhuma pessoa adicionada.</p>
+              ) : (
+                <div className="admin-simple-collaborator-list">
+                  {form.collaborators.map((collaborator, index) => (
+                    <div className="admin-simple-collaborator" key={index}>
+                      <Input
+                        value={collaborator.name}
+                        onChange={(event) => updateCollaborator(index, 'name', event.target.value)}
+                        placeholder="Nome"
+                      />
+                      <select
+                        value={collaborator.platform}
+                        onChange={(event) => updateCollaborator(index, 'platform', event.target.value)}
+                      >
+                        <option value="github">GitHub</option>
+                        <option value="instagram">Instagram</option>
+                        <option value="site">Site</option>
+                      </select>
+                      <Input
+                        value={collaborator.url}
+                        onChange={(event) => updateCollaborator(index, 'url', event.target.value)}
+                        placeholder="Link"
+                      />
+                      <Button type="button" variant="ghost" className="text-red-400" onClick={() => removeCollaborator(index)}>
+                        <Trash2 className="h-4 w-4" />
+                      </Button>
+                    </div>
+                  ))}
+                </div>
+              )}
             </div>
           </div>
-          <SheetFooter className="shrink-0 flex flex-row flex-wrap gap-3 border-t border-zinc-800 bg-zinc-950 px-6 py-4 sm:px-8">
+
+          <DialogFooter className="admin-simple-footer">
             <Button variant="outline" className="border-zinc-600" onClick={() => setOpen(false)}>
               Cancelar
             </Button>
-            <Button
-              className="bg-cyan-600 text-white hover:bg-cyan-500 shadow-lg shadow-cyan-900/20 transition-all hover:-translate-y-0.5 hover:shadow-cyan-900/40"
-              disabled={saving}
-              onClick={() => void save()}
-            >
+            <Button className="bg-cyan-600 text-white hover:bg-cyan-500" disabled={saving} onClick={() => void save()}>
               {saving ? <Loader2 className="h-4 w-4 animate-spin" /> : 'Salvar'}
             </Button>
-          </SheetFooter>
-        </SheetContent>
-      </Sheet>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }
