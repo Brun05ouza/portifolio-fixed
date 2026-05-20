@@ -1,5 +1,7 @@
-import { useEffect, useMemo, useRef, useState, type CSSProperties, type PointerEvent as ReactPointerEvent } from 'react';
-import { AnimatePresence, motion, useInView, useScroll, useTransform } from 'motion/react';
+import { useEffect, useRef, useState, type CSSProperties, type PointerEvent as ReactPointerEvent } from 'react';
+import { createPortal } from 'react-dom';
+import { useNavigate } from 'react-router-dom';
+import { AnimatePresence, motion, useInView, useMotionValue, useScroll, useSpring, useTransform } from 'motion/react';
 import Lenis from 'lenis';
 import {
   ArrowDown,
@@ -40,6 +42,15 @@ const trackedPortfolioSections = [
   { selector: '#ecosystem', label: 'Ecossistema' },
   { selector: '#process', label: 'Processo' },
   { selector: '#contact', label: 'Contato' },
+];
+
+const nav = [
+  { label: 'Inicio', href: '#home' },
+  { label: 'Skills', href: '#skills' },
+  { label: 'Projetos', href: '#projects' },
+  { label: 'Cursos', href: '#courses' },
+  { label: 'Servicos', href: '#services' },
+  { label: 'Contato', href: '#contact' },
 ];
 
 const skillGroups = [
@@ -140,19 +151,9 @@ function AnimatedName() {
       {words.map((word, wordIndex) => (
         <span className="dv-name-word" key={word}>
           {word.split('').map((letter, letterIndex) => (
-            <motion.span
-              key={`${word}-${letterIndex}`}
-              aria-hidden
-              initial={{ opacity: 0, y: 80, rotateX: -70 }}
-              animate={{ opacity: 1, y: 0, rotateX: 0 }}
-              transition={{
-                duration: 0.75,
-                delay: 0.25 + wordIndex * 0.18 + letterIndex * 0.045,
-                ease: [0.22, 1, 0.36, 1],
-              }}
-            >
+            <span key={`${word}-${letterIndex}`} aria-hidden>
               {letter}
-            </motion.span>
+            </span>
           ))}
         </span>
       ))}
@@ -198,22 +199,42 @@ function CountUpStat({ value, suffix, label }: { value: number; suffix: string; 
 }
 
 function CursorDot() {
-  const [position, setPosition] = useState({ x: -80, y: -80 });
+  const cursorX = useMotionValue(-80);
+  const cursorY = useMotionValue(-80);
+  const smoothX = useSpring(cursorX, { stiffness: 520, damping: 38, mass: 0.45 });
+  const smoothY = useSpring(cursorY, { stiffness: 520, damping: 38, mass: 0.45 });
 
   useEffect(() => {
-    const onPointerMove = (event: globalThis.PointerEvent) => {
-      setPosition({ x: event.clientX, y: event.clientY });
+    if (window.matchMedia('(pointer: coarse)').matches) return;
+
+    let frame = 0;
+    let nextX = -80;
+    let nextY = -80;
+
+    const flush = () => {
+      cursorX.set(nextX);
+      cursorY.set(nextY);
+      frame = 0;
     };
-    window.addEventListener('pointermove', onPointerMove);
-    return () => window.removeEventListener('pointermove', onPointerMove);
-  }, []);
+
+    const onPointerMove = (event: globalThis.PointerEvent) => {
+      nextX = event.clientX;
+      nextY = event.clientY;
+      if (!frame) frame = requestAnimationFrame(flush);
+    };
+
+    window.addEventListener('pointermove', onPointerMove, { passive: true });
+    return () => {
+      window.removeEventListener('pointermove', onPointerMove);
+      if (frame) cancelAnimationFrame(frame);
+    };
+  }, [cursorX, cursorY]);
 
   return (
     <motion.span
       className="dv-cursor-dot"
       aria-hidden
-      animate={{ x: position.x, y: position.y }}
-      transition={{ type: 'spring', stiffness: 520, damping: 38, mass: 0.45 }}
+      style={{ x: smoothX, y: smoothY }}
     />
   );
 }
@@ -228,14 +249,64 @@ function CodeDivider() {
   );
 }
 
-function getProjectHref(project: ProjectWithId): string {
-  return project.demoLink || project.githubLink || siteConfig.githubUrl;
-}
-
 function collaboratorLabel(platform: string): string {
   if (platform === 'instagram') return 'Instagram';
   if (platform === 'site') return 'Site';
   return 'GitHub';
+}
+
+function FixedPortfolioHeader({
+  menuOpen,
+  onToggleMenu,
+  onNavigate,
+}: {
+  menuOpen: boolean;
+  onToggleMenu: () => void;
+  onNavigate: (href: string) => void;
+}) {
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
+
+  if (!mounted) return null;
+
+  return createPortal(
+    <>
+      <header className="dv-header">
+        <a className="dv-brand" href="#home" onClick={(event) => { event.preventDefault(); onNavigate('#home'); }}>
+          Bruno Souza
+        </a>
+        <nav className="dv-nav" aria-label="Navegacao principal">
+          {nav.map((item) => (
+            <button key={item.href} type="button" onClick={() => onNavigate(item.href)}>
+              <RollingText>{item.label}</RollingText>
+            </button>
+          ))}
+        </nav>
+        <button className="dv-menu-button" type="button" onClick={onToggleMenu} aria-label="Menu">
+          {menuOpen ? <X size={20} /> : <Menu size={20} />}
+        </button>
+      </header>
+
+      {menuOpen && (
+        <motion.div
+          className="dv-mobile-menu"
+          initial={{ opacity: 0, y: -16 }}
+          animate={{ opacity: 1, y: 0 }}
+          exit={{ opacity: 0, y: -16 }}
+        >
+          {nav.map((item) => (
+            <button key={item.href} type="button" onClick={() => onNavigate(item.href)}>
+              {item.label}
+            </button>
+          ))}
+        </motion.div>
+      )}
+    </>,
+    document.body
+  );
 }
 
 function RotatingDeck({ projects }: { projects: ProjectWithId[] }) {
@@ -249,7 +320,7 @@ function RotatingDeck({ projects }: { projects: ProjectWithId[] }) {
   });
   const trackX = useTransform(scrollYProgress, [0, 1], ['46vw', trackEnd]);
   const deckRotate = useTransform(scrollYProgress, [0, 0.5, 1], [-4, 0, 4]);
-  const marqueeX = useTransform(scrollYProgress, [0, 1], ['0%', '-32%']);
+  const marqueeX = useTransform(scrollYProgress, [0, 1], ['0%', '-10%']);
 
   return (
     <section
@@ -261,8 +332,11 @@ function RotatingDeck({ projects }: { projects: ProjectWithId[] }) {
     >
       <div className="dv-deck-sticky">
         <motion.div className="dv-name-marquee" style={{ x: marqueeX }} aria-hidden>
-          <span>BRUNO SOUZA * BRUNO SOUZA * BRUNO SOUZA *</span>
-          <span>BRUNO SOUZA * BRUNO SOUZA * BRUNO SOUZA *</span>
+          <div className="dv-name-marquee-track">
+            <span>BRUNO SOUZA * BRUNO SOUZA * BRUNO SOUZA *</span>
+            <span>BRUNO SOUZA * BRUNO SOUZA * BRUNO SOUZA *</span>
+            <span>BRUNO SOUZA * BRUNO SOUZA * BRUNO SOUZA *</span>
+          </div>
         </motion.div>
         <motion.div className="dv-floating-deck" style={{ x: trackX, rotate: deckRotate }}>
           {deckProjects.map((project, index) => (
@@ -272,10 +346,10 @@ function RotatingDeck({ projects }: { projects: ProjectWithId[] }) {
               style={{ '--deck-index': index } as CSSProperties}
               initial={{ opacity: 0.2, y: 50, scale: 0.86 }}
               whileInView={{ opacity: 1, y: 0, scale: 1 }}
-              viewport={{ once: false, margin: '-20% 0px -20% 0px' }}
+              viewport={{ once: true, margin: '-20% 0px -20% 0px' }}
               transition={{ duration: 0.8, delay: index * 0.08, ease: [0.22, 1, 0.36, 1] }}
             >
-              <img src={project.imageUrl || '/background-project.svg'} alt="" />
+              <img src={project.imageUrl || '/background-project.svg'} alt="" loading="lazy" decoding="async" />
               <div>
                 <strong>{project.title}</strong>
                 <span>{project.role || 'Projeto web'}</span>
@@ -379,22 +453,18 @@ function FooterCTA({ onNavigate }: { onNavigate: (href: string) => void }) {
 export function DevsyncPortfolio() {
   const prefersReducedMotion = useReducedMotion();
   const lenisRef = useRef<Lenis | null>(null);
+  const navigate = useNavigate();
   const [menuOpen, setMenuOpen] = useState(false);
   const [activeService, setActiveService] = useState(0);
+  const [heroReady, setHeroReady] = useState(false);
+  const [projectTransitioning, setProjectTransitioning] = useState(false);
   const [portfolioProjects, setPortfolioProjects] = useState<ProjectWithId[]>([]);
   const [courses, setCourses] = useState<CourseWithId[]>([]);
 
-  const nav = useMemo(
-    () => [
-      { label: 'Inicio', href: '#home' },
-      { label: 'Skills', href: '#skills' },
-      { label: 'Projetos', href: '#projects' },
-      { label: 'Cursos', href: '#courses' },
-      { label: 'Servicos', href: '#services' },
-      { label: 'Contato', href: '#contact' },
-    ],
-    []
-  );
+  useEffect(() => {
+    const timer = window.setTimeout(() => setHeroReady(true), 60);
+    return () => window.clearTimeout(timer);
+  }, []);
 
   useEffect(() => {
     if (prefersReducedMotion) {
@@ -403,65 +473,78 @@ export function DevsyncPortfolio() {
       return;
     }
 
-    const lenis = new Lenis({
-      duration: 1.08,
-      easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
-      smoothWheel: true,
-      touchMultiplier: 1.25,
-    });
-    lenisRef.current = lenis;
-
+    let startTimer = 0;
     let frame = 0;
-    const raf = (time: number) => {
-      lenis.raf(time);
+    let lenis: Lenis | null = null;
+
+    startTimer = window.setTimeout(() => {
+      lenis = new Lenis({
+        duration: 0.86,
+        easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
+        smoothWheel: true,
+        touchMultiplier: 1.15,
+      });
+      lenisRef.current = lenis;
+
+      const raf = (time: number) => {
+        lenis?.raf(time);
+        frame = requestAnimationFrame(raf);
+      };
       frame = requestAnimationFrame(raf);
-    };
-    frame = requestAnimationFrame(raf);
+    }, 700);
 
     return () => {
-      cancelAnimationFrame(frame);
-      lenis.destroy();
+      window.clearTimeout(startTimer);
+      if (frame) cancelAnimationFrame(frame);
+      lenis?.destroy();
       if (lenisRef.current === lenis) lenisRef.current = null;
     };
   }, [prefersReducedMotion]);
 
   useEffect(() => {
     let cancelled = false;
-
-    Promise.all([listProjectsPublic(), listCoursesPublic()]).then(([projectList, courseList]) => {
-      if (cancelled) return;
-      setPortfolioProjects(projectList);
-      setCourses(courseList);
-    });
+    const timer = window.setTimeout(() => {
+      Promise.all([listProjectsPublic(), listCoursesPublic()]).then(([projectList, courseList]) => {
+        if (cancelled) return;
+        setPortfolioProjects(projectList);
+        setCourses(courseList);
+      });
+    }, 450);
 
     return () => {
       cancelled = true;
+      window.clearTimeout(timer);
     };
   }, []);
 
   useEffect(() => {
-    const observer = new IntersectionObserver(
-      (entries) => {
-        entries.forEach((entry) => {
-          if (!entry.isIntersecting) return;
-          const label = entry.target.getAttribute('data-track-section');
-          if (label) void trackPortfolioSection(label);
-        });
-      },
-      { threshold: 0.45 }
-    );
+    let observer: IntersectionObserver | null = null;
 
-    trackedPortfolioSections.forEach(({ selector, label }) => {
-      const element = document.querySelector(selector);
-      if (!element) return;
-      element.setAttribute('data-track-section', label);
-      observer.observe(element);
-    });
+    const timer = window.setTimeout(() => {
+      observer = new IntersectionObserver(
+        (entries) => {
+          entries.forEach((entry) => {
+            if (!entry.isIntersecting) return;
+            const label = entry.target.getAttribute('data-track-section');
+            if (label) void trackPortfolioSection(label);
+          });
+        },
+        { threshold: 0.45 }
+      );
 
-    void trackPortfolioSection('Hero');
+      trackedPortfolioSections.forEach(({ selector, label }) => {
+        const element = document.querySelector(selector);
+        if (!element) return;
+        element.setAttribute('data-track-section', label);
+        observer?.observe(element);
+      });
+
+      void trackPortfolioSection('Hero');
+    }, 900);
 
     return () => {
-      observer.disconnect();
+      window.clearTimeout(timer);
+      observer?.disconnect();
     };
   }, []);
 
@@ -474,49 +557,31 @@ export function DevsyncPortfolio() {
     document.querySelector(href)?.scrollIntoView({ behavior: 'auto' });
   };
 
-  return (
-    <div className="dv-page">
-      <CursorDot />
-      <header className="dv-header">
-        <a className="dv-brand" href="#home" onClick={(event) => { event.preventDefault(); handleNav('#home'); }}>
-          Bruno Souza
-        </a>
-        <nav className="dv-nav" aria-label="Navegacao principal">
-          {nav.map((item) => (
-            <button key={item.href} type="button" onClick={() => handleNav(item.href)}>
-              <RollingText>{item.label}</RollingText>
-            </button>
-          ))}
-        </nav>
-        <button className="dv-menu-button" type="button" onClick={() => setMenuOpen((open) => !open)} aria-label="Menu">
-          {menuOpen ? <X size={20} /> : <Menu size={20} />}
-        </button>
-      </header>
+  const handleProjectOpen = (project: ProjectWithId) => {
+    if (projectTransitioning) return;
+    lenisRef.current?.stop();
+    document.documentElement.classList.add('dv-transition-lock');
+    document.body.classList.add('dv-transition-lock');
+    setProjectTransitioning(true);
+    window.setTimeout(() => {
+      navigate(`/projetos/${encodeURIComponent(project.id)}`, { state: { fromProjectTransition: true } });
+    }, 540);
+  };
 
-      {menuOpen && (
-        <motion.div
-          className="dv-mobile-menu"
-          initial={{ opacity: 0, y: -16 }}
-          animate={{ opacity: 1, y: 0 }}
-          exit={{ opacity: 0, y: -16 }}
-        >
-          {nav.map((item) => (
-            <button key={item.href} type="button" onClick={() => handleNav(item.href)}>
-              {item.label}
-            </button>
-          ))}
-        </motion.div>
-      )}
+  return (
+    <div className={`dv-page${heroReady ? ' is-hero-ready' : ''}`}>
+      {projectTransitioning ? <div className="dv-route-reveal" aria-hidden /> : null}
+      <CursorDot />
+      <FixedPortfolioHeader
+        menuOpen={menuOpen}
+        onToggleMenu={() => setMenuOpen((open) => !open)}
+        onNavigate={handleNav}
+      />
 
       <main>
         <section id="home" className="dv-hero">
           <div className="dv-hero-grid">
-            <motion.div
-              className="dv-hero-copy"
-              initial={{ opacity: 0, y: 34 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.8, ease: [0.22, 1, 0.36, 1] }}
-            >
+            <div className="dv-hero-copy">
               <p className="dv-eyebrow">Ola,</p>
               <p className="dv-role">sou desenvolvedor Full Stack</p>
               <AnimatedName />
@@ -524,28 +589,17 @@ export function DevsyncPortfolio() {
                 Eu crio sistemas web rapidos, escalaveis e bem desenhados, combinando React no front-end
                 com APIs e bancos de dados robustos no backend.
               </p>
-            </motion.div>
+            </div>
 
-            <motion.div
-              className="dv-hero-portrait"
-              initial={{ opacity: 0, scale: 0.9, rotate: 4 }}
-              animate={{ opacity: 1, scale: 1, rotate: 0 }}
-              transition={{ duration: 0.9, delay: 0.25, ease: [0.22, 1, 0.36, 1] }}
-              aria-hidden
-            >
+            <div className="dv-hero-portrait" aria-hidden>
               <div className="dv-portrait-card dv-portrait-card-back" />
               <div className="dv-portrait-card">
-                <img src="/eu.jpeg" alt="" />
+                <img src="/eu.jpeg" alt="" decoding="async" />
               </div>
               <span className="dv-portrait-tag">Desenvolvedor Full Stack</span>
-            </motion.div>
+            </div>
 
-            <motion.aside
-              className="dv-contact-rail"
-              initial={{ opacity: 0, x: 28 }}
-              animate={{ opacity: 1, x: 0 }}
-              transition={{ duration: 0.8, delay: 0.15, ease: [0.22, 1, 0.36, 1] }}
-            >
+            <aside className="dv-contact-rail">
               <div>
                 <Mail size={16} />
                 <a href={`mailto:${siteConfig.contactEmail}`}>{siteConfig.contactEmail}</a>
@@ -562,7 +616,7 @@ export function DevsyncPortfolio() {
                   </a>
                 ))}
               </div>
-            </motion.aside>
+            </aside>
           </div>
 
           <div className="dv-scroll-cue">
@@ -589,7 +643,7 @@ export function DevsyncPortfolio() {
                   className="dv-skill-reveal"
                   initial={{ opacity: 0, y: 80, scale: 0.96 }}
                   whileInView={{ opacity: 1, y: 0, scale: 1 }}
-                  viewport={{ once: false, margin: '-20% 0px -20% 0px' }}
+                  viewport={{ once: true, margin: '-20% 0px -20% 0px' }}
                   transition={{ duration: 0.65, ease: [0.22, 1, 0.36, 1] }}
                 >
                   <span>{String(groupIndex + 1).padStart(2, '0')}</span>
@@ -600,7 +654,7 @@ export function DevsyncPortfolio() {
                         key={item}
                         initial={{ opacity: 0, y: 18 }}
                         whileInView={{ opacity: 1, y: 0 }}
-                        viewport={{ once: false }}
+                        viewport={{ once: true }}
                         transition={{ duration: 0.42, delay: itemIndex * 0.05 }}
                       >
                         {item}
@@ -618,7 +672,7 @@ export function DevsyncPortfolio() {
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
           >
-            <img src="/eu.jpeg" alt="Bruno Souza" />
+            <img src="/eu.jpeg" alt="Bruno Souza" loading="lazy" decoding="async" />
             <p>
               Sou estudante de desenvolvimento web e transformo aprendizado em projetos reais. Gosto de
               resolver problemas, estruturar interfaces claras e criar experiencias que parecem simples porque
@@ -652,19 +706,18 @@ export function DevsyncPortfolio() {
 
           <div className="dv-project-list">
             {portfolioProjects.map((project, index) => (
-              <motion.a
+              <motion.button
                 key={project.id}
                 className="dv-project-card"
-                href={getProjectHref(project)}
-                target="_blank"
-                rel="noopener noreferrer"
+                type="button"
+                onClick={() => handleProjectOpen(project)}
                 initial={{ opacity: 0, y: 34 }}
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true, margin: '-80px' }}
                 transition={{ duration: 0.6, delay: index * 0.05 }}
               >
                 <div className="dv-project-image">
-                  <img src={project.imageUrl || '/background-project.svg'} alt="" loading="lazy" />
+                  <img src={project.imageUrl || '/background-project.svg'} alt="" loading="lazy" decoding="async" />
                 </div>
                 <div className="dv-project-copy">
                   <div className="dv-project-topline">
@@ -696,7 +749,7 @@ export function DevsyncPortfolio() {
                     </div>
                   ) : null}
                 </div>
-              </motion.a>
+              </motion.button>
             ))}
           </div>
         </section>

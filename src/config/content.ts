@@ -3,7 +3,7 @@
  * Edite aqui para alterar textos e configurações sem mexer na lógica de UI.
  */
 
-import { ClockIcon, CoffeeIcon, FolderCodeIcon, RocketIcon } from 'lucide-animated';
+import { Clock, Coffee, FolderCode, Rocket } from 'lucide-react';
 
 export const siteConfig = {
   githubUser: import.meta.env.VITE_GITHUB_USER || 'Brun05ouza',
@@ -31,10 +31,10 @@ export const navItems = [
 
 /** Valores padrão das métricas; rótulos vêm do i18n (`stats.${id}`). */
 export const stats = [
-  { id: 'lines', icon: FolderCodeIcon, value: 43500, color: '#22c55e' },
-  { id: 'projects', icon: RocketIcon, value: 29, color: '#10b981' },
-  { id: 'coffees', icon: CoffeeIcon, value: 350, color: '#f59e0b' },
-  { id: 'hours', icon: ClockIcon, value: 1200, color: '#8b5cf6' },
+  { id: 'lines', icon: FolderCode, value: 43500, color: '#22c55e' },
+  { id: 'projects', icon: Rocket, value: 29, color: '#10b981' },
+  { id: 'coffees', icon: Coffee, value: 350, color: '#f59e0b' },
+  { id: 'hours', icon: Clock, value: 1200, color: '#8b5cf6' },
 ] as const;
 
 export const socialLinks = [
