@@ -101,6 +101,7 @@ function cleanProject(input: any) {
     active: input.active !== false,
     order: Number(input.order || 0),
     repoName: input.repoName ? String(input.repoName) : null,
+    companyId: input.companyId ? String(input.companyId) : null,
     collaborators: Array.isArray(input.collaborators)
       ? input.collaborators
           .map((item: any) => ({
@@ -110,6 +111,15 @@ function cleanProject(input: any) {
           }))
           .filter((item: any) => item.name && item.url)
       : [],
+  }
+}
+
+function cleanCompany(input: any) {
+  return {
+    name: String(input.name || '').trim(),
+    iconUrl: String(input.iconUrl || '').trim(),
+    websiteUrl: String(input.websiteUrl || '').trim(),
+    active: input.active !== false,
   }
 }
 
@@ -333,11 +343,13 @@ function neonDevApi(connectionString: string | undefined) {
 
         if (req.method === 'GET') {
           const rows = await sql`
-            select id, title, description, image_url, tags, role, demo_link, github_link,
-              hide_github_link, hide_image_overlay, case_problem, case_solution, case_result,
-              active, sort_order, repo_name, collaborators
-            from public.projects
-            order by sort_order asc, created_at desc
+            select p.id, p.title, p.description, p.image_url, p.tags, p.role, p.demo_link, p.github_link,
+              p.hide_github_link, p.hide_image_overlay, p.case_problem, p.case_solution, p.case_result,
+              p.active, p.sort_order, p.repo_name, p.company_id, p.collaborators,
+              c.name as company_name, c.icon_url as company_icon_url, c.website_url as company_website_url
+            from public.projects p
+            left join public.companies c on c.id = p.company_id
+            order by p.sort_order asc, p.created_at desc
           `
           sendJson(res, 200, { data: rows })
           return
@@ -352,13 +364,13 @@ function neonDevApi(connectionString: string | undefined) {
             insert into public.projects (
               title, description, image_url, tags, role, demo_link, github_link, hide_github_link,
               hide_image_overlay, case_problem, case_solution, case_result, active, sort_order,
-              repo_name, collaborators
+              repo_name, company_id, collaborators
             )
             values (
               ${item.title}, ${item.description}, ${item.imageUrl}, ${item.tags}, ${item.role},
               ${item.demoLink}, ${item.githubLink}, ${item.hideGithubLink}, ${item.hideImageOverlay},
               ${item.caseProblem}, ${item.caseSolution}, ${item.caseResult}, ${item.active},
-              ${item.order}, ${item.repoName}, ${JSON.stringify(item.collaborators)}
+              ${item.order}, ${item.repoName}, ${item.companyId}, ${JSON.stringify(item.collaborators)}
             )
             returning id
           `
@@ -375,7 +387,7 @@ function neonDevApi(connectionString: string | undefined) {
               hide_github_link = ${item.hideGithubLink}, hide_image_overlay = ${item.hideImageOverlay},
               case_problem = ${item.caseProblem}, case_solution = ${item.caseSolution}, case_result = ${item.caseResult},
               active = ${item.active}, sort_order = ${item.order}, repo_name = ${item.repoName},
-              collaborators = ${JSON.stringify(item.collaborators)}, updated_at = now()
+              company_id = ${item.companyId}, collaborators = ${JSON.stringify(item.collaborators)}, updated_at = now()
             where id = ${id}
           `
           sendJson(res, 200, { ok: true })
@@ -385,6 +397,47 @@ function neonDevApi(connectionString: string | undefined) {
         if (req.method === 'DELETE') {
           await sql`delete from public.projects where id = ${new URL(req.url || '', 'http://localhost').searchParams.get('id')}`
           sendJson(res, 200, { ok: true })
+          return
+        }
+
+        sendJson(res, 405, { error: 'Metodo nao permitido.' })
+      })
+
+      server.middlewares.use('/api/admin/companies', async (req, res) => {
+        if (!connectionString) {
+          sendJson(res, 503, { error: 'DATABASE_URL nao configurada.' })
+          return
+        }
+        const sql = neon(connectionString)
+        const user = await getAdminUser(sql, req)
+        if (!user) {
+          sendJson(res, 401, { error: 'Login necessario.' })
+          return
+        }
+
+        if (req.method === 'GET') {
+          const rows = await sql`
+            select id, name, icon_url, website_url, active
+            from public.companies
+            order by active desc, name asc
+          `
+          sendJson(res, 200, { data: rows })
+          return
+        }
+
+        if (req.method === 'POST') {
+          const body = await readBody(req)
+          const item = cleanCompany(body)
+          if (!item.name) {
+            sendJson(res, 400, { error: 'Informe o nome da empresa.' })
+            return
+          }
+          const rows = await sql`
+            insert into public.companies (name, icon_url, website_url, active)
+            values (${item.name}, ${item.iconUrl}, ${item.websiteUrl}, ${item.active})
+            returning id
+          `
+          sendJson(res, 200, { ok: true, id: rows[0].id })
           return
         }
 
@@ -401,26 +454,31 @@ function neonDevApi(connectionString: string | undefined) {
           const sql = neon(connectionString)
           const rows = await sql`
             select
-              id,
-              title,
-              description,
-              image_url,
-              tags,
-              role,
-              demo_link,
-              github_link,
-              hide_github_link,
-              hide_image_overlay,
-              case_problem,
-              case_solution,
-              case_result,
-              active,
-              sort_order,
-              repo_name,
-              collaborators
-            from public.projects
-            where active = true
-            order by sort_order asc, created_at desc
+              p.id,
+              p.title,
+              p.description,
+              p.image_url,
+              p.tags,
+              p.role,
+              p.demo_link,
+              p.github_link,
+              p.hide_github_link,
+              p.hide_image_overlay,
+              p.case_problem,
+              p.case_solution,
+              p.case_result,
+              p.active,
+              p.sort_order,
+              p.repo_name,
+              p.company_id,
+              p.collaborators,
+              c.name as company_name,
+              c.icon_url as company_icon_url,
+              c.website_url as company_website_url
+            from public.projects p
+            left join public.companies c on c.id = p.company_id
+            where p.active = true
+            order by p.sort_order asc, p.created_at desc
           `
           sendJson(res, 200, { data: rows })
         } catch (error) {
@@ -463,6 +521,14 @@ export default defineConfig(({ mode }) => {
       tailwindcss(),
       neonDevApi(connectionString),
     ],
+    server: {
+      port: 5173,
+      strictPort: false,
+    },
+    preview: {
+      port: 5173,
+      strictPort: false,
+    },
     resolve: {
       alias: {
         // Alias @ to the src directory

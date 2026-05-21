@@ -150,7 +150,14 @@ export function ProjectDetailPage() {
         <section className="project-detail-meta" aria-label="Resumo do projeto">
           <div>
             <span>Cliente</span>
-            <strong>{project.repoName || 'Projeto próprio'}</strong>
+            {project.company ? (
+              <strong className="project-detail-company">
+                {project.company.iconUrl ? <img src={project.company.iconUrl} alt="" /> : null}
+                {project.company.name}
+              </strong>
+            ) : (
+              <strong>{project.repoName || 'Projeto próprio'}</strong>
+            )}
           </div>
           <div>
             <span>Area</span>

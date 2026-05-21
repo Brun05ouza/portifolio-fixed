@@ -1,5 +1,5 @@
-import type { CertificateDoc, CourseDoc, ProjectDoc } from '../types/portfolio';
-import type { CourseWithId, CertificateWithId, ProjectCollaborator, ProjectWithId } from '../types/portfolio';
+import type { CertificateDoc, CompanyDoc, CourseDoc, ProjectDoc } from '../types/portfolio';
+import type { CourseWithId, CertificateWithId, CompanyWithId, ProjectCollaborator, ProjectCompany, ProjectWithId } from '../types/portfolio';
 import { csvCourses, csvProjects } from '../data/csvPortfolioData';
 
 const DB_DISABLED_ERROR = 'Banco desativado no frontend. Crie uma API/backend para salvar e ler dados do Neon.';
@@ -29,6 +29,16 @@ function normalizeCourse(row: Record<string, unknown>): CourseWithId {
   };
 }
 
+function normalizeCompany(row: Record<string, unknown>): CompanyWithId {
+  return {
+    id: String(row.id),
+    name: String(row.name ?? ''),
+    iconUrl: String(row.iconUrl ?? row.icon_url ?? ''),
+    websiteUrl: String(row.websiteUrl ?? row.website_url ?? ''),
+    active: toBoolean(row.active ?? true),
+  };
+}
+
 function normalizeProject(row: Record<string, unknown>): ProjectWithId {
   const rawTags = row.tags;
   let tags: string[] = [];
@@ -42,6 +52,18 @@ function normalizeProject(row: Record<string, unknown>): ProjectWithId {
       tags = rawTags.split(',').map((tag) => tag.trim()).filter(Boolean);
     }
   }
+
+  const rawCompany = typeof row.company === 'object' && row.company ? row.company as Record<string, unknown> : {};
+  const companyId = String(row.companyId ?? row.company_id ?? rawCompany.id ?? '') || undefined;
+  const companyName = String(row.companyName ?? row.company_name ?? rawCompany.name ?? '');
+  const company = companyId && companyName
+    ? ({
+        id: companyId,
+        name: companyName,
+        iconUrl: String(row.companyIconUrl ?? row.company_icon_url ?? rawCompany.iconUrl ?? rawCompany.icon_url ?? ''),
+        websiteUrl: String(row.companyWebsiteUrl ?? row.company_website_url ?? rawCompany.websiteUrl ?? rawCompany.website_url ?? ''),
+      } satisfies ProjectCompany)
+    : null;
 
   return {
     id: String(row.id),
@@ -60,6 +82,8 @@ function normalizeProject(row: Record<string, unknown>): ProjectWithId {
     active: toBoolean(row.active),
     order: toNumber(row.order ?? row.sort_order),
     repoName: String(row.repoName ?? row.repo_name ?? '') || undefined,
+    companyId,
+    company,
     collaborators: Array.isArray(row.collaborators)
       ? row.collaborators.map((item): ProjectCollaborator => {
           const collaborator = item as Record<string, unknown>;
@@ -116,6 +140,10 @@ export async function listProjectsAll(): Promise<ProjectWithId[]> {
   return fetchCollection('/api/admin/projects', normalizeProject, csvProjects);
 }
 
+export async function listCompaniesAll(): Promise<CompanyWithId[]> {
+  return fetchCollection('/api/admin/companies', normalizeCompany, []);
+}
+
 export async function countActiveCourses(): Promise<number> {
   return (await listCoursesPublic()).length;
 }
@@ -162,6 +190,10 @@ export async function updateProject(_id: string, _data: ProjectDoc): Promise<Wri
 
 export async function deleteProject(_id: string): Promise<WriteResult> {
   return writeJson(`/api/admin/projects?id=${encodeURIComponent(_id)}`, 'DELETE');
+}
+
+export async function createCompany(_data: CompanyDoc): Promise<WriteResult & { id?: string }> {
+  return writeJson('/api/admin/companies', 'POST', _data);
 }
 
 async function writeJson(endpoint: string, method: string, data?: unknown): Promise<WriteResult & { id?: string }> {

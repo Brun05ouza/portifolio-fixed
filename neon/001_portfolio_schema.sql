@@ -50,6 +50,16 @@ create table if not exists public.certificates (
   updated_at timestamptz default now()
 );
 
+create table if not exists public.companies (
+  id uuid primary key default gen_random_uuid(),
+  name text not null default '',
+  icon_url text not null default '',
+  website_url text not null default '',
+  active boolean not null default true,
+  created_at timestamptz default now(),
+  updated_at timestamptz default now()
+);
+
 create table if not exists public.projects (
   id uuid primary key default gen_random_uuid(),
   title text not null default '',
@@ -67,6 +77,7 @@ create table if not exists public.projects (
   active boolean not null default true,
   sort_order integer not null default 0,
   repo_name text,
+  company_id uuid references public.companies(id) on delete set null,
   collaborators jsonb not null default '[]'::jsonb,
   created_at timestamptz default now(),
   updated_at timestamptz default now()
@@ -74,6 +85,19 @@ create table if not exists public.projects (
 
 alter table public.projects
   add column if not exists collaborators jsonb not null default '[]'::jsonb;
+
+alter table public.projects
+  add column if not exists company_id uuid references public.companies(id) on delete set null;
+
+insert into public.companies (name, icon_url, website_url, active)
+select
+  'Gênesis Empreendimentos',
+  'https://wp.moregenesis.com.br/wp-content/uploads/2025/07/GN-Genesis-Favicon-App.png',
+  'https://www.genesisempreendimentos.com.br/empreendimentos.html',
+  true
+where not exists (
+  select 1 from public.companies where lower(name) = lower('Gênesis Empreendimentos')
+);
 
 create table if not exists public.admin_users (
   id uuid primary key default gen_random_uuid(),
@@ -118,6 +142,7 @@ create table if not exists public.project_requests (
 
 create index if not exists courses_active_sort_order_idx on public.courses (active, sort_order);
 create index if not exists certificates_active_sort_order_idx on public.certificates (active, sort_order);
+create index if not exists companies_active_name_idx on public.companies (active, name);
 create index if not exists projects_active_sort_order_idx on public.projects (active, sort_order);
 create index if not exists contacts_created_at_idx on public.contacts (created_at desc);
 create index if not exists page_views_created_at_idx on public.page_views (created_at desc);

@@ -211,6 +211,20 @@ button:hover .project-roll > span {
   line-height: 1.1;
 }
 
+.project-detail-company {
+  display: inline-flex;
+  width: fit-content;
+  align-items: center;
+  gap: 10px;
+}
+
+.project-detail-company img {
+  width: 30px;
+  height: 30px;
+  border-radius: 7px;
+  object-fit: cover;
+}
+
 .project-detail-techs {
   display: flex;
   flex-wrap: wrap;

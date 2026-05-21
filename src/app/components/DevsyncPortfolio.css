@@ -820,6 +820,29 @@ button:hover .dv-roll span {
   line-height: 1.5;
 }
 
+.dv-project-company {
+  display: inline-flex;
+  width: fit-content;
+  align-items: center;
+  gap: 8px;
+  margin: 0 0 18px;
+  border: 1px solid rgba(105, 245, 139, 0.28);
+  border-radius: 999px;
+  padding: 7px 11px;
+  background: rgba(105, 245, 139, 0.08);
+  color: var(--dv-ink);
+  font-size: 0.78rem;
+  font-weight: 900;
+  text-transform: uppercase;
+}
+
+.dv-project-company img {
+  width: 22px;
+  height: 22px;
+  border-radius: 6px;
+  object-fit: cover;
+}
+
 .dv-project-tags {
   display: flex;
   flex-wrap: wrap;

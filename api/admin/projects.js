@@ -18,6 +18,7 @@ function cleanProject(input) {
     active: input.active !== false,
     order: Number(input.order || 0),
     repoName: input.repoName ? String(input.repoName) : null,
+    companyId: input.companyId ? String(input.companyId) : null,
     collaborators: Array.isArray(input.collaborators)
       ? input.collaborators
           .map((item) => ({
@@ -43,11 +44,13 @@ export default async function handler(request, response) {
   if (request.method === 'GET') {
     const rows = await sql`
       select
-        id, title, description, image_url, tags, role, demo_link, github_link,
-        hide_github_link, hide_image_overlay, case_problem, case_solution, case_result,
-        active, sort_order, repo_name, collaborators
-      from public.projects
-      order by sort_order asc, created_at desc
+        p.id, p.title, p.description, p.image_url, p.tags, p.role, p.demo_link, p.github_link,
+        p.hide_github_link, p.hide_image_overlay, p.case_problem, p.case_solution, p.case_result,
+        p.active, p.sort_order, p.repo_name, p.company_id, p.collaborators,
+        c.name as company_name, c.icon_url as company_icon_url, c.website_url as company_website_url
+      from public.projects p
+      left join public.companies c on c.id = p.company_id
+      order by p.sort_order asc, p.created_at desc
     `;
     response.status(200).json({ data: rows });
     return;
@@ -59,13 +62,13 @@ export default async function handler(request, response) {
       insert into public.projects (
         title, description, image_url, tags, role, demo_link, github_link, hide_github_link,
         hide_image_overlay, case_problem, case_solution, case_result, active, sort_order,
-        repo_name, collaborators
+        repo_name, company_id, collaborators
       )
       values (
         ${item.title}, ${item.description}, ${item.imageUrl}, ${item.tags}, ${item.role},
         ${item.demoLink}, ${item.githubLink}, ${item.hideGithubLink}, ${item.hideImageOverlay},
         ${item.caseProblem}, ${item.caseSolution}, ${item.caseResult}, ${item.active},
-        ${item.order}, ${item.repoName}, ${JSON.stringify(item.collaborators)}
+        ${item.order}, ${item.repoName}, ${item.companyId}, ${JSON.stringify(item.collaborators)}
       )
       returning id
     `;
@@ -93,6 +96,7 @@ export default async function handler(request, response) {
         active = ${item.active},
         sort_order = ${item.order},
         repo_name = ${item.repoName},
+        company_id = ${item.companyId},
         collaborators = ${JSON.stringify(item.collaborators)},
         updated_at = now()
       where id = ${id}

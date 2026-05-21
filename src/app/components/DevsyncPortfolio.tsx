@@ -726,6 +726,12 @@ export function DevsyncPortfolio() {
                   </div>
                   <h3>{project.title}</h3>
                   <p>{project.description}</p>
+                  {project.company ? (
+                    <div className="dv-project-company">
+                      {project.company.iconUrl ? <img src={project.company.iconUrl} alt="" loading="lazy" decoding="async" /> : null}
+                      <span>{project.company.name}</span>
+                    </div>
+                  ) : null}
                   <div className="dv-project-tags">
                     {project.tags.map((tag) => (
                       <span key={tag} title={tag} aria-label={tag}>

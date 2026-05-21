@@ -43,7 +43,23 @@ export interface ProjectDoc {
   order: number;
   /** Opcional: fallback para texto do case em config/cases.ts */
   repoName?: string;
+  companyId?: string;
+  company?: ProjectCompany | null;
   collaborators: ProjectCollaborator[];
+}
+
+export interface CompanyDoc {
+  name: string;
+  iconUrl: string;
+  websiteUrl: string;
+  active: boolean;
+}
+
+export interface ProjectCompany {
+  id: string;
+  name: string;
+  iconUrl: string;
+  websiteUrl: string;
 }
 
 export interface ProjectCollaborator {
@@ -54,6 +70,7 @@ export interface ProjectCollaborator {
 
 export type CourseWithId = CourseDoc & { id: string };
 export type CertificateWithId = CertificateDoc & { id: string };
+export type CompanyWithId = CompanyDoc & { id: string };
 export type ProjectWithId = ProjectDoc & { id: string };
 
 /** Formato consumido por ProjectCard + CaseModal no site */
@@ -72,6 +89,7 @@ export interface PortfolioProjectView {
   caseSolution: string;
   caseResult: string;
   repoName?: string;
+  company?: ProjectCompany | null;
   collaborators: ProjectCollaborator[];
 }
 
@@ -91,6 +109,7 @@ export function toPortfolioProjectView(p: ProjectWithId): PortfolioProjectView {
     caseSolution: p.caseSolution,
     caseResult: p.caseResult,
     repoName: p.repoName,
+    company: p.company,
     collaborators: p.collaborators,
   };
 }

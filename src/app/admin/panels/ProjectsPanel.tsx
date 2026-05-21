@@ -1,14 +1,16 @@
 import { useCallback, useEffect, useState, type ChangeEvent } from 'react';
-import { Loader2, Pencil, Plus, Trash2, Upload, UserPlus } from 'lucide-react';
+import { Building2, Loader2, Pencil, Plus, Trash2, Upload, UserPlus } from 'lucide-react';
 import {
+  createCompany,
   createProject,
   deleteProject,
+  listCompaniesAll,
   listProjectsAll,
   updateProject,
 } from '../../../services/portfolioDb';
 import { uploadPortfolioFile } from '../../../services/storageUpload';
 import { TECHNOLOGIES, TechnologyIcon } from '../../../config/technologies';
-import type { ProjectDoc, ProjectWithId } from '../../../types/portfolio';
+import type { CompanyWithId, ProjectDoc, ProjectWithId } from '../../../types/portfolio';
 import { toAbsoluteHttpUrl } from '../../../utils/externalUrl';
 import { Button } from '../../components/ui/button';
 import {
@@ -48,6 +50,8 @@ const empty: ProjectDoc = {
   active: true,
   order: 0,
   repoName: '',
+  companyId: '',
+  company: null,
   collaborators: [],
 };
 
@@ -57,6 +61,7 @@ function getNextOrder(rows: ProjectWithId[]): number {
 
 export function ProjectsPanel() {
   const [rows, setRows] = useState<ProjectWithId[]>([]);
+  const [companies, setCompanies] = useState<CompanyWithId[]>([]);
   const [loading, setLoading] = useState(true);
   const [open, setOpen] = useState(false);
   const [editingId, setEditingId] = useState<string | null>(null);
@@ -65,11 +70,18 @@ export function ProjectsPanel() {
   const [saving, setSaving] = useState(false);
   const [msg, setMsg] = useState('');
   const [uploading, setUploading] = useState(false);
+  const [creatingCompany, setCreatingCompany] = useState(false);
+  const [companyDraft, setCompanyDraft] = useState({
+    name: '',
+    iconUrl: '',
+    websiteUrl: '',
+  });
 
   const load = useCallback(async () => {
     setLoading(true);
-    const list = await listProjectsAll();
+    const [list, companyList] = await Promise.all([listProjectsAll(), listCompaniesAll()]);
     setRows(list);
+    setCompanies(companyList);
     setLoading(false);
   }, []);
 
@@ -103,6 +115,8 @@ export function ProjectsPanel() {
       active: row.active,
       order: row.order,
       repoName: row.repoName ?? '',
+      companyId: row.companyId ?? row.company?.id ?? '',
+      company: row.company ?? null,
       collaborators: row.collaborators ?? [],
     });
     setSelectedTechnologies(row.tags);
@@ -172,6 +186,8 @@ export function ProjectsPanel() {
       demoLink: demo ? toAbsoluteHttpUrl(demo) : '',
       githubLink: github ? toAbsoluteHttpUrl(github) : '',
       repoName: form.repoName?.trim() || undefined,
+      companyId: form.companyId || undefined,
+      company: null,
       collaborators: form.collaborators
         .map((item) => ({
           ...item,
@@ -205,6 +221,31 @@ export function ProjectsPanel() {
     }
     setOpen(false);
     await load();
+  };
+
+  const addCompany = async () => {
+    if (!companyDraft.name.trim()) {
+      setMsg('Informe o nome da empresa.');
+      return;
+    }
+
+    setCreatingCompany(true);
+    setMsg('');
+    const res = await createCompany({
+      name: companyDraft.name.trim(),
+      iconUrl: companyDraft.iconUrl.trim(),
+      websiteUrl: companyDraft.websiteUrl.trim() ? toAbsoluteHttpUrl(companyDraft.websiteUrl.trim()) : '',
+      active: true,
+    });
+    setCreatingCompany(false);
+    if (!res.ok || !res.id) {
+      setMsg(res.ok ? 'Nao foi possivel criar a empresa.' : res.error);
+      return;
+    }
+    const companyList = await listCompaniesAll();
+    setCompanies(companyList);
+    setForm((current) => ({ ...current, companyId: res.id }));
+    setCompanyDraft({ name: '', iconUrl: '', websiteUrl: '' });
   };
 
   const remove = async (id: string) => {
@@ -246,6 +287,7 @@ export function ProjectsPanel() {
                 <TableHead className="text-zinc-400">Ordem</TableHead>
                 <TableHead className="text-zinc-400">Título</TableHead>
                 <TableHead className="text-zinc-400">Papel</TableHead>
+                <TableHead className="text-zinc-400">Empresa</TableHead>
                 <TableHead className="text-zinc-400">Apoio</TableHead>
                 <TableHead className="text-zinc-400">Ativo</TableHead>
                 <TableHead className="text-zinc-400">Imagem</TableHead>
@@ -255,7 +297,7 @@ export function ProjectsPanel() {
             <TableBody>
               {rows.length === 0 ? (
                 <TableRow className="border-zinc-800">
-                  <TableCell colSpan={7} className="text-center text-zinc-500 py-12">
+                  <TableCell colSpan={8} className="text-center text-zinc-500 py-12">
                     Nenhum projeto. Adicione o primeiro projeto para publicar no portfolio.
                   </TableCell>
                 </TableRow>
@@ -265,6 +307,7 @@ export function ProjectsPanel() {
                     <TableCell className="text-zinc-300">{row.order}</TableCell>
                     <TableCell className="font-medium text-white">{row.title}</TableCell>
                     <TableCell className="text-zinc-400">{row.role}</TableCell>
+                    <TableCell className="text-zinc-400">{row.company?.name ?? '-'}</TableCell>
                     <TableCell className="text-zinc-400">{row.collaborators?.length ?? 0}</TableCell>
                     <TableCell className="text-zinc-400">{row.active ? 'Sim' : 'Não'}</TableCell>
                     <TableCell className="text-zinc-500 max-w-[120px] truncate">
@@ -316,6 +359,54 @@ export function ProjectsPanel() {
               <div className="admin-field">
                 <Label>Papel</Label>
                 <Input value={form.role} onChange={(event) => setForm((current) => ({ ...current, role: event.target.value }))} />
+              </div>
+
+              <div className="admin-field admin-field-wide">
+                <Label>Empresa destacada</Label>
+                <div className="admin-company-picker">
+                  <select
+                    value={form.companyId ?? ''}
+                    onChange={(event) => setForm((current) => ({ ...current, companyId: event.target.value }))}
+                  >
+                    <option value="">Sem empresa no card</option>
+                    {companies.map((company) => (
+                      <option key={company.id} value={company.id}>
+                        {company.name}
+                      </option>
+                    ))}
+                  </select>
+                  {companies.find((company) => company.id === form.companyId) ? (
+                    <div className="admin-company-preview">
+                      {companies.find((company) => company.id === form.companyId)?.iconUrl ? (
+                        <img src={companies.find((company) => company.id === form.companyId)?.iconUrl} alt="" />
+                      ) : (
+                        <Building2 className="h-4 w-4" />
+                      )}
+                      <span>{companies.find((company) => company.id === form.companyId)?.name}</span>
+                    </div>
+                  ) : null}
+                </div>
+                <div className="admin-company-create">
+                  <Input
+                    value={companyDraft.name}
+                    onChange={(event) => setCompanyDraft((current) => ({ ...current, name: event.target.value }))}
+                    placeholder="Nome da empresa"
+                  />
+                  <Input
+                    value={companyDraft.iconUrl}
+                    onChange={(event) => setCompanyDraft((current) => ({ ...current, iconUrl: event.target.value }))}
+                    placeholder="URL do icone/logo"
+                  />
+                  <Input
+                    value={companyDraft.websiteUrl}
+                    onChange={(event) => setCompanyDraft((current) => ({ ...current, websiteUrl: event.target.value }))}
+                    placeholder="Site"
+                  />
+                  <Button type="button" variant="outline" className="border-zinc-700" disabled={creatingCompany} onClick={() => void addCompany()}>
+                    {creatingCompany ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Plus className="mr-2 h-4 w-4" />}
+                    Criar empresa
+                  </Button>
+                </div>
               </div>
 
               <div className="admin-field admin-field-wide">
