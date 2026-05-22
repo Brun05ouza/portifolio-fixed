@@ -101,7 +101,7 @@ const stats = [
   { value: 43, suffix: 'k+', label: 'Linhas de codigo' },
 ];
 
-const clients = ['Neon', 'React', 'Vite', 'GitHub', 'Supabase', 'Figma', 'TypeScript', 'Node'];
+const clients = ['Neon', 'React', 'Vite', 'GitHub', 'Figma', 'TypeScript', 'Node'];
 
 const processSteps = [
   {
@@ -311,7 +311,10 @@ function FixedPortfolioHeader({
 
 function RotatingDeck({ projects }: { projects: ProjectWithId[] }) {
   const sectionRef = useRef<HTMLElement>(null);
-  const deckProjects = projects.slice(0, 5);
+  const deckProjects = [
+    ...projects.filter((project) => project.repoName === 'lume' || project.title.toLowerCase() === 'lume'),
+    ...projects.filter((project) => project.title.toLowerCase() !== 'creator tools' && project.repoName !== 'lume' && project.title.toLowerCase() !== 'lume'),
+  ].slice(0, 5);
   const sectionHeight = `${Math.max(5, deckProjects.length) + 1}00vh`;
   const trackEnd = `-${Math.max(190, deckProjects.length * 38)}vw`;
   const { scrollYProgress } = useScroll({

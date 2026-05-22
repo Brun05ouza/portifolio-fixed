@@ -5,7 +5,7 @@ function cleanProject(input) {
   return {
     title: String(input.title || ''),
     description: String(input.description || ''),
-    imageUrl: String(input.imageUrl || ''),
+    imageUrl: String(input.imageUrl || '/background-project.svg'),
     tags: Array.isArray(input.tags) ? input.tags.map(String) : [],
     role: String(input.role || ''),
     demoLink: String(input.demoLink || ''),

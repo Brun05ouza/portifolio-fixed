@@ -1,5 +1,5 @@
-import { useCallback, useEffect, useState, type ChangeEvent } from 'react';
-import { Building2, Loader2, Pencil, Plus, Trash2, Upload, UserPlus } from 'lucide-react';
+import { useCallback, useEffect, useState } from 'react';
+import { Building2, Loader2, Pencil, Plus, Trash2, UserPlus } from 'lucide-react';
 import {
   createCompany,
   createProject,
@@ -8,7 +8,6 @@ import {
   listProjectsAll,
   updateProject,
 } from '../../../services/portfolioDb';
-import { uploadPortfolioFile } from '../../../services/storageUpload';
 import { TECHNOLOGIES, TechnologyIcon } from '../../../config/technologies';
 import type { CompanyWithId, ProjectDoc, ProjectWithId } from '../../../types/portfolio';
 import { toAbsoluteHttpUrl } from '../../../utils/externalUrl';
@@ -69,7 +68,6 @@ export function ProjectsPanel() {
   const [selectedTechnologies, setSelectedTechnologies] = useState<string[]>([]);
   const [saving, setSaving] = useState(false);
   const [msg, setMsg] = useState('');
-  const [uploading, setUploading] = useState(false);
   const [creatingCompany, setCreatingCompany] = useState(false);
   const [companyDraft, setCompanyDraft] = useState({
     name: '',
@@ -133,22 +131,6 @@ export function ProjectsPanel() {
     });
   };
 
-  const handleFile = async (event: ChangeEvent<HTMLInputElement>) => {
-    const file = event.target.files?.[0];
-    if (!file) return;
-    setUploading(true);
-    setMsg('');
-    const path = `portfolio/media/${Date.now()}-${file.name.replace(/[^\w.-]/g, '_')}`;
-    const res = await uploadPortfolioFile(path, file);
-    setUploading(false);
-    event.target.value = '';
-    if ('error' in res) {
-      setMsg(res.error ?? 'Falha ao enviar imagem.');
-      return;
-    }
-    setForm((current) => ({ ...current, imageUrl: res.url ?? '' }));
-  };
-
   const addCollaborator = () => {
     setForm((current) => ({
       ...current,
@@ -181,6 +163,7 @@ export function ProjectsPanel() {
     const github = form.githubLink.trim();
     return {
       ...form,
+      imageUrl: form.imageUrl.trim() || '/background-project.svg',
       tags: selectedTechnologies,
       order: editingId ? form.order : getNextOrder(rows),
       demoLink: demo ? toAbsoluteHttpUrl(demo) : '',
@@ -202,10 +185,6 @@ export function ProjectsPanel() {
     const payload = buildPayload();
     if (!payload.title.trim()) {
       setMsg('Informe o titulo.');
-      return;
-    }
-    if (!payload.imageUrl.trim()) {
-      setMsg('Informe a imagem do projeto.');
       return;
     }
 
@@ -432,15 +411,12 @@ export function ProjectsPanel() {
               </div>
 
               <div className="admin-field admin-field-wide">
-                <Label>Imagem</Label>
-                <div className="admin-image-input-row">
-                  <Input value={form.imageUrl} onChange={(event) => setForm((current) => ({ ...current, imageUrl: event.target.value }))} />
-                  <label className="admin-upload-button">
-                    <Upload className="h-4 w-4" />
-                    {uploading ? 'Enviando...' : 'Upload'}
-                    <input type="file" accept="image/*" className="hidden" onChange={(event) => void handleFile(event)} />
-                  </label>
-                </div>
+                <Label>Caminho da imagem</Label>
+                <Input
+                  value={form.imageUrl}
+                  placeholder="/projects/nome-da-imagem.png"
+                  onChange={(event) => setForm((current) => ({ ...current, imageUrl: event.target.value }))}
+                />
               </div>
 
               <div className="admin-field">

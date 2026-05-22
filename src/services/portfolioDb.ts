@@ -69,7 +69,7 @@ function normalizeProject(row: Record<string, unknown>): ProjectWithId {
     id: String(row.id),
     title: String(row.title ?? ''),
     description: String(row.description ?? ''),
-    imageUrl: String(row.imageUrl ?? row.image_url ?? ''),
+    imageUrl: String(row.imageUrl ?? row.image_url ?? '').trim() || '/background-project.svg',
     tags,
     role: String(row.role ?? ''),
     demoLink: String(row.demoLink ?? row.demo_link ?? ''),
@@ -116,6 +116,26 @@ async function fetchCollection<T>(
   }
 }
 
+function projectKey(project: ProjectWithId): string {
+  return [
+    project.id,
+    project.repoName ?? '',
+    project.githubLink ?? '',
+  ].map((value) => value.trim().toLowerCase()).find(Boolean) ?? project.title.trim().toLowerCase();
+}
+
+function mergeProjects(primary: ProjectWithId[], extras: ProjectWithId[]): ProjectWithId[] {
+  const seen = new Set(primary.map(projectKey));
+  const merged = [...primary];
+  for (const project of extras) {
+    const key = projectKey(project);
+    if (seen.has(key)) continue;
+    seen.add(key);
+    merged.push(project);
+  }
+  return merged.sort((a, b) => a.order - b.order || a.title.localeCompare(b.title));
+}
+
 export async function listCoursesPublic(): Promise<CourseWithId[]> {
   return fetchCollection('/api/courses', normalizeCourse, csvCourses.filter((course) => course.active));
 }
@@ -125,7 +145,9 @@ export async function listCertificatesPublic(): Promise<CertificateWithId[]> {
 }
 
 export async function listProjectsPublic(): Promise<ProjectWithId[]> {
-  return fetchCollection('/api/projects', normalizeProject, csvProjects.filter((project) => project.active));
+  const localProjects = csvProjects.filter((project) => project.active);
+  const apiProjects = await fetchCollection('/api/projects', normalizeProject, localProjects);
+  return mergeProjects(apiProjects, localProjects);
 }
 
 export async function listCoursesAll(): Promise<CourseWithId[]> {
@@ -137,7 +159,8 @@ export async function listCertificatesAll(): Promise<CertificateWithId[]> {
 }
 
 export async function listProjectsAll(): Promise<ProjectWithId[]> {
-  return fetchCollection('/api/admin/projects', normalizeProject, csvProjects);
+  const apiProjects = await fetchCollection('/api/admin/projects', normalizeProject, csvProjects);
+  return mergeProjects(apiProjects, csvProjects);
 }
 
 export async function listCompaniesAll(): Promise<CompanyWithId[]> {

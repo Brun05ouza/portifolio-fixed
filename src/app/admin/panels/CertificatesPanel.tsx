@@ -1,12 +1,11 @@
 import { useCallback, useEffect, useState } from 'react';
-import { Loader2, Pencil, Plus, Trash2, Upload } from 'lucide-react';
+import { Loader2, Pencil, Plus, Trash2 } from 'lucide-react';
 import {
   createCertificate,
   deleteCertificate,
   listCertificatesAll,
   updateCertificate,
 } from '../../../services/portfolioDb';
-import { uploadPortfolioFile } from '../../../services/storageUpload';
 import type { CertificateDoc, CertificateWithId } from '../../../types/portfolio';
 import { CERT_ICON_OPTIONS } from '../../../config/certIcons';
 import { Button } from '../../components/ui/button';
@@ -69,7 +68,6 @@ export function CertificatesPanel() {
   const [form, setForm] = useState<CertificateDoc>(empty);
   const [saving, setSaving] = useState(false);
   const [msg, setMsg] = useState('');
-  const [uploading, setUploading] = useState(false);
 
   const load = useCallback(async () => {
     setLoading(true);
@@ -105,21 +103,6 @@ export function CertificatesPanel() {
     setOpen(true);
   };
 
-  const handleFile = async (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (!file) return;
-    setUploading(true);
-    setMsg('');
-    const path = `portfolio/media/${Date.now()}-${file.name.replace(/[^\w.-]/g, '_')}`;
-    const res = await uploadPortfolioFile(path, file);
-    setUploading(false);
-    e.target.value = '';
-    if ('error' in res) {
-      setMsg(res.error);
-      return;
-    }
-    setForm((f) => ({ ...f, imageUrl: res.url }));
-  };
 
   const save = async () => {
     setSaving(true);
@@ -288,17 +271,13 @@ export function CertificatesPanel() {
               />
             </div>
             <div>
-              <Label className="mb-2 block text-zinc-400">URL da imagem (opcional — substitui ícone se preenchida)</Label>
+              <Label className="mb-2 block text-zinc-400">Caminho da imagem opcional</Label>
               <Input
                 value={form.imageUrl}
+                placeholder="/projects/nome-da-imagem.png"
                 onChange={(e) => setForm((f) => ({ ...f, imageUrl: e.target.value }))}
                 className="border-zinc-700 bg-zinc-900"
               />
-              <label className="mt-3 inline-flex cursor-pointer items-center gap-2 text-sm text-cyan-400">
-                <Upload className="h-4 w-4" />
-                {uploading ? 'Enviando…' : 'Enviar imagem'}
-                <input type="file" accept="image/*" className="hidden" onChange={(e) => void handleFile(e)} />
-              </label>
             </div>
             <div>
               <Label className="mb-2 block text-zinc-400">Ordem</Label>
