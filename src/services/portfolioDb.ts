@@ -125,12 +125,23 @@ function projectKey(project: ProjectWithId): string {
 }
 
 function mergeProjects(primary: ProjectWithId[], extras: ProjectWithId[]): ProjectWithId[] {
-  const seen = new Set(primary.map(projectKey));
   const merged = [...primary];
+  const indexByKey = new Map(merged.map((project, index) => [projectKey(project), index]));
   for (const project of extras) {
     const key = projectKey(project);
-    if (seen.has(key)) continue;
-    seen.add(key);
+    const existingIndex = indexByKey.get(key);
+    if (existingIndex !== undefined) {
+      const current = merged[existingIndex];
+      merged[existingIndex] = {
+        ...current,
+        imageUrl: project.imageUrl || current.imageUrl || '/background-project.svg',
+        tags: project.tags.length > 0 ? project.tags : current.tags,
+        order: project.order || current.order,
+        repoName: project.repoName ?? current.repoName,
+      };
+      continue;
+    }
+    indexByKey.set(key, merged.length);
     merged.push(project);
   }
   return merged.sort((a, b) => a.order - b.order || a.title.localeCompare(b.title));
